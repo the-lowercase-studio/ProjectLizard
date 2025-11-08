@@ -1,2 +1,56 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# --- Git LFS Configuration for Unity 2D Project ---
+
+# --- Aseprite Source Files ---
+# Keep these in LFS so artists can version source sprites safely
+*.ase filter=lfs diff=lfs merge=lfs -text
+*.aseprite filter=lfs diff=lfs merge=lfs -text
+
+# --- Exported Sprite Sheets / Textures ---
+# Unity uses these directly — large binary image files
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+
+# --- Animations and Prefabs ---
+# Unity animation and prefab assets can get large and binary
+*.anim filter=lfs diff=lfs merge=lfs -text
+*.controller filter=lfs diff=lfs merge=lfs -text
+*.prefab filter=lfs diff=lfs merge=lfs -text
+*.asset filter=lfs diff=lfs merge=lfs -text
+*.mat filter=lfs diff=lfs merge=lfs -text
+
+# --- Audio Files ---
+# Store background music and sound effects via LFS
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+
+# --- Video or Cutscene Files (if used) ---
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+
+# --- Fonts (binary data) ---
+*.ttf filter=lfs diff=lfs merge=lfs -text
+*.otf filter=lfs diff=lfs merge=lfs -text
+
+# --- Binary Cache/Imported Assets (optional) ---
+# These are sometimes binary in Unity even if small
+*.unity filter=lfs diff=lfs merge=lfs -text
+
+# --- Exclude text-based files (keep them as normal Git text diffs) ---
+# Unity meta, script, and config files should NOT use LFS
+*.cs text
+*.shader text
+*.cginc text
+*.json text
+*.xml text
+*.txt text
+*.md text
+*.meta text
+*.asmdef text
+*.asmref text
+*.rsp text

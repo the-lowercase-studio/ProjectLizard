@@ -73,3 +73,15 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# === Preserving only top level important folders ===
+
+# Ignore everything
+/*
+
+# Keep only what’s necessary
+!/.gitignore
+!/Assets/
+!/ProjectSettings/
+
+# ======
