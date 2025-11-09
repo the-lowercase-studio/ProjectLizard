@@ -11,6 +11,7 @@ namespace Assets.Cards
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private TextMeshProUGUI _costText;
         [SerializeField] private Image _cardFrontImage;
+
         private Card _card;
 
         private void Awake()
@@ -22,7 +23,7 @@ namespace Assets.Cards
         {
             _titleText.text = _card.Config.Title;
             _descriptionText.text = _card.Config.Description;
-            _costText.text = _card.Config.StartCost.ToString();
+            _costText.text = _card.Config.StartEnergyCost.ToString();
             _cardFrontImage.sprite = _card.Config.CardFront;
         }
     }

@@ -1,11 +1,34 @@
 using Assets.Interfaces;
+using System;
 using UnityEngine;
 
 namespace Assets.Cards
 {
-    public class Card : MonoBehaviour, IInitializableByConfig<CardBaseSO>
+    public interface ICard : IInitializableByConfig<CardBaseSO>
+    {
+        ICardMovement Movement { get; }
+        ICardRotation Rotation { get; }
+        CardBaseSO Config { get; }
+
+        event EventHandler OnCardUsage;
+
+        byte GetCurrentEnergyCost();
+    }
+
+    public class Card : MonoBehaviour, ICard
     {
         [field: SerializeField] public CardBaseSO Config { get; private set; }
+        [field: SerializeField] public Transform Visual { get; private set; }
+        public ICardMovement Movement { get; private set; }
+        public ICardRotation Rotation { get; private set; }
+
+        public event EventHandler OnCardUsage;
+
+        private void Awake()
+        {
+            Movement = GetComponent<ICardMovement>();
+            Rotation = GetComponent<ICardRotation>();
+        }
 
         public void Initialize(CardBaseSO config)
         {
@@ -13,6 +36,12 @@ namespace Assets.Cards
             {
                 Config = config;
             }
+        }
+
+        public byte GetCurrentEnergyCost()
+        {
+            //TODO: logic for increasing / decreasing card costs when effects are active
+            return Config.StartEnergyCost;
         }
     }
 }
