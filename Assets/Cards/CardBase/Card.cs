@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Assets.Cards
 {
-    public interface ICard : IInitializableByConfig<CardBaseSO>
+    public interface ICard : IInitializableByConfig<CardConfigBaseSO>
     {
         ICardMovement Movement { get; }
         ICardRotation Rotation { get; }
-        CardBaseSO Config { get; }
+        CardConfigBaseSO Config { get; }
 
         event EventHandler OnCardUsage;
 
@@ -17,7 +17,7 @@ namespace Assets.Cards
 
     public class Card : MonoBehaviour, ICard
     {
-        [field: SerializeField] public CardBaseSO Config { get; private set; }
+        [field: SerializeField] public CardConfigBaseSO Config { get; private set; }
         [field: SerializeField] public Transform Visual { get; private set; }
         public ICardMovement Movement { get; private set; }
         public ICardRotation Rotation { get; private set; }
@@ -30,7 +30,7 @@ namespace Assets.Cards
             Rotation = GetComponent<ICardRotation>();
         }
 
-        public void Initialize(CardBaseSO config)
+        public void Initialize(CardConfigBaseSO config)
         {
             if (Config == null)
             {

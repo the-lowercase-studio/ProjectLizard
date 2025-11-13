@@ -46,7 +46,7 @@ namespace Assets.Cards
             return _cards.ToImmutableArray();
         }
 
-        public void AddCard(CardBaseSO config)
+        public void AddCard(CardConfigBaseSO config)
         {
             ICard card = Instantiate(_cardPrefab, _cardsHolder.transform);
             card.OnCardUsage += Card_OnCardUsage;
@@ -74,6 +74,11 @@ namespace Assets.Cards
                 _cards.Enqueue(card);
             }
 
+            Invoke("TestInvoke", 1f);
+        }
+
+        private void TestInvoke()
+        {
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
         }
     }

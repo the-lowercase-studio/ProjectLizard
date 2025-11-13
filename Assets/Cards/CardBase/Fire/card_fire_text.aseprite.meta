@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f50f0dc0e832c56448cfc76a3ea630b7
+guid: b3ebfa5cd7899ae45ab9d65efb3b94c4
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,9 +123,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: firesowrdcard
+  - name: card_fire_text
     originalName: 
-    pivot: {x: 0.5, y: 0}
+    pivot: {x: 0.49549547, y: -0.21621622}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,9 +133,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 180
-      height: 260
-    spriteID: d0c6981327b476047b232352b042a886
+      width: 111
+      height: 74
+    spriteID: c465f3de98280524dbc2d39cd7a72baf
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -148,25 +148,25 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 914313837
+      value0: 504063309
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: firesowrdcard
+    name: card_fire_text
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: firesowrdcard
+    - name: card_fire_text
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 0
-        y: 0
-        width: 180
-        height: 260
-      spriteId: d0c6981327b476047b232352b042a886
+        x: 16
+        y: 16
+        width: 111
+        height: 74
+      spriteId: c465f3de98280524dbc2d39cd7a72baf
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -185,5 +185,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 180, y: 260}
-  previousTextureSize: {x: 256, y: 512}
+  canvasSize: {x: 142, y: 190}
+  previousTextureSize: {x: 128, y: 128}

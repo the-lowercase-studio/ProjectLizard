@@ -10,7 +10,11 @@ namespace Assets.Cards
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private TextMeshProUGUI _costText;
-        [SerializeField] private Image _cardFrontImage;
+
+        [SerializeField] private Image _titleBackground;
+        [SerializeField] private Image _descriptionBackground;
+        [SerializeField] private Image _background;
+        [SerializeField] private Image _frontGraphic;
 
         private Card _card;
 
@@ -24,7 +28,11 @@ namespace Assets.Cards
             _titleText.text = _card.Config.Title;
             _descriptionText.text = _card.Config.Description;
             _costText.text = _card.Config.StartEnergyCost.ToString();
-            _cardFrontImage.sprite = _card.Config.CardFront;
+
+            _titleBackground.sprite = _card.Config.ElementalVisualBase.TitleBackground;
+            _descriptionBackground.sprite = _card.Config.ElementalVisualBase.DescriptionBackground;
+            _background.sprite = _card.Config.ElementalVisualBase.Background;
+            _frontGraphic.sprite = _card.Config.FrontGraphic;
         }
     }
 }

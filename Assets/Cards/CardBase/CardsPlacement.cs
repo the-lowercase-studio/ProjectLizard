@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CardsPlacement : MonoBehaviour
 {
+    [SerializeField] private AnimationCurve _positionCurve;
+    [SerializeField] private AnimationCurve _rotationCurve;
+
     private CardsHandManager _handManager;
 
     private void Start()
@@ -23,33 +26,20 @@ public class CardsPlacement : MonoBehaviour
 
     public void UpdateCardPlacement(ICard card)
     {
-        Vector3 cardPos = card.Movement.GetPosition();
+        Vector3 cardPos = card.Movement.GetRectAnchoredPosition();
         SetCardYOffset(card, cardPos);
         SetCardZRotation(card, cardPos);
     }
 
     private void SetCardYOffset(ICard card, Vector3 cardPos)
     {
-        float yOffset = CalculateYOffset(cardPos.x);
-        card.Movement.SetPosition(new Vector3(cardPos.x, yOffset));
-    }
-
-    private float CalculateYOffset(float xPos)
-    {
-        //y = -1/8x^2 + 10
-        return (-0.125f * xPos * xPos) + 10f;
+        float yOffset = _positionCurve.Evaluate(cardPos.x);
+        card.Movement.SetVisualRectAnchoredPosition(new Vector3(0, yOffset, 0));
     }
 
     private void SetCardZRotation(ICard card, Vector3 cardPos)
     {
-        Vector3 rotation = card.Rotation.GetVisualEulerRotation();
-        float zRotation = CalculateZRotation(cardPos.x);
+        float zRotation = _rotationCurve.Evaluate(cardPos.x);
         card.Rotation.SetZVisualRotation(zRotation);
-    }
-
-    private float CalculateZRotation(float xPos)
-    {
-        //y = -1/24x^2 + 10
-        return (-0.0416f * xPos * xPos) + 10f;
     }
 }
