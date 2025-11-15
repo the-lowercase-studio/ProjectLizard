@@ -8,15 +8,21 @@ namespace Assets.Cards
 
         Vector3 GetVisualRectAnchoredPosition();
 
+        void MoveCardUp();
+
         void SetVisualRectAnchoredPosition(Vector3 pos);
+
+        void SetVisualRectAnchoredPositionToPrevPosition();
     }
 
     [RequireComponent(typeof(Card))]
     public class CardMovement : MonoBehaviour, ICardMovement
     {
+        [SerializeField] private float hoveredCardYOffset = 8f;
         private Card _card;
         private RectTransform _rectTransform;
         private RectTransform _visualRectTransform;
+        private Vector3 _visualRectPrevPosition;
 
         private void Awake()
         {
@@ -47,8 +53,28 @@ namespace Assets.Cards
             return Vector3.zero;
         }
 
+        public void MoveCardUp()
+        {
+            var pos = GetVisualRectAnchoredPosition();
+
+            SetVisualRectAnchoredPosition(new Vector3(
+                    pos.x,
+                    pos.y + hoveredCardYOffset,
+                    pos.z
+                )
+            );
+
+            _visualRectPrevPosition = pos;
+        }
+
+        public void SetVisualRectAnchoredPositionToPrevPosition()
+        {
+            SetVisualRectAnchoredPosition(_visualRectPrevPosition);
+        }
+
         public void SetVisualRectAnchoredPosition(Vector3 pos)
         {
+            _visualRectPrevPosition = GetVisualRectAnchoredPosition();
             _visualRectTransform.anchoredPosition = pos;
         }
     }
