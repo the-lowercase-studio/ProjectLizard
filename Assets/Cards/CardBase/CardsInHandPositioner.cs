@@ -2,12 +2,26 @@ using Assets.Cards;
 using Assets.CustomEventArgs;
 using UnityEngine;
 
-public class CardsPlacement : MonoBehaviour
+public class CardsInHandPositioner : MonoBehaviour
 {
+    public static CardsInHandPositioner Instance { get; private set; }
+
     [SerializeField] private AnimationCurve _positionCurve;
     [SerializeField] private AnimationCurve _rotationCurve;
 
     private CardsHandManager _handManager;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {

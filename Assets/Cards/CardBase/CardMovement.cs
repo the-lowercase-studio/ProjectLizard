@@ -1,28 +1,31 @@
-﻿using UnityEngine;
+﻿using Assets.Inputs;
+using UnityEngine;
 
 namespace Assets.Cards
 {
     public interface ICardMovement
     {
-        Vector3 GetRectAnchoredPosition();
+        Vector2 GetRectAnchoredPosition();
 
-        Vector3 GetVisualRectAnchoredPosition();
+        Vector2 GetVisualRectAnchoredPosition();
 
         void MoveCardUp();
 
-        void SetVisualRectAnchoredPosition(Vector3 pos);
+        void SetVisualRectAnchoredPosition(Vector2 pos);
 
-        void SetVisualRectAnchoredPositionToPrevPosition();
+        void VisualStartFollowingPointer();
+
+        void VisualStopFollowingPointer();
     }
 
-    [RequireComponent(typeof(Card))]
+    [RequireComponent(typeof(ICard))]
     public class CardMovement : MonoBehaviour, ICardMovement
     {
-        [SerializeField] private float hoveredCardYOffset = 8f;
+        [SerializeField] private float hoveredCardYOffset = 20f;
         private Card _card;
         private RectTransform _rectTransform;
         private RectTransform _visualRectTransform;
-        private Vector3 _visualRectPrevPosition;
+        private bool _isFolowingPointer;
 
         private void Awake()
         {
@@ -33,48 +36,57 @@ namespace Assets.Cards
             _visualRectTransform = _card.Visual.gameObject.GetComponent<RectTransform>();
         }
 
-        public Vector3 GetRectAnchoredPosition()
+        private void FixedUpdate()
+        {
+            if (_isFolowingPointer)
+            {
+                _card.Visual.position = Pointer.WorldPosition;
+            }
+        }
+
+        public void VisualStartFollowingPointer()
+        {
+            _isFolowingPointer = true;
+        }
+
+        public void VisualStopFollowingPointer()
+        {
+            _isFolowingPointer = false;
+        }
+
+        public Vector2 GetRectAnchoredPosition()
         {
             if (_rectTransform != null)
             {
                 return _rectTransform.anchoredPosition;
             }
 
-            return Vector3.zero;
+            return Vector2.zero;
         }
 
-        public Vector3 GetVisualRectAnchoredPosition()
+        public Vector2 GetVisualRectAnchoredPosition()
         {
             if (_visualRectTransform != null)
             {
                 return _visualRectTransform.anchoredPosition;
             }
 
-            return Vector3.zero;
+            return Vector2.zero;
         }
 
         public void MoveCardUp()
         {
             var pos = GetVisualRectAnchoredPosition();
 
-            SetVisualRectAnchoredPosition(new Vector3(
+            SetVisualRectAnchoredPosition(new Vector2(
                     pos.x,
-                    pos.y + hoveredCardYOffset,
-                    pos.z
+                    pos.y + hoveredCardYOffset
                 )
             );
-
-            _visualRectPrevPosition = pos;
         }
 
-        public void SetVisualRectAnchoredPositionToPrevPosition()
+        public void SetVisualRectAnchoredPosition(Vector2 pos)
         {
-            SetVisualRectAnchoredPosition(_visualRectPrevPosition);
-        }
-
-        public void SetVisualRectAnchoredPosition(Vector3 pos)
-        {
-            _visualRectPrevPosition = GetVisualRectAnchoredPosition();
             _visualRectTransform.anchoredPosition = pos;
         }
     }
