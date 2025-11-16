@@ -84,7 +84,7 @@ namespace Assets.Cards.CardBase
 
         private void Interactions_OnDragStart(object sender, PointerEventData e)
         {
-            _card.Visual.SetParent(UITransformsProvider.Instance.BackPanel);
+            _card.Visual.SetParent(UITransformsProvider.Instance.FrontPanel);
             _card.Movement.VisualStartFollowingPointer();
             _isCardDragged = true;
         }
