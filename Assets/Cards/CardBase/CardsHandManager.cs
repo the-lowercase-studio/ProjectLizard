@@ -1,6 +1,7 @@
 using Assets.CustomEventArgs;
 using Assets.Energy;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using UnityEngine;
@@ -34,11 +35,16 @@ namespace Assets.Cards
             }
         }
 
-        private void Start()
+        private void OnEnable()
         {
             _energyManager = EnergyManager.Instance;
 
-            SetStartCards();
+            Canvas.willRenderCanvases += Canvas_willRenderCanvases;
+        }
+
+        private void OnDisable()
+        {
+            Canvas.willRenderCanvases -= Canvas_willRenderCanvases;
         }
 
         public ImmutableArray<ICard> GetCards()
@@ -65,20 +71,18 @@ namespace Assets.Cards
             }
         }
 
+        private void Canvas_willRenderCanvases()
+        {
+            SetStartCards();
+        }
+
         private void SetStartCards()
         {
-            //TODO: change to random cards on start or some
-            // other mechanizm like discarging cards form 10 on start and then setting them
             foreach (ICard card in _cardsHolder.GetComponentsInChildren<ICard>())
             {
                 _cards.Enqueue(card);
             }
 
-            Invoke("TestInvoke", 1f);
-        }
-
-        private void TestInvoke()
-        {
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
         }
     }

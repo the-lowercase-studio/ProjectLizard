@@ -1,5 +1,4 @@
 ﻿using Assets.Extensions;
-using Assets.Inputs;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
 using System;
