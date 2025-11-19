@@ -1,15 +1,26 @@
 using Assets.Cards;
 using Assets.CustomEventArgs;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardsInHandPositioner : MonoBehaviour
 {
     public static CardsInHandPositioner Instance { get; private set; }
 
+    [Header("Cards defaults")]
+    [SerializeField] private byte _startCardsCount = 5;
+
+    [Header("Curves")]
     [SerializeField] private AnimationCurve _positionCurve;
     [SerializeField] private AnimationCurve _rotationCurve;
 
+    [Header("Cards Spacing")]
+    [SerializeField][Range(-180, 0)] private float _minCardsSpacing;
+    [SerializeField][Range(-180, 0)] private float _maxCardsSpacing;
+    [SerializeField][Range(-36, 0)] private float _cardsSpacingDecreaser = -16f;
+
     private CardsHandManager _handManager;
+    private HorizontalLayoutGroup _cardsGroup;
 
     private void Awake()
     {
@@ -21,11 +32,15 @@ public class CardsInHandPositioner : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        _cardsGroup = GetComponent<HorizontalLayoutGroup>();
     }
 
     private void Start()
     {
         _handManager = CardsHandManager.Instance;
+
+        UpdateCardsOverlapping();
 
         _handManager.OnHandChange += HandManager_OnHandChange;
     }
@@ -36,6 +51,8 @@ public class CardsInHandPositioner : MonoBehaviour
         {
             UpdateCardPlacement(card);
         }
+
+        UpdateCardsOverlapping();
     }
 
     public void UpdateCardPlacement(ICard card)
@@ -43,6 +60,24 @@ public class CardsInHandPositioner : MonoBehaviour
         Vector3 cardPos = card.Movement.GetRectAnchoredPosition();
         SetCardYOffset(card, cardPos);
         SetCardZRotation(card, cardPos);
+    }
+
+    private void UpdateCardsOverlapping()
+    {
+        int cardDiff = _handManager.CountCards() - _startCardsCount;
+
+        if (cardDiff > 0)
+        {
+            float spacing = _maxCardsSpacing + _cardsSpacingDecreaser * cardDiff;
+            if (spacing >= _minCardsSpacing)
+            {
+                _cardsGroup.spacing = spacing;
+            }
+        }
+        else
+        {
+            _cardsGroup.spacing = _maxCardsSpacing;
+        }
     }
 
     private void SetCardYOffset(ICard card, Vector3 cardPos)

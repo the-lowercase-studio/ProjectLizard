@@ -35,21 +35,33 @@ namespace Assets.Cards
             }
         }
 
-        private void OnEnable()
-        {
-            _energyManager = EnergyManager.Instance;
+        //private void OnEnable()
+        //{
+        //    _energyManager = EnergyManager.Instance;
 
-            Canvas.willRenderCanvases += Canvas_willRenderCanvases;
-        }
+        //    Canvas.willRenderCanvases += Canvas_willRenderCanvases;
+        //}
 
-        private void OnDisable()
+        //private void OnDisable()
+        //{
+        //    Canvas.willRenderCanvases -= Canvas_willRenderCanvases;
+        //}
+
+        public IEnumerator Start()
         {
-            Canvas.willRenderCanvases -= Canvas_willRenderCanvases;
+            yield return new WaitForEndOfFrame();
+
+            Canvas_willRenderCanvases();
         }
 
         public ImmutableArray<ICard> GetCards()
         {
             return _cards.ToImmutableArray();
+        }
+
+        public int CountCards()
+        {
+            return _cards.Count;
         }
 
         public void AddCard(CardConfigBaseSO config)
