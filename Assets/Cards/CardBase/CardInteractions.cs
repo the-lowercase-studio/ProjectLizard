@@ -68,7 +68,7 @@ namespace Assets.Cards.CardBase
                 return;
             }
 
-            _card.Movement.MoveCardUp();
+            _card.Movement.MoveCardUp(true);
         }
 
         private void Interactions_OnHoverEnd(object sender, PointerEventData e)

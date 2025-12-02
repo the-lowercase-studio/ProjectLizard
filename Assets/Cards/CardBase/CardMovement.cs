@@ -1,4 +1,5 @@
 ﻿using Assets.Inputs;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Assets.Cards
@@ -9,9 +10,9 @@ namespace Assets.Cards
 
         Vector2 GetVisualRectAnchoredPosition();
 
-        void MoveCardUp();
+        void MoveCardUp(bool withTweening = false);
 
-        void SetVisualRectAnchoredPosition(Vector2 pos);
+        void SetVisualRectAnchoredPosition(Vector2 pos, bool withTweening = false);
 
         void VisualStartFollowingPointer();
 
@@ -22,10 +23,14 @@ namespace Assets.Cards
     public class CardMovement : MonoBehaviour, ICardMovement
     {
         [SerializeField] private float hoveredCardYOffset = 20f;
+
+        private float CARD_UP_MOVEMENT_DURATION = 0.5f;
+
         private Card _card;
         private RectTransform _rectTransform;
         private RectTransform _visualRectTransform;
         private bool _isFolowingPointer;
+        private Tween _visualMovementTween;
 
         private void Awake()
         {
@@ -74,20 +79,35 @@ namespace Assets.Cards
             return Vector2.zero;
         }
 
-        public void MoveCardUp()
+        public void MoveCardUp(bool withTweening = false)
         {
             var pos = GetVisualRectAnchoredPosition();
 
             SetVisualRectAnchoredPosition(new Vector2(
                     pos.x,
                     pos.y + hoveredCardYOffset
-                )
+                ),
+                withTweening
             );
         }
 
-        public void SetVisualRectAnchoredPosition(Vector2 pos)
+        public void SetVisualRectAnchoredPosition(Vector2 pos, bool withTweening = false)
         {
-            _visualRectTransform.anchoredPosition = pos;
+            if (withTweening)
+            {
+                if (_visualMovementTween?.IsPlaying() == true)
+                {
+                    _visualMovementTween.Kill();
+                }
+
+                _visualMovementTween = _visualRectTransform
+                    .DOAnchorPos(pos, CARD_UP_MOVEMENT_DURATION)
+                    .SetEase(Ease.OutSine);
+            }
+            else
+            {
+                _visualRectTransform.anchoredPosition = pos;
+            }
         }
     }
 }
