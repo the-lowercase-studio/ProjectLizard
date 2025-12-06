@@ -1,4 +1,6 @@
 using Assets.CustomEventArgs;
+using Assets.TweenCustom;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,10 +58,10 @@ namespace Assets.Cards
             UpdateCardsOverlapping();
         }
 
-        public void UpdateCardPlacement(ICard card)
+        public void UpdateCardPlacement(ICard card, Action onPlacementMovementEnd = null)
         {
             Vector3 cardPos = card.Movement.GetRectAnchoredPosition();
-            SetCardYOffset(card, cardPos);
+            SetCardYOffset(card, cardPos, onPlacementMovementEnd);
             SetCardZRotation(card, cardPos);
         }
 
@@ -81,10 +83,10 @@ namespace Assets.Cards
             }
         }
 
-        private void SetCardYOffset(ICard card, Vector3 cardPos)
+        private void SetCardYOffset(ICard card, Vector3 cardPos, Action onPlacementMovementEnd = null)
         {
             float yOffset = _positionCurve.Evaluate(cardPos.x);
-            card.Movement.SetVisualRectAnchoredPosition(new Vector3(0, yOffset, 0), withTweening: true);
+            card.Movement.SetVisualRectAnchoredPosition(new Vector3(0, yOffset, 0), new TweenConfig(callback: onPlacementMovementEnd));
         }
 
         private void SetCardZRotation(ICard card, Vector3 cardPos)
