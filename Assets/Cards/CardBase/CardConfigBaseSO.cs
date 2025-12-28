@@ -1,5 +1,4 @@
 using Assets.ElementalSystem;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 namespace Assets.Cards
@@ -7,8 +6,8 @@ namespace Assets.Cards
     [CreateAssetMenu(fileName = "CardConfigBaseSO", menuName = "Scriptable Objects/CardConfigBaseSO")]
     public class CardConfigBaseSO : ScriptableObject
     {
-        [field: SerializeField][MaxLength(18)] public string Title { get; private set; }
-        [field: SerializeField][MaxLength(76)][TextArea(1, 2)] public string Description { get; private set; }
+        [field: SerializeField] public string Title { get; private set; }
+        [field: SerializeField][TextArea(1, 2)] public string Description { get; private set; }
         [field: SerializeField] public Elements Element { get; private set; }
         [field: SerializeField][Range(0, 9)] public byte StartEnergyCost { get; private set; }
         [field: SerializeField] public Sprite FrontGraphic { get; private set; }
