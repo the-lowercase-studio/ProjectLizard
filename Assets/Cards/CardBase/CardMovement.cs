@@ -1,4 +1,8 @@
-﻿using Assets.Inputs;
+﻿using Assets.Constants;
+using Assets.Inputs;
+using Assets.TweenCustom;
+using DG.Tweening;
+using System;
 using UnityEngine;
 
 namespace Assets.Cards
@@ -9,9 +13,9 @@ namespace Assets.Cards
 
         Vector2 GetVisualRectAnchoredPosition();
 
-        void MoveCardUp();
+        void MoveCardUp(Action callback = null);
 
-        void SetVisualRectAnchoredPosition(Vector2 pos);
+        void SetVisualRectAnchoredPosition(Vector2 pos, TweenConfig config);
 
         void VisualStartFollowingPointer();
 
@@ -26,6 +30,8 @@ namespace Assets.Cards
         private RectTransform _rectTransform;
         private RectTransform _visualRectTransform;
         private bool _isFolowingPointer;
+        private Tween _visualMovementTween;
+        private Vector2 _lastTargetPos = Vector3.zero;
 
         private void Awake()
         {
@@ -38,14 +44,21 @@ namespace Assets.Cards
 
         private void FixedUpdate()
         {
-            if (_isFolowingPointer)
+            if (_isFolowingPointer
+                && Vector2.Distance(_lastTargetPos, Pointer.WorldPosition) >= PositionConstants.DISTANCE_ACCURACY)
             {
                 _card.Visual.position = Pointer.WorldPosition;
+                _lastTargetPos = Pointer.WorldPosition;
             }
         }
 
         public void VisualStartFollowingPointer()
         {
+            if (_visualMovementTween?.IsPlaying() == true)
+            {
+                _visualMovementTween.Kill();
+            }
+
             _isFolowingPointer = true;
         }
 
@@ -74,20 +87,36 @@ namespace Assets.Cards
             return Vector2.zero;
         }
 
-        public void MoveCardUp()
+        public void MoveCardUp(Action callback = null)
         {
             var pos = GetVisualRectAnchoredPosition();
 
             SetVisualRectAnchoredPosition(new Vector2(
                     pos.x,
                     pos.y + hoveredCardYOffset
-                )
+                ),
+                new TweenConfig(MovementConstants.Tween.CARD_HOVER_UP_MOVEMENT_DURATION, callback)
             );
         }
 
-        public void SetVisualRectAnchoredPosition(Vector2 pos)
+        public void SetVisualRectAnchoredPosition(Vector2 pos, TweenConfig config)
         {
-            _visualRectTransform.anchoredPosition = pos;
+            if (config.Equals(default(TweenConfig)))
+            {
+                _visualRectTransform.anchoredPosition = pos;
+            }
+            else
+            {
+                if (_visualMovementTween?.IsPlaying() == true)
+                {
+                    _visualMovementTween.Kill();
+                }
+
+                _visualMovementTween = _visualRectTransform
+                    .DOAnchorPos(pos, config.TweenDuration)
+                    .SetEase(Ease.OutSine)
+                    .OnComplete(() => config.Callback?.Invoke());
+            }
         }
     }
 }

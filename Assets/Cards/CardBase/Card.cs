@@ -1,4 +1,4 @@
-using Assets.Cards.CardBase;
+using Assets.Cards.CardBase.Interactions;
 using Assets.Interfaces;
 using System;
 using UnityEngine;
