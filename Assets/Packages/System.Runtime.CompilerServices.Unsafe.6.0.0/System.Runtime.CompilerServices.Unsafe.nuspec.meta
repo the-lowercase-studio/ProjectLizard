@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Packages/System.Runtime.CompilerServices.Unsafe.6.0.0/System.Runtime.CompilerServices.Unsafe.nuspec.meta
 guid: 8d03bfcb469173a45a9bc0c796a18d61
+========
+guid: ffc61e08f483165478189c362725802d
+>>>>>>>> Stashed changes:Assets/Packages/System.Collections.Immutable.9.0.11/buildTransitive/netcoreapp2.0/System.Collections.Immutable.targets.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
