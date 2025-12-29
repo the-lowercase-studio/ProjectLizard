@@ -1,5 +1,5 @@
 ﻿using Assets.Constants;
-using Assets.Inputs;
+using Assets.Inputs.Pointer;
 using Assets.TweenCustom;
 using DG.Tweening;
 using System;
@@ -45,10 +45,10 @@ namespace Assets.Cards
         private void FixedUpdate()
         {
             if (_isFolowingPointer
-                && Vector2.Distance(_lastTargetPos, Pointer.WorldPosition) >= PositionConstants.DISTANCE_ACCURACY)
+                && Vector2.Distance(_lastTargetPos, PointerPositioner.RawInputPosition) >= PositionConstants.DISTANCE_ACCURACY)
             {
-                _card.Visual.position = Pointer.WorldPosition;
-                _lastTargetPos = Pointer.WorldPosition;
+                _card.Visual.position = PointerPositioner.RawInputPosition;
+                _lastTargetPos = PointerPositioner.RawInputPosition;
             }
         }
 

@@ -1,11 +1,13 @@
 ﻿using Assets.Extensions;
+using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Assets.Cards.CardBase.Interactions
+namespace Assets.Cards.CardBase
 {
     public interface ICardInteractions : IClickable, IHoverable, IDragable
     {
@@ -26,7 +28,7 @@ namespace Assets.Cards.CardBase.Interactions
 
         private EventTrigger _eventTrigger;
         private Card _card;
-        private CardInteraction _currentInteraction = CardInteraction.None;
+        private CardState _currentState = CardState.None;
 
         private void Awake()
         {
@@ -63,83 +65,87 @@ namespace Assets.Cards.CardBase.Interactions
 
         private void Interactions_OnHoverStart(object sender, PointerEventData e)
         {
-            if (CanTransitToHoverStartInteraction())
+            Debug.Log("Hover start");
+
+            if (CanTransitToHoveredState())
             {
-                Debug.Log("Hover start");
+                _currentState = CardState.Hovered;
 
                 _card.Movement.MoveCardUp();
-
-                _currentInteraction = CardInteraction.Hover;
             }
         }
 
         private void Interactions_OnHoverEnd(object sender, PointerEventData e)
         {
-            if (CanTransitToHoverEndInteraction())
+            Debug.Log("Hover end");
+
+            if (CanTransitToNoneState())
             {
-                Debug.Log("Hover end");
+                _currentState = CardState.None;
 
-                CardsInHandPositioner.Instance.UpdateCardPlacement(
-                    _card,
-                    () =>
-                    {
-                        _currentInteraction = CardInteraction.None;
-                    }
-                );
-
-                _currentInteraction = CardInteraction.None;
+                CardsInHandPositioner.Instance.UpdateCardPlacement(_card);
             }
         }
 
         private void Interactions_OnDragStart(object sender, PointerEventData e)
         {
-            if (CanTransitToDragStartInteraction())
-            {
-                Debug.Log("Drag start");
+            Debug.Log("Drag start");
 
+            if (CanTransitToDragState())
+            {
                 _card.Visual.SetParent(UITransformsProvider.Instance.FrontPanel);
                 _card.Movement.VisualStartFollowingPointer();
 
-                _currentInteraction = CardInteraction.Drag;
+                _currentState = CardState.Dragged;
             }
         }
 
         private void Interactions_OnDragEnd(object sender, PointerEventData e)
         {
-            if (CanTransitToDragEndInteraction())
+            Debug.Log("Drag end");
+
+            if (CanTransitToReturningToHandState())
             {
-                Debug.Log("Drag end");
+                _currentState = CardState.ReturningToHand;
 
                 _card.Movement.VisualStopFollowingPointer();
                 _card.Visual.SetParent(_card.transform);
-                CardsInHandPositioner.Instance.UpdateCardPlacement(_card);
 
-                _currentInteraction = CardInteraction.None;
+                CardsInHandPositioner.Instance.UpdateCardPlacement(_card, () =>
+                {
+                    _currentState = CardState.None;
+
+                    if (PointerHoverHelper.GetUIObjectsUnderPointer().FirstOrDefault().layer == 6)
+                    {
+                        OnHoverStart?.Invoke(this, e);
+                    }
+                });
             }
         }
 
         private void Interactions_OnClick(object sender, PointerEventData e)
         {
-            if (CanTransitToClickInteraction())
+            Debug.Log($"{sender} on click");
+
+            if (CanTransitToClickState())
             {
-                _currentInteraction = CardInteraction.Click;
+                _currentState = CardState.Clicked;
 
                 //click logic
-                Debug.Log($"{sender} on click");
 
-                _currentInteraction = CardInteraction.None;
+                _currentState = CardState.None;
             }
         }
 
-        private bool CanTransitToHoverStartInteraction() => _currentInteraction == CardInteraction.None;
+        private bool CanTransitToHoveredState() => _currentState == CardState.None;
 
-        private bool CanTransitToHoverEndInteraction() => _currentInteraction == CardInteraction.Hover
-                                                            || _currentInteraction == CardInteraction.Click;
+        private bool CanTransitToDragState() => _currentState == CardState.Hovered
+                                                || _currentState == CardState.ReturningToHand;
 
-        private bool CanTransitToDragStartInteraction() => _currentInteraction == CardInteraction.Hover;
+        private bool CanTransitToClickState() => _currentState == CardState.Hovered;
 
-        private bool CanTransitToDragEndInteraction() => _currentInteraction == CardInteraction.Drag;
+        private bool CanTransitToReturningToHandState() => _currentState == CardState.Dragged;
 
-        private bool CanTransitToClickInteraction() => _currentInteraction == CardInteraction.Hover;
+        private bool CanTransitToNoneState() => _currentState == CardState.Hovered;
     }
 }

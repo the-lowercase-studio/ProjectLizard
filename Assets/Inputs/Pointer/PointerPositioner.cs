@@ -1,12 +1,12 @@
 using UnityEngine;
 
-namespace Assets.Inputs
+namespace Assets.Inputs.Pointer
 {
-    public class Pointer : MonoBehaviour
+    public class PointerPositioner : MonoBehaviour
     {
-        public static Pointer Instance { get; private set; }
+        public static PointerPositioner Instance { get; private set; }
         public static Vector2 ScreenPosition { get; private set; }
-        public static Vector2 WorldPosition { get; private set; }
+        public static Vector2 RawInputPosition { get; private set; }
 
         private InputHandler _inputHandler;
         private Camera _mainCamera;
@@ -35,22 +35,10 @@ namespace Assets.Inputs
             UpdatePositions();
         }
 
-        public GameObject GetHoveredGameObject()
-        {
-            Ray ray = _mainCamera.ScreenPointToRay(_inputHandler.PointerPositionInput);
-
-            if (Physics.Raycast(ray, out var hit))
-            {
-                return hit.transform.gameObject;
-            }
-
-            return null;
-        }
-
         private void UpdatePositions()
         {
             ScreenPosition = _mainCamera.ScreenToWorldPoint(_inputHandler.PointerPositionInput);
-            WorldPosition = _inputHandler.PointerPositionInput;
+            RawInputPosition = _inputHandler.PointerPositionInput;
         }
     }
 }

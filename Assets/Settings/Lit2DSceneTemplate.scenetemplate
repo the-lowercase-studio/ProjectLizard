@@ -11,7 +11,7 @@ Texture2D:
     serializedVersion: 2
     Hash: 3eb422a44b812e16b34078a6083bea48
   m_IsAlphaChannelOptional: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Width: 1068
   m_Height: 615
   m_CompleteImageSize: 1970460
@@ -84,8 +84,8 @@ MonoBehaviour:
     instantiationMode: 0
   - dependency: {fileID: 2800000, guid: ee148e281f3c41c5b4ff5f8a5afe5a6c, type: 3}
     instantiationMode: 1
-  - dependency: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-    instantiationMode: 0
+  - dependency: {fileID: 2800000, guid: 08a04b12dd0d5ec4da08f074806d5bf7, type: 3}
+    instantiationMode: 1
   - dependency: {fileID: 11400000, guid: 7c596ca1ad1c1324bb94e7d59f48ff57, type: 2}
     instantiationMode: 1
   - dependency: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
@@ -95,8 +95,6 @@ MonoBehaviour:
   - dependency: {fileID: 11400000, guid: c6c5092c7679b4149912e026a5872281, type: 2}
     instantiationMode: 1
   - dependency: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    instantiationMode: 1
-  - dependency: {fileID: 2800000, guid: 7cba34d70552e144586a4d3ce4a33de5, type: 3}
     instantiationMode: 1
   - dependency: {fileID: -2253911629886400664, guid: b1dd899cbc8d2784e9a5cd77def06494, type: 3}
     instantiationMode: 0

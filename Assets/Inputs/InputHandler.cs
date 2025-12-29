@@ -1,4 +1,5 @@
 using Assets.CustomEventArgs;
+using Assets.Inputs.Pointer;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -52,7 +53,7 @@ namespace Assets.Inputs
                 return;
             }
 
-            var pointerClickEventArgs = new PointerClickEventArgs(PointerPositionInput, Pointer.Instance.GetHoveredGameObject());
+            var pointerClickEventArgs = new PointerClickEventArgs(PointerPositionInput, PointerHoverHelper.GetHoveredGameObject());
             pointerClick.performed += _ => action.Invoke(pointerClickEventArgs);
         }
     }
