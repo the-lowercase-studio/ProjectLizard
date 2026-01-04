@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Assets.Cards.CardBase
+namespace Assets.Cards.Base
 {
     public interface ICardInteractions : IClickable, IHoverable, IDragable
     {
@@ -59,8 +59,6 @@ namespace Assets.Cards.CardBase
             OnHoverEnd -= Interactions_OnHoverEnd;
             OnDragStart -= Interactions_OnDragStart;
             OnDragEnd -= Interactions_OnDragEnd;
-
-            _eventTrigger.triggers.Clear();
         }
 
         private void Interactions_OnHoverStart(object sender, PointerEventData e)

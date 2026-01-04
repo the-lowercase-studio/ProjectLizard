@@ -1,4 +1,4 @@
-﻿namespace Assets.Cards.CardBase
+﻿namespace Assets.Cards.Base
 {
     public enum CardState
     {

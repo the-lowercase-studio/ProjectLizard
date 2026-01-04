@@ -1,7 +1,7 @@
 using Assets.ElementalSystem;
 using UnityEngine;
 
-namespace Assets.Cards
+namespace Assets.Cards.Base
 {
     [CreateAssetMenu(fileName = "CardConfigBaseSO", menuName = "Scriptable Objects/CardConfigBaseSO")]
     public class CardConfigBaseSO : ScriptableObject

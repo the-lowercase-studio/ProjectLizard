@@ -1,9 +1,8 @@
-using Assets.Cards.CardBase;
 using Assets.Interfaces;
 using System;
 using UnityEngine;
 
-namespace Assets.Cards
+namespace Assets.Cards.Base
 {
     public interface ICard : IInitializableByConfig<CardConfigBaseSO>
     {

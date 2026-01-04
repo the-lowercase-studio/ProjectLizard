@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Cards
+namespace Assets.Cards.Base
 {
     [RequireComponent(typeof(Card))]
     public class CardPresenter : MonoBehaviour

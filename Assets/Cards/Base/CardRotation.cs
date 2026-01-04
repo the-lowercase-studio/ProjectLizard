@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-namespace Assets.Cards
+namespace Assets.Cards.Base
 {
     public interface ICardRotation
     {

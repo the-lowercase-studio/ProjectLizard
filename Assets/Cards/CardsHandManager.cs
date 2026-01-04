@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using UnityEngine;
+using Assets.Cards.Base;
 
 namespace Assets.Cards
 {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Cards
+namespace Assets.Cards.Base
 {
     [CreateAssetMenu(fileName = "CardElementalVisualBaseSO", menuName = "Scriptable Objects/CardElementalVisualBaseSO")]
     public class CardElementalVisualBaseSO : ScriptableObject

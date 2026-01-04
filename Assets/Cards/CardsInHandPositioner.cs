@@ -1,3 +1,4 @@
+using Assets.Cards.Base;
 using Assets.CustomEventArgs;
 using Assets.TweenCustom;
 using System;
@@ -15,10 +16,12 @@ namespace Assets.Cards
 
         [Header("Curves")]
         [SerializeField] private AnimationCurve _positionCurve;
+
         [SerializeField] private AnimationCurve _rotationCurve;
 
         [Header("Cards Spacing")]
         [SerializeField][Range(-180, 0)] private float _minCardsSpacing;
+
         [SerializeField][Range(-180, 0)] private float _maxCardsSpacing;
         [SerializeField][Range(-36, 0)] private float _cardsSpacingDecreaser = -16f;
 

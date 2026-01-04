@@ -5,7 +5,7 @@ using DG.Tweening;
 using System;
 using UnityEngine;
 
-namespace Assets.Cards
+namespace Assets.Cards.Base
 {
     public interface ICardMovement
     {
@@ -54,10 +54,7 @@ namespace Assets.Cards
 
         public void VisualStartFollowingPointer()
         {
-            if (_visualMovementTween?.IsPlaying() == true)
-            {
-                _visualMovementTween.Kill();
-            }
+            _visualMovementTween.KillIfPlaying();
 
             _isFolowingPointer = true;
         }
@@ -107,10 +104,7 @@ namespace Assets.Cards
             }
             else
             {
-                if (_visualMovementTween?.IsPlaying() == true)
-                {
-                    _visualMovementTween.Kill();
-                }
+                _visualMovementTween.KillIfPlaying();
 
                 _visualMovementTween = _visualRectTransform
                     .DOAnchorPos(pos, config.TweenDuration)
