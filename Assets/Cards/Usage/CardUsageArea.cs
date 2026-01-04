@@ -12,6 +12,7 @@ public class CardUsageArea : MonoBehaviour, Assets.Interfaces.Interactions.IDrop
     private EventTrigger _eventTrigger;
 
     public event EventHandler<CardDropEventArgs> OnCardDrop;
+
     public event EventHandler<PointerEventData> OnDrop;
 
     private void Awake()
@@ -50,7 +51,7 @@ public class CardUsageArea : MonoBehaviour, Assets.Interfaces.Interactions.IDrop
             return;
         }
 
-        Debug.Log("OnDrop event detected in CardUsageArea. Object: " + draggable.name);
+        Debug.Log("OnDrop event detected in CardUsageArea. Object: " + e);
 
         if (draggable.TryGetComponent(out Card card))
         {

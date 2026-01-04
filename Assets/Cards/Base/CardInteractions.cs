@@ -113,7 +113,11 @@ namespace Assets.Cards.Base
                 {
                     _currentState = CardState.None;
 
-                    if (PointerHoverHelper.GetUIObjectsUnderPointer().FirstOrDefault().layer == 6)
+                    var hoveredObjects = PointerHoverHelper
+                        .GetUIObjectsUnderPointer()
+                        .Where(o => o.layer == 6);
+
+                    if (hoveredObjects.Any(o => o.transform.parent == _card.Visual))
                     {
                         OnHoverStart?.Invoke(this, e);
                     }
