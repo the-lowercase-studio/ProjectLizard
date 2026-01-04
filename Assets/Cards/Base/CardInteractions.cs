@@ -69,7 +69,7 @@ namespace Assets.Cards.Base
             {
                 _currentState = CardState.Hovered;
 
-                _card.Movement.MoveCardUp();
+                _card.Movement.LiftCardUp();
             }
         }
 

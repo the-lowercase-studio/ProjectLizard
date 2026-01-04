@@ -13,7 +13,7 @@ namespace Assets.Cards.Base
 
         Vector2 GetVisualRectAnchoredPosition();
 
-        void MoveCardUp(Action callback = null);
+        void LiftCardUp(Action callback = null);
 
         void SetVisualRectAnchoredPosition(Vector2 pos, TweenConfig config);
 
@@ -84,7 +84,7 @@ namespace Assets.Cards.Base
             return Vector2.zero;
         }
 
-        public void MoveCardUp(Action callback = null)
+        public void LiftCardUp(Action callback = null)
         {
             var pos = GetVisualRectAnchoredPosition();
 
