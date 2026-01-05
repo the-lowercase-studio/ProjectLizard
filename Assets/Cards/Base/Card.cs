@@ -27,11 +27,14 @@ namespace Assets.Cards.Base
 
         public event EventHandler OnCardUsage;
 
+        private CanvasGroup _canvasGroup;
+
         private void Awake()
         {
             Movement = GetComponent<ICardMovement>();
             Rotation = GetComponent<ICardRotation>();
             Interactions = GetComponent<ICardInteractions>();
+            _canvasGroup = Visual.GetComponent<CanvasGroup>();
         }
 
         public void Initialize(CardConfigBaseSO config)
@@ -40,6 +43,28 @@ namespace Assets.Cards.Base
             {
                 Config = config;
             }
+        }
+
+        private void OnEnable()
+        {
+            Interactions.OnDragStart += Interactions_OnDragStart;
+            Interactions.OnDragEnd += Interactions_OnDragEnd;
+        }
+
+        private void OnDisable()
+        {
+            Interactions.OnDragStart -= Interactions_OnDragStart;
+            Interactions.OnDragEnd -= Interactions_OnDragEnd;
+        }
+
+        private void Interactions_OnDragStart(object sender, UnityEngine.EventSystems.PointerEventData e)
+        {
+            _canvasGroup.blocksRaycasts = false;
+        }
+
+        private void Interactions_OnDragEnd(object sender, UnityEngine.EventSystems.PointerEventData e)
+        {
+            _canvasGroup.blocksRaycasts = true;
         }
 
         public byte GetCurrentEnergyCost()

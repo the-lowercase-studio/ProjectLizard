@@ -1,5 +1,4 @@
-﻿using Assets.Extensions;
-using Assets.Inputs.Pointer;
+﻿using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
 using System;
@@ -26,43 +25,32 @@ namespace Assets.Cards.Base
 
         public event EventHandler<PointerEventData> OnDragEnd;
 
-        private EventTrigger _eventTrigger;
         private Card _card;
         private CardState _currentState = CardState.None;
 
         private void Awake()
         {
-            _eventTrigger = GetComponentInChildren<EventTrigger>();
             _card = GetComponent<Card>();
         }
 
-        private void OnEnable()
+        public void OnPointerClick(PointerEventData eventData)
         {
-            OnClick += Interactions_OnClick;
-            OnHoverStart += Interactions_OnHoverStart;
-            OnHoverEnd += Interactions_OnHoverEnd;
-            OnDragStart += Interactions_OnDragStart;
-            OnDragEnd += Interactions_OnDragEnd;
+            OnClick?.Invoke(this, eventData);
+            Debug.Log($"{_card.name} on click");
 
-            _eventTrigger.triggers.Clear();
-            _eventTrigger.triggers.AddEventHandlerInvocation(OnClick, EventTriggerType.PointerClick, _card);
-            _eventTrigger.triggers.AddEventHandlerInvocation(OnHoverStart, EventTriggerType.PointerEnter, _card);
-            _eventTrigger.triggers.AddEventHandlerInvocation(OnHoverEnd, EventTriggerType.PointerExit, _card);
-            _eventTrigger.triggers.AddEventHandlerInvocation(OnDragStart, EventTriggerType.BeginDrag, _card);
-            _eventTrigger.triggers.AddEventHandlerInvocation(OnDragEnd, EventTriggerType.EndDrag, _card);
+            if (CanTransitToClickState())
+            {
+                _currentState = CardState.Clicked;
+
+                //click logic
+
+                _currentState = CardState.None;
+            }
         }
 
-        private void OnDisable()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            OnClick -= Interactions_OnClick;
-            OnHoverStart -= Interactions_OnHoverStart;
-            OnHoverEnd -= Interactions_OnHoverEnd;
-            OnDragStart -= Interactions_OnDragStart;
-            OnDragEnd -= Interactions_OnDragEnd;
-        }
-
-        private void Interactions_OnHoverStart(object sender, PointerEventData e)
-        {
+            OnHoverStart?.Invoke(this, eventData);
             Debug.Log("Hover start");
 
             if (CanTransitToHoveredState())
@@ -73,8 +61,9 @@ namespace Assets.Cards.Base
             }
         }
 
-        private void Interactions_OnHoverEnd(object sender, PointerEventData e)
+        public void OnPointerExit(PointerEventData eventData)
         {
+            OnHoverEnd?.Invoke(this, eventData);
             Debug.Log("Hover end");
 
             if (CanTransitToNoneState())
@@ -85,8 +74,13 @@ namespace Assets.Cards.Base
             }
         }
 
-        private void Interactions_OnDragStart(object sender, PointerEventData e)
+        public void OnDrag(PointerEventData eventData)
         {
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            OnDragStart?.Invoke(this, eventData);
             Debug.Log("Drag start");
 
             if (CanTransitToDragState())
@@ -98,8 +92,9 @@ namespace Assets.Cards.Base
             }
         }
 
-        private void Interactions_OnDragEnd(object sender, PointerEventData e)
+        public void OnEndDrag(PointerEventData eventData)
         {
+            OnDragEnd?.Invoke(this, eventData);
             Debug.Log("Drag end");
 
             if (CanTransitToReturningToHandState())
@@ -119,35 +114,36 @@ namespace Assets.Cards.Base
 
                     if (hoveredObjects.Any(o => o.transform.parent == _card.Visual))
                     {
-                        OnHoverStart?.Invoke(this, e);
+                        OnHoverStart?.Invoke(this, eventData);
                     }
                 });
             }
         }
 
-        private void Interactions_OnClick(object sender, PointerEventData e)
+        private bool CanTransitToHoveredState()
         {
-            Debug.Log($"{sender} on click");
-
-            if (CanTransitToClickState())
-            {
-                _currentState = CardState.Clicked;
-
-                //click logic
-
-                _currentState = CardState.None;
-            }
+            return _currentState == CardState.None;
         }
 
-        private bool CanTransitToHoveredState() => _currentState == CardState.None;
+        private bool CanTransitToDragState()
+        {
+            return _currentState == CardState.Hovered
+                || _currentState == CardState.ReturningToHand;
+        }
 
-        private bool CanTransitToDragState() => _currentState == CardState.Hovered
-                                                || _currentState == CardState.ReturningToHand;
+        private bool CanTransitToClickState()
+        {
+            return _currentState == CardState.Hovered;
+        }
 
-        private bool CanTransitToClickState() => _currentState == CardState.Hovered;
+        private bool CanTransitToReturningToHandState()
+        {
+            return _currentState == CardState.Dragged;
+        }
 
-        private bool CanTransitToReturningToHandState() => _currentState == CardState.Dragged;
-
-        private bool CanTransitToNoneState() => _currentState == CardState.Hovered;
+        private bool CanTransitToNoneState()
+        {
+            return _currentState == CardState.Hovered;
+        }
     }
 }

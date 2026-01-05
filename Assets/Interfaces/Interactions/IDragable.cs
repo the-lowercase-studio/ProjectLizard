@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Assets.Interfaces.Interactions
 {
-    public interface IDragable
+    public interface IDragable : IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         event EventHandler<PointerEventData> OnDragStart;
 

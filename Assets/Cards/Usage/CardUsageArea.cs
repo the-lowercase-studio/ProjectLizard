@@ -1,15 +1,12 @@
 using Assets.Cards.Base;
 using Assets.CustomEventArgs;
-using Assets.Extensions;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardUsageArea : MonoBehaviour, Assets.Interfaces.Interactions.IDropHandler
+public class CardUsageArea : MonoBehaviour, IDropHandler
 {
     public static CardUsageArea Instance { get; private set; }
-
-    private EventTrigger _eventTrigger;
 
     public event EventHandler<CardDropEventArgs> OnCardDrop;
 
@@ -25,21 +22,21 @@ public class CardUsageArea : MonoBehaviour, Assets.Interfaces.Interactions.IDrop
         {
             Destroy(gameObject);
         }
-
-        _eventTrigger = GetComponent<EventTrigger>();
     }
 
     private void OnEnable()
     {
         OnDrop += CardUsageArea_OnDrop;
-
-        _eventTrigger.triggers.Clear();
-        _eventTrigger.triggers.AddEventHandlerInvocation(OnDrop, EventTriggerType.Drop, this);
     }
 
     private void OnDisable()
     {
         OnDrop -= CardUsageArea_OnDrop;
+    }
+
+    void IDropHandler.OnDrop(PointerEventData eventData)
+    {
+        CardUsageArea_OnDrop(this, eventData);
     }
 
     private void CardUsageArea_OnDrop(object sender, PointerEventData e)

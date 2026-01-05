@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Assets.Interfaces.Interactions
 {
-    public interface IHoverable
+    public interface IHoverable : IPointerEnterHandler, IPointerExitHandler
     {
         event EventHandler<PointerEventData> OnHoverStart;
 
