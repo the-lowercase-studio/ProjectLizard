@@ -44,7 +44,7 @@ namespace Assets.Cards.Base
 
                 //click logic
 
-                _currentState = CardState.None;
+                _currentState = CardState.Hovered;
             }
         }
 
@@ -106,15 +106,19 @@ namespace Assets.Cards.Base
 
                 CardsInHandPositioner.Instance.UpdateCardPlacement(_card, () =>
                 {
-                    _currentState = CardState.None;
-
                     var hoveredObjects = PointerHoverHelper
                         .GetUIObjectsUnderPointer()
                         .Where(o => o.layer == 6);
 
                     if (hoveredObjects.Any(o => o.transform.parent == _card.Visual))
                     {
+                        _currentState = CardState.Hovered;
+                        _card.Movement.LiftCardUp();
                         OnHoverStart?.Invoke(this, eventData);
+                    }
+                    else
+                    {
+                        _currentState = CardState.None;
                     }
                 });
             }
