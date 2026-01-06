@@ -2,7 +2,7 @@
 {
     public enum Elements
     {
-        None,
+        Physical,
         Fire
     }
 }

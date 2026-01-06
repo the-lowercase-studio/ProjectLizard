@@ -68,7 +68,7 @@ namespace Assets.Cards
         public void AddCard(CardConfigBaseSO config)
         {
             ICard card = Instantiate(_cardPrefab, _cardsHolder.transform);
-            card.OnCardUsage += Card_OnCardUsage;
+            card.CardUsage.OnCardUsage += Card_OnCardUsage;
             card.Initialize(config);
             _cards.Enqueue(card);
 

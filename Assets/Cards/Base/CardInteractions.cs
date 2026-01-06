@@ -27,10 +27,24 @@ namespace Assets.Cards.Base
 
         private Card _card;
         private CardState _currentState = CardState.None;
+        private CanvasGroup _canvasGroup;
 
         private void Awake()
         {
             _card = GetComponent<Card>();
+            _canvasGroup = _card.Visual.GetComponent<CanvasGroup>();
+        }
+
+        private void OnEnable()
+        {
+            OnDragStart += Interactions_OnDragStart;
+            OnDragEnd += Interactions_OnDragEnd;
+        }
+
+        private void OnDisable()
+        {
+            OnDragStart -= Interactions_OnDragStart;
+            OnDragEnd -= Interactions_OnDragEnd;
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -76,6 +90,16 @@ namespace Assets.Cards.Base
 
         public void OnDrag(PointerEventData eventData)
         {
+        }
+
+        private void Interactions_OnDragStart(object sender, PointerEventData e)
+        {
+            _canvasGroup.blocksRaycasts = false;
+        }
+
+        private void Interactions_OnDragEnd(object sender, PointerEventData e)
+        {
+            _canvasGroup.blocksRaycasts = true;
         }
 
         public void OnBeginDrag(PointerEventData eventData)

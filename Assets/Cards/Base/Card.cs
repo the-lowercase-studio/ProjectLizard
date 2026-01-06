@@ -1,3 +1,4 @@
+using Assets.Cards.Usage;
 using Assets.Interfaces;
 using System;
 using UnityEngine;
@@ -11,8 +12,7 @@ namespace Assets.Cards.Base
         ICardMovement Movement { get; }
         ICardRotation Rotation { get; }
         ICardInteractions Interactions { get; }
-
-        event EventHandler OnCardUsage;
+        public ICardUsage CardUsage { get; }
 
         byte GetCurrentEnergyCost();
     }
@@ -24,17 +24,16 @@ namespace Assets.Cards.Base
         public ICardMovement Movement { get; private set; }
         public ICardRotation Rotation { get; private set; }
         public ICardInteractions Interactions { get; private set; }
+        public ICardUsage CardUsage { get; private set; }
 
         public event EventHandler OnCardUsage;
-
-        private CanvasGroup _canvasGroup;
 
         private void Awake()
         {
             Movement = GetComponent<ICardMovement>();
             Rotation = GetComponent<ICardRotation>();
             Interactions = GetComponent<ICardInteractions>();
-            _canvasGroup = Visual.GetComponent<CanvasGroup>();
+            CardUsage = GetComponent<ICardUsage>();
         }
 
         public void Initialize(CardConfigBaseSO config)
@@ -43,28 +42,6 @@ namespace Assets.Cards.Base
             {
                 Config = config;
             }
-        }
-
-        private void OnEnable()
-        {
-            Interactions.OnDragStart += Interactions_OnDragStart;
-            Interactions.OnDragEnd += Interactions_OnDragEnd;
-        }
-
-        private void OnDisable()
-        {
-            Interactions.OnDragStart -= Interactions_OnDragStart;
-            Interactions.OnDragEnd -= Interactions_OnDragEnd;
-        }
-
-        private void Interactions_OnDragStart(object sender, UnityEngine.EventSystems.PointerEventData e)
-        {
-            _canvasGroup.blocksRaycasts = false;
-        }
-
-        private void Interactions_OnDragEnd(object sender, UnityEngine.EventSystems.PointerEventData e)
-        {
-            _canvasGroup.blocksRaycasts = true;
         }
 
         public byte GetCurrentEnergyCost()

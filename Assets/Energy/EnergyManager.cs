@@ -12,6 +12,9 @@ namespace Assets.Energy
         private byte _energyPerTurn = START_ENERGY_PER_TURN;
         private byte _currentEnergy = START_ENERGY_PER_TURN;
 
+        private EnergyManager()
+        { }
+
         public byte EnergyPerTurn
         {
             get => _energyPerTurn;
@@ -47,9 +50,6 @@ namespace Assets.Energy
                 }
             }
         }
-
-        private EnergyManager()
-        { }
 
         private void Awake()
         {
