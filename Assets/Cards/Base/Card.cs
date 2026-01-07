@@ -14,7 +14,7 @@ namespace Assets.Cards.Base
         ICardInteractions Interactions { get; }
         public ICardUsage CardUsage { get; }
 
-        byte GetCurrentEnergyCost();
+        int GetCurrentEnergyCost();
     }
 
     public class Card : MonoBehaviour, ICard
@@ -44,7 +44,7 @@ namespace Assets.Cards.Base
             }
         }
 
-        public byte GetCurrentEnergyCost()
+        public int GetCurrentEnergyCost()
         {
             //TODO: logic for increasing / decreasing card costs when effects are active
             return Config.StartEnergyCost;

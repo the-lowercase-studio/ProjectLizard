@@ -43,9 +43,12 @@ namespace Assets.Cards.Usage
 
         public void Use()
         {
-            if (_card.GetCurrentEnergyCost() <= _energyManager.CurrentEnergy)
+            int currentEnergyCost = _card.GetCurrentEnergyCost();
+            if (currentEnergyCost <= _energyManager.CurrentEnergy)
             {
                 Debug.Log($"Card {_card.name} used");
+
+                _energyManager.DecreaseCurrentEnergy(currentEnergyCost);
 
                 OnCardUsage?.Invoke(_card, EventArgs.Empty);
             }

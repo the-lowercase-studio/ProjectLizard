@@ -68,20 +68,11 @@ namespace Assets.Cards
         public void AddCard(CardConfigBaseSO config)
         {
             ICard card = Instantiate(_cardPrefab, _cardsHolder.transform);
-            card.CardUsage.OnCardUsage += Card_OnCardUsage;
             card.Initialize(config);
             _cards.Enqueue(card);
 
             //TODO: CHANGE TYPE TO DIVIDE EXISTING COLLECTION AND ITEMS CHANGED
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
-        }
-
-        private void Card_OnCardUsage(object sender, System.EventArgs e)
-        {
-            if (sender is ICard card)
-            {
-                _energyManager.CurrentEnergy -= card.GetCurrentEnergyCost();
-            }
         }
 
         private void Canvas_willRenderCanvases()
