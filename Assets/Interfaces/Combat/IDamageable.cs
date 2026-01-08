@@ -2,6 +2,8 @@ namespace Assets.Interfaces.Combat
 {
     public interface IDamageable
     {
-        void TakeDamage(float damage);
+        public void TakeDamage(int damage);
+
+        public void TakeFullHpDamage();
     }
 }

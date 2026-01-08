@@ -7,7 +7,7 @@ namespace Assets.Effects
     [CreateAssetMenu(fileName = "New Physical Stun Effect", menuName = "Scriptable Objects/Cards/Effects/Physical/Stun Effect")]
     public class PhysicalStunEffectSO : EffectSO
     {
-        [field: SerializeField] public float Damage { get; private set; }
+        [field: SerializeField] public int Damage { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float StunChance { get; private set; }
         [field: SerializeField] public byte StunDuration { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }

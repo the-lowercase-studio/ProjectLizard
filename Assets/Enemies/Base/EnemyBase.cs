@@ -1,0 +1,62 @@
+using Assets.Audio;
+using Assets.Interfaces;
+using Assets.Interfaces.Combat;
+using Assets.Scripts.HealthSystem;
+using Assets.VFX;
+using System;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+public class EnemyBase : MonoBehaviour, IHealthy, IDamageable
+{
+    [field: SerializeField] public EnemyConfigSO Config { get; private set; }
+    [SerializeField] private VFXPlayer _damageVfxPlayer;
+    [SerializeField] private GameObject _visual;
+    private Image _enemyImage;
+
+    public IHealth Health { get; private set; }
+    public IAudioClipPlayer AudioClipPlayer { get; private set; }
+
+    public event EventHandler OnCanBeDestroyed;
+
+    private INeedToCompleteBeforeDisable _enemyDeathSequence;
+
+    protected virtual void Awake()
+    {
+        Health = GetComponent<IHealth>();
+        AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
+        _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
+        _enemyImage = _visual.GetComponent<Image>();
+    }
+
+    protected virtual void OnEnable()
+    {
+        _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
+        _enemyImage.sprite = Config.Sprite;
+    }
+
+    protected virtual void OnDisable()
+    {
+        _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
+    }
+
+    public virtual void TakeFullHpDamage()
+    {
+        Health.DecreaseHealth(Health.MaxHealth);
+    }
+
+    public virtual void TakeDamage(int damage)
+    {
+        Health.DecreaseHealth(damage);
+
+        if (Health.IsAlive())
+        {
+            _damageVfxPlayer.Play(new VFXPlayConfig());
+        }
+    }
+
+    private void EnemyDeathSequence_OnCompleted(object sender, EventArgs e)
+    {
+        OnCanBeDestroyed?.Invoke(this, EventArgs.Empty);
+    }
+}

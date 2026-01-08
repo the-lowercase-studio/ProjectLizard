@@ -5,10 +5,10 @@ namespace Assets.Effects.StatusEffects
 {
     public class BurningStatusEffect : StatusEffectBase
     {
-        private readonly float damagePerTurn;
+        private readonly int damagePerTurn;
         private GameObject visualEffect;
 
-        public BurningStatusEffect(byte turns, float damagePerTurn) : base("Burning", turns)
+        public BurningStatusEffect(byte turns, int damagePerTurn) : base("Burning", turns)
         {
             this.damagePerTurn = damagePerTurn;
         }

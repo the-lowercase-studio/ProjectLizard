@@ -7,10 +7,10 @@ namespace Assets.Effects
     [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Cards/Effects/Fire/Burning Effect")]
     public class FireBurningEffectSO : EffectSO
     {
-        [field: SerializeField] public float Damage { get; private set; }
+        [field: SerializeField] public int Damage { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float BurningChance { get; private set; }
         [field: SerializeField] public byte BurningDuration { get; private set; }
-        [field: SerializeField] public float BurnDamagePerTurn { get; private set; }
+        [field: SerializeField] public int BurnDamagePerTurn { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
 
         public override void Execute(CardEffectContext context)
