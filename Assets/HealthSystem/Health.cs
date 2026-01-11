@@ -11,7 +11,7 @@ namespace Assets.Scripts.HealthSystem
     public interface IHealth
     {
         public int CurrentHealth { get; }
-        public int MaxHealth { get; set; }
+        public int MaxHealth { get; }
 
         public event EventHandler OnHealthChange;
 
@@ -20,19 +20,23 @@ namespace Assets.Scripts.HealthSystem
         public event EventHandler OnHealthIncreased;
 
         public event EventHandler OnNoHealth;
+
+        public event EventHandler OnHealthInitialization;
 
         public void DecreaseHealth(int value);
 
         public void IncreaseHealth(int value);
 
         public bool IsAlive();
+
+        public void Initialize(int maxHealth);
     }
 
     [Serializable]
     public class Health : MonoBehaviour, IHealth
     {
-        [field: SerializeField] public int MaxHealth { get; set; }
-        public int CurrentHealth { get; protected set; }
+        public int MaxHealth { get; private set; }
+        public int CurrentHealth { get; private set; }
 
         public event EventHandler OnNoHealth;
 
@@ -42,23 +46,30 @@ namespace Assets.Scripts.HealthSystem
 
         public event EventHandler OnHealthIncreased;
 
+        public event EventHandler OnHealthInitialization;
+
         private bool _isAlive;
 
-        protected virtual void OnEnable()
+        private void OnEnable()
         {
             OnHealthDecreased += InvokeOnHealthChange;
             OnHealthIncreased += InvokeOnHealthChange;
             OnNoHealth += InvokeOnHealthChange;
-
-            _isAlive = true;
-            CurrentHealth = MaxHealth;
         }
 
-        protected virtual void OnDisable()
+        private void OnDisable()
         {
             OnHealthDecreased -= InvokeOnHealthChange;
             OnHealthIncreased -= InvokeOnHealthChange;
             OnNoHealth -= InvokeOnHealthChange;
+        }
+
+        public void Initialize(int maxHealth)
+        {
+            _isAlive = true;
+            MaxHealth = maxHealth;
+            CurrentHealth = maxHealth;
+            OnHealthInitialization?.Invoke(this, EventArgs.Empty);
         }
 
         public void DecreaseHealth(int value)

@@ -1,28 +1,23 @@
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.HealthSystem
 {
-    [RequireComponent(typeof(Slider))]
     public class HealthBar : MonoBehaviour
     {
-        [SerializeField] private Gradient _gradient;
         [SerializeField] private Health _health;
+        [SerializeField] private Gradient _gradient;
+        [SerializeField] private Slider _slider;
+        [SerializeField] private TextMeshProUGUI _healthText;
         [SerializeField] private Image _fillImage;
         [SerializeField] private bool _shakeOnHealthDecrease;
-        private Slider _slider;
-
-        private void Awake()
-        {
-            _slider = GetComponent<Slider>();
-        }
 
         private void OnEnable()
         {
-            _slider.maxValue = _health.MaxHealth;
-            _slider.value = _health.MaxHealth;
-            _health.OnHealthChange += UpdateSlider_OnHealthChange;
+            _health.OnHealthChange += UpdateVisuals_OnHealthChange;
+            _health.OnHealthInitialization += Health_OnHealthInitialization;
 
             if (_shakeOnHealthDecrease)
             {
@@ -32,7 +27,7 @@ namespace Assets.Scripts.HealthSystem
 
         private void OnDisable()
         {
-            _health.OnHealthChange -= UpdateSlider_OnHealthChange;
+            _health.OnHealthChange -= UpdateVisuals_OnHealthChange;
 
             if (_shakeOnHealthDecrease)
             {
@@ -40,10 +35,12 @@ namespace Assets.Scripts.HealthSystem
             }
         }
 
-        private void UpdateSlider_OnHealthChange(object sender, System.EventArgs e)
+        private void UpdateVisuals_OnHealthChange(object sender, System.EventArgs e)
         {
             _fillImage.color = _gradient.Evaluate(_health.CurrentHealth / _health.MaxHealth);
             _slider.value = _health.CurrentHealth;
+
+            UpdateHealthText();
         }
 
         private void Health_OnHealthDecreased(object sender, System.EventArgs e)
@@ -59,6 +56,18 @@ namespace Assets.Scripts.HealthSystem
                                       snapping,
                                       fadeOut,
                                       ShakeRandomnessMode.Harmonic);
+        }
+
+        private void Health_OnHealthInitialization(object sender, System.EventArgs e)
+        {
+            _slider.maxValue = _health.MaxHealth;
+            _slider.value = _health.MaxHealth;
+            UpdateHealthText();
+        }
+
+        private void UpdateHealthText()
+        {
+            _healthText.text = _health.CurrentHealth.ToString();
         }
     }
 }

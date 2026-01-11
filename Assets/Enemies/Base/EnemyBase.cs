@@ -5,13 +5,13 @@ using Assets.Scripts.HealthSystem;
 using Assets.VFX;
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class EnemyBase : MonoBehaviour, IHealthy, IDamageable
 {
+    [field: SerializeField] public GameObject Visual { get; private set; }
     [field: SerializeField] public EnemyConfigSO Config { get; private set; }
     [SerializeField] private VFXPlayer _damageVfxPlayer;
-    [SerializeField] private GameObject _visual;
     private Image _enemyImage;
 
     public IHealth Health { get; private set; }
@@ -26,13 +26,16 @@ public class EnemyBase : MonoBehaviour, IHealthy, IDamageable
         Health = GetComponent<IHealth>();
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
-        _enemyImage = _visual.GetComponent<Image>();
+        _enemyImage = Visual.GetComponent<Image>();
     }
 
     protected virtual void OnEnable()
     {
         _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
+
         _enemyImage.sprite = Config.Sprite;
+
+        Health.Initialize(Config.MaxHealth);
     }
 
     protected virtual void OnDisable()
