@@ -35,7 +35,10 @@ namespace Assets.Cards.Base
 
         public void SetZVisualRotation(float rotation, bool withTweening = false)
         {
-            SetRotation(_card.Visual.transform, rotation, withTweening);
+            if (_card.Visual != null)
+            {
+                SetRotation(_card.Visual.transform, rotation, withTweening);
+            }
         }
 
         public Vector3 GetVisualEulerRotation()

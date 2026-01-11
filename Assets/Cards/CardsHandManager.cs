@@ -96,6 +96,7 @@ namespace Assets.Cards
 
         public void RemoveCard(ICard card)
         {
+            card.OnCardDiscard -= Card_OnCardDiscard;
             _cards.Remove(card);
 
             //TODO: CHANGE TYPE TO DIVIDE EXISTING COLLECTION AND ITEMS CHANGED

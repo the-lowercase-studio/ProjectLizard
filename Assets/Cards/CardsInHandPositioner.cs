@@ -64,7 +64,10 @@ namespace Assets.Cards
 
             foreach (ICard card in cards)
             {
-                UpdateCardPlacement(card);
+                if (card != null)
+                {
+                    UpdateCardPlacement(card);
+                }
             }
         }
 
