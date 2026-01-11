@@ -14,6 +14,7 @@ namespace Assets.Cards
 
         public event EventHandler<EnumerableCollectionChangeEventArgs<ICard>> OnHandChange;
 
+        [SerializeField] private CardConfigBaseSO _testConfig;
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private Transform _cardsHolder;
 
@@ -50,6 +51,11 @@ namespace Assets.Cards
 
         public IEnumerator Start()
         {
+            for (int i = 0; i < 5; i++)
+            {
+                AddCard(_testConfig);
+            }
+
             _cardsInHandPositioner = CardsInHandPositioner.Instance;
 
             yield return new WaitForEndOfFrame();
@@ -70,7 +76,7 @@ namespace Assets.Cards
         public void AddCard(CardConfigBaseSO config)
         {
             ICard card = Instantiate(_cardPrefab, _cardsHolder.transform);
-            card.OnCardDiscard += Card_OnCardDiscard; ;
+            card.OnCardDiscard += Card_OnCardDiscard;
             card.Initialize(config);
             _cards.Add(card);
 
@@ -85,10 +91,6 @@ namespace Assets.Cards
                 Debug.Log(sender + " Card discarded");
 
                 RemoveCard(card);
-
-                _cardsInHandPositioner.UpdateAllCardsPlacement();
-
-                OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
             }
         }
 

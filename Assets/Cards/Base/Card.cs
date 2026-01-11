@@ -56,9 +56,15 @@ namespace Assets.Cards.Base
 
         public void Discard()
         {
+            OnCardDiscard?.Invoke(this, EventArgs.Empty);
+
+            foreach (var item in GetComponentsInChildren<IDisposable>())
+            {
+                item.Dispose();
+            }
+
             Destroy(Visual.gameObject);
             Destroy(gameObject);
-            OnCardDiscard?.Invoke(this, EventArgs.Empty);
         }
     }
 }

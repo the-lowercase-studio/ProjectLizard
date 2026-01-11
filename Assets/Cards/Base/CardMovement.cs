@@ -23,7 +23,7 @@ namespace Assets.Cards.Base
     }
 
     [RequireComponent(typeof(ICard))]
-    public class CardMovement : MonoBehaviour, ICardMovement
+    public class CardMovement : MonoBehaviour, ICardMovement, IDisposable
     {
         [SerializeField] private float hoveredCardYOffset = 20f;
         private Card _card;
@@ -111,6 +111,11 @@ namespace Assets.Cards.Base
                     .SetEase(Ease.OutSine)
                     .OnComplete(() => config.Callback?.Invoke());
             }
+        }
+
+        public void Dispose()
+        {
+            _visualMovementTween.KillIfPlaying();
         }
     }
 }
