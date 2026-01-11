@@ -37,7 +37,7 @@ namespace Assets.Scripts.HealthSystem
 
         private void UpdateVisuals_OnHealthChange(object sender, System.EventArgs e)
         {
-            _fillImage.color = _gradient.Evaluate(_health.CurrentHealth / _health.MaxHealth);
+            _fillImage.color = _gradient.Evaluate((float)_health.CurrentHealth / _health.MaxHealth);
             _slider.value = _health.CurrentHealth;
 
             UpdateHealthText();
