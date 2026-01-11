@@ -1,5 +1,4 @@
 using Assets.Effects.StatusEffects;
-using Assets.Interfaces.Combat;
 using UnityEngine;
 
 namespace Assets.Effects
@@ -21,19 +20,19 @@ namespace Assets.Effects
 
         private void ApplyDamage(CardEffectContext context)
         {
-            if (context.Target != null && context.Target.TryGetComponent(out IDamageable damageable))
+            if (context.Target?.Damageable != null)
             {
-                damageable.TakeDamage(Damage);
-                Debug.Log($"Physical effect dealt {Damage} damage to {context.Target.name}");
+                context.Target.Damageable.TakeDamage(Damage);
+                Debug.Log($"Physical effect dealt {Damage} damage to {context.Target.Name}");
             }
         }
 
         private void ApplyStunEffect(CardEffectContext context)
         {
-            if (Random.value <= StunChance && context.Target != null && context.Target.TryGetComponent(out IStatusEffectReceiver statusReceiver))
+            if (Random.value <= StunChance && context.Target?.StatusEffectReceiver != null)
             {
-                statusReceiver.ApplyStatusEffect(new StunStatusEffect(StunDuration));
-                Debug.Log($"Applied burning effect to {context.Target.name} for {StunDuration} turns");
+                context.Target.StatusEffectReceiver.ApplyStatusEffect(new StunStatusEffect(StunDuration));
+                Debug.Log($"Applied burning effect to {context.Target.Name} for {StunDuration} turns");
             }
         }
 

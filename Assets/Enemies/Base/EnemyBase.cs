@@ -1,30 +1,38 @@
 using Assets.Audio;
+using Assets.Effects.StatusEffects;
 using Assets.Interfaces;
 using Assets.Interfaces.Combat;
 using Assets.Scripts.HealthSystem;
+using Assets.Targeting;
 using Assets.VFX;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyBase : MonoBehaviour, IHealthy, IDamageable
+public class EnemyBase : MonoBehaviour, IHealthy, ITarget, IDamageable
 {
     [field: SerializeField] public GameObject Visual { get; private set; }
     [field: SerializeField] public EnemyConfigSO Config { get; private set; }
     [SerializeField] private VFXPlayer _damageVfxPlayer;
     private Image _enemyImage;
 
+    public event EventHandler OnCanBeDestroyed;
+
     public IHealth Health { get; private set; }
     public IAudioClipPlayer AudioClipPlayer { get; private set; }
 
-    public event EventHandler OnCanBeDestroyed;
+    public IDamageable Damageable => this;
+
+    public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
 
     private INeedToCompleteBeforeDisable _enemyDeathSequence;
+    public string Name => Config.name;
 
     protected virtual void Awake()
     {
         Health = GetComponent<IHealth>();
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
+        StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
         _enemyImage = Visual.GetComponent<Image>();
     }

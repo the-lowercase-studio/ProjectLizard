@@ -1,3 +1,4 @@
+using Assets.Targeting;
 using UnityEngine;
 
 namespace Assets.Effects
@@ -12,7 +13,7 @@ namespace Assets.Effects
 
     public class CardEffectContext
     {
-        public GameObject Target { get; set; }
+        public ITarget Target { get; set; }
         public GameObject Source { get; set; }
         public Vector3 Position { get; set; }
     }

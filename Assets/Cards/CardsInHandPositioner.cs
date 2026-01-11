@@ -61,6 +61,14 @@ namespace Assets.Cards
             UpdateCardsOverlapping();
         }
 
+        public void UpdateAllCardsPlacement(Action onPlacementMovementEnd = null)
+        {
+            foreach (var card in _handManager.GetCards())
+            {
+                UpdateCardPlacement(card, onPlacementMovementEnd);
+            }
+        }
+
         public void UpdateCardPlacement(ICard card, Action onPlacementMovementEnd = null)
         {
             Vector3 cardPos = card.Movement.GetRectAnchoredPosition();

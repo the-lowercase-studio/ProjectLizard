@@ -1,5 +1,4 @@
 using Assets.Effects.StatusEffects;
-using Assets.Interfaces.Combat;
 using UnityEngine;
 
 namespace Assets.Effects
@@ -22,19 +21,21 @@ namespace Assets.Effects
 
         private void ApplyDirectDamage(CardEffectContext context)
         {
-            if (context.Target != null && context.Target.TryGetComponent(out IDamageable damageable))
+            Debug.Log($"START APPLY DAMAGE {context.Target}");
+
+            if (context.Target?.Damageable != null)
             {
-                damageable.TakeDamage(Damage);
-                Debug.Log($"Fire effect dealt {Damage} damage to {context.Target.name}");
+                context.Target.Damageable.TakeDamage(Damage);
+                Debug.Log($"Fire effect dealt {Damage} damage to {context.Target.Name}");
             }
         }
 
         private void ApplyBurningEffect(CardEffectContext context)
         {
-            if (Random.value <= BurningChance && context.Target != null && context.Target.TryGetComponent(out IStatusEffectReceiver statusReceiver))
+            if (Random.value <= BurningChance && context.Target?.StatusEffectReceiver != null)
             {
-                statusReceiver.ApplyStatusEffect(new BurningStatusEffect(BurningDuration, BurnDamagePerTurn));
-                Debug.Log($"Applied burning effect to {context.Target.name} for {BurningDuration} turns");
+                context.Target.StatusEffectReceiver.ApplyStatusEffect(new BurningStatusEffect(BurningDuration, BurnDamagePerTurn));
+                Debug.Log($"Applied burning effect to {context.Target.Name} for {BurningDuration} turns");
             }
         }
 

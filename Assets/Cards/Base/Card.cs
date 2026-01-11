@@ -15,6 +15,10 @@ namespace Assets.Cards.Base
         public ICardUsage CardUsage { get; }
 
         int GetCurrentEnergyCost();
+
+        public event EventHandler OnCardDiscard;
+
+        public void Discard();
     }
 
     public class Card : MonoBehaviour, ICard
@@ -26,7 +30,7 @@ namespace Assets.Cards.Base
         public ICardInteractions Interactions { get; private set; }
         public ICardUsage CardUsage { get; private set; }
 
-        public event EventHandler OnCardUsage;
+        public event EventHandler OnCardDiscard;
 
         private void Awake()
         {
@@ -48,6 +52,13 @@ namespace Assets.Cards.Base
         {
             //TODO: logic for increasing / decreasing card costs when effects are active
             return Config.StartEnergyCost;
+        }
+
+        public void Discard()
+        {
+            Destroy(Visual.gameObject);
+            Destroy(gameObject);
+            OnCardDiscard?.Invoke(this, EventArgs.Empty);
         }
     }
 }
