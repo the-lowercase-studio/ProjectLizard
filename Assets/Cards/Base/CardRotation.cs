@@ -1,11 +1,10 @@
 ﻿using Assets.TweenCustom;
 using DG.Tweening;
-using System;
 using UnityEngine;
 
 namespace Assets.Cards.Base
 {
-    public interface ICardRotation
+    public interface ICardRotation : ITweenUser
     {
         void SetZRotation(float rotation, bool withTweening = false);
 
@@ -17,7 +16,7 @@ namespace Assets.Cards.Base
     }
 
     [RequireComponent(typeof(Card))]
-    public class CardRotation : MonoBehaviour, ICardRotation, IDisposable
+    public class CardRotation : MonoBehaviour, ICardRotation
     {
         private const float ROTATION_TWEEN_DURATION = 0.4f;
         private Card _card;
@@ -57,8 +56,6 @@ namespace Assets.Cards.Base
 
             if (withTweening)
             {
-                Debug.Log("changing rotation for: " + _card.name + " for value: " + rotation);
-
                 _visualRotationTween.KillIfPlaying();
 
                 _visualRotationTween = transform
@@ -71,7 +68,7 @@ namespace Assets.Cards.Base
             }
         }
 
-        public void Dispose()
+        public void StopTweens()
         {
             _visualRotationTween.KillIfPlaying();
         }

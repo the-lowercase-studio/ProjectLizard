@@ -6,11 +6,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Cards
+namespace Assets.Cards.CardsHand
 {
-    public class CardsInHandPositioner : MonoBehaviour
+    public class CardsHandPresenter : MonoBehaviour
     {
-        public static CardsInHandPositioner Instance { get; private set; }
+        public static CardsHandPresenter Instance { get; private set; }
 
         [Header("Cards defaults")]
         [SerializeField] private byte _startCardsCount = 5;
@@ -26,8 +26,8 @@ namespace Assets.Cards
         [SerializeField][Range(-180, 0)] private float _maxCardsSpacing;
         [SerializeField][Range(-36, 0)] private float _cardsSpacingDecreaser = -16f;
 
-        private CardsHandManager _handManager;
         private HorizontalLayoutGroup _cardsGroup;
+        private CardsHandManager _handManager;
 
         private void Awake()
         {
@@ -50,6 +50,16 @@ namespace Assets.Cards
             UpdateCardsOverlapping();
 
             _handManager.OnHandChange += HandManager_OnHandChange;
+        }
+
+        private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
+        {
+            ShowHand();
+        }
+
+        private void TurnManager_OnPlayerTurnEnd(object sender, EventArgs e)
+        {
+            HideHand();
         }
 
         private void HandManager_OnHandChange(object sender, EnumerableCollectionChangeEventArgs<ICard> e)
@@ -84,6 +94,22 @@ namespace Assets.Cards
             Vector3 cardPos = card.Movement.GetRectAnchoredPosition();
             SetCardYOffset(card, cardPos, onPlacementMovementEnd);
             SetCardZRotation(card, cardPos);
+        }
+
+        public void HideHand()
+        {
+            foreach (ICard card in _handManager.GetCards())
+            {
+                card.Hide();
+            }
+        }
+
+        public void ShowHand()
+        {
+            foreach (ICard card in _handManager.GetCards())
+            {
+                card.Show();
+            }
         }
 
         private void UpdateCardsOverlapping()

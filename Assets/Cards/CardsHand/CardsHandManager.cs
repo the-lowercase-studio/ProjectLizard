@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using UnityEngine;
 using Assets.Cards.Base;
+using Assets.Turns;
+using Assets.Cards.Constants;
 
-namespace Assets.Cards
+namespace Assets.Cards.CardsHand
 {
     public class CardsHandManager : MonoBehaviour
     {
@@ -20,7 +22,7 @@ namespace Assets.Cards
 
         private List<ICard> _cards = new();
 
-        private CardsInHandPositioner _cardsInHandPositioner;
+        private TurnManager _turnManager;
 
         private CardsHandManager()
         { }
@@ -51,16 +53,19 @@ namespace Assets.Cards
 
         public IEnumerator Start()
         {
-            for (int i = 0; i < 5; i++)
-            {
-                AddCard(_testConfig);
-            }
-
-            _cardsInHandPositioner = CardsInHandPositioner.Instance;
+            _turnManager = TurnManager.Instance;
+            _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+            _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
 
             yield return new WaitForEndOfFrame();
 
             Canvas_willRenderCanvases();
+        }
+
+        private void OnDisable()
+        {
+            _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
+            _turnManager.OnPlayerTurnEnd -= TurnManager_OnPlayerTurnEnd;
         }
 
         public ImmutableArray<ICard> GetCards()
@@ -84,6 +89,15 @@ namespace Assets.Cards
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
         }
 
+        public void RemoveCard(ICard card)
+        {
+            card.OnCardDiscard -= Card_OnCardDiscard;
+            _cards.Remove(card);
+
+            //TODO: CHANGE TYPE TO DIVIDE EXISTING COLLECTION AND ITEMS CHANGED
+            OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
+        }
+
         private void Card_OnCardDiscard(object sender, EventArgs e)
         {
             if (sender is ICard card)
@@ -94,23 +108,36 @@ namespace Assets.Cards
             }
         }
 
-        public void RemoveCard(ICard card)
-        {
-            card.OnCardDiscard -= Card_OnCardDiscard;
-            _cards.Remove(card);
-
-            //TODO: CHANGE TYPE TO DIVIDE EXISTING COLLECTION AND ITEMS CHANGED
-            OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
-        }
-
         private void Canvas_willRenderCanvases()
         {
-            SetStartCards();
+            FillHand();
         }
 
-        private void SetStartCards()
+        private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
         {
-            _cards.AddRange(_cardsHolder.GetComponentsInChildren<ICard>());
+            FillHand();
+        }
+
+        private void TurnManager_OnPlayerTurnEnd(object sender, EventArgs e)
+        {
+            DiscardHand();
+        }
+
+        private void DiscardHand()
+        {
+            List<ICard> cardsCopy = new(_cards);
+            foreach (var card in cardsCopy)
+            {
+                card.Discard();
+            }
+        }
+
+        private void FillHand()
+        {
+            for (int i = 0; i < CardConstants.START_CARDS_NUMBER; i++)
+            {
+                AddCard(_testConfig);
+            }
 
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
         }
