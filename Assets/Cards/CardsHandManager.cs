@@ -1,5 +1,4 @@
 using Assets.CustomEventArgs;
-using Assets.Energy;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,11 +14,13 @@ namespace Assets.Cards
 
         public event EventHandler<EnumerableCollectionChangeEventArgs<ICard>> OnHandChange;
 
+        [SerializeField] private CardConfigBaseSO _testConfig;
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private Transform _cardsHolder;
 
-        private Queue<ICard> _cards = new();
-        private EnergyManager _energyManager;
+        private List<ICard> _cards = new();
+
+        private CardsInHandPositioner _cardsInHandPositioner;
 
         private CardsHandManager()
         { }
@@ -50,6 +51,13 @@ namespace Assets.Cards
 
         public IEnumerator Start()
         {
+            for (int i = 0; i < 5; i++)
+            {
+                AddCard(_testConfig);
+            }
+
+            _cardsInHandPositioner = CardsInHandPositioner.Instance;
+
             yield return new WaitForEndOfFrame();
 
             Canvas_willRenderCanvases();
@@ -68,8 +76,28 @@ namespace Assets.Cards
         public void AddCard(CardConfigBaseSO config)
         {
             ICard card = Instantiate(_cardPrefab, _cardsHolder.transform);
+            card.OnCardDiscard += Card_OnCardDiscard;
             card.Initialize(config);
-            _cards.Enqueue(card);
+            _cards.Add(card);
+
+            //TODO: CHANGE TYPE TO DIVIDE EXISTING COLLECTION AND ITEMS CHANGED
+            OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
+        }
+
+        private void Card_OnCardDiscard(object sender, EventArgs e)
+        {
+            if (sender is ICard card)
+            {
+                Debug.Log(sender + " Card discarded");
+
+                RemoveCard(card);
+            }
+        }
+
+        public void RemoveCard(ICard card)
+        {
+            card.OnCardDiscard -= Card_OnCardDiscard;
+            _cards.Remove(card);
 
             //TODO: CHANGE TYPE TO DIVIDE EXISTING COLLECTION AND ITEMS CHANGED
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
@@ -82,10 +110,7 @@ namespace Assets.Cards
 
         private void SetStartCards()
         {
-            foreach (ICard card in _cardsHolder.GetComponentsInChildren<ICard>())
-            {
-                _cards.Enqueue(card);
-            }
+            _cards.AddRange(_cardsHolder.GetComponentsInChildren<ICard>());
 
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));
         }

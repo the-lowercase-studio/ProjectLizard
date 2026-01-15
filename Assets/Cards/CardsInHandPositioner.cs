@@ -2,6 +2,7 @@ using Assets.Cards.Base;
 using Assets.CustomEventArgs;
 using Assets.TweenCustom;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,12 +54,29 @@ namespace Assets.Cards
 
         private void HandManager_OnHandChange(object sender, EnumerableCollectionChangeEventArgs<ICard> e)
         {
-            foreach (ICard card in e.CollectionAfterChange)
-            {
-                UpdateCardPlacement(card);
-            }
-
             UpdateCardsOverlapping();
+            StartCoroutine(UpdateCardsAfterFrameEnds(e.CollectionAfterChange));
+        }
+
+        private IEnumerator UpdateCardsAfterFrameEnds(System.Collections.Generic.IEnumerable<ICard> cards)
+        {
+            yield return new WaitForEndOfFrame();
+
+            foreach (ICard card in cards)
+            {
+                if (card != null)
+                {
+                    UpdateCardPlacement(card);
+                }
+            }
+        }
+
+        public void UpdateAllCardsPlacement(Action onPlacementMovementEnd = null)
+        {
+            foreach (var card in _handManager.GetCards())
+            {
+                UpdateCardPlacement(card, onPlacementMovementEnd);
+            }
         }
 
         public void UpdateCardPlacement(ICard card, Action onPlacementMovementEnd = null)
