@@ -44,7 +44,7 @@ namespace Assets.Scripts.Enemies
 
             _deathVfxPlayer.Play(new VFXPlayConfig());
 
-            _enemy.AudioClipPlayer.Play("Death");
+            //_enemy.AudioClipPlayer.Play("Death");
         }
 
         private void OnDeathEffectFinishedPlaying(object sender, EventArgs e)

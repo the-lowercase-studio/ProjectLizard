@@ -1,3 +1,4 @@
+using Assets.Turns;
 using System;
 using UnityEngine;
 
@@ -20,6 +21,8 @@ namespace Assets.Energy
         public int EnergyPerTurn => _energyPerTurn;
         public int CurrentEnergy => _currentEnergy;
 
+        private TurnManager _turnManager;
+
         private EnergyManager()
         { }
 
@@ -33,6 +36,17 @@ namespace Assets.Energy
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void Start()
+        {
+            _turnManager = TurnManager.Instance;
+            _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+        }
+
+        private void OnDisable()
+        {
+            _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
         }
 
         public void RefilCurrentEnergy()
@@ -102,6 +116,11 @@ namespace Assets.Energy
 
                 OnEnergyPerTurnChange?.Invoke(this, _energyPerTurn);
             }
+        }
+
+        private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
+        {
+            RefilCurrentEnergy();
         }
     }
 }

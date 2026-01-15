@@ -1,5 +1,6 @@
 using Assets.Cards.Usage;
 using Assets.Interfaces;
+using Assets.TweenCustom;
 using System;
 using UnityEngine;
 
@@ -8,23 +9,27 @@ namespace Assets.Cards.Base
     public interface ICard : IInitializableByConfig<CardConfigBaseSO>
     {
         CardConfigBaseSO Config { get; }
-        Transform Visual { get; }
+        GameObject Visual { get; }
         ICardMovement Movement { get; }
         ICardRotation Rotation { get; }
         ICardInteractions Interactions { get; }
-        public ICardUsage CardUsage { get; }
+        ICardUsage CardUsage { get; }
 
         int GetCurrentEnergyCost();
 
-        public event EventHandler OnCardDiscard;
+        event EventHandler OnCardDiscard;
 
-        public void Discard();
+        void Discard();
+
+        void Hide();
+
+        void Show();
     }
 
     public class Card : MonoBehaviour, ICard
     {
         [field: SerializeField] public CardConfigBaseSO Config { get; private set; }
-        [field: SerializeField] public Transform Visual { get; private set; }
+        [field: SerializeField] public GameObject Visual { get; private set; }
         public ICardMovement Movement { get; private set; }
         public ICardRotation Rotation { get; private set; }
         public ICardInteractions Interactions { get; private set; }
@@ -56,15 +61,32 @@ namespace Assets.Cards.Base
 
         public void Discard()
         {
+            StopTweensInChildren();
+
             OnCardDiscard?.Invoke(this, EventArgs.Empty);
 
-            foreach (var item in GetComponentsInChildren<IDisposable>())
-            {
-                item.Dispose();
-            }
-
-            Destroy(Visual.gameObject);
+            Destroy(Visual);
             Destroy(gameObject);
+        }
+
+        public void Show()
+        {
+            Visual.SetActive(false);
+        }
+
+        public void Hide()
+        {
+            StopTweensInChildren();
+
+            Visual.SetActive(false);
+        }
+
+        private void StopTweensInChildren()
+        {
+            foreach (var tweenUser in GetComponentsInChildren<ITweenUser>())
+            {
+                tweenUser.StopTweens();
+            }
         }
     }
 }

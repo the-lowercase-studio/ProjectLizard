@@ -28,16 +28,6 @@ namespace Assets.Cards.Usage
             _card = GetComponent<Card>();
         }
 
-        private void OnEnable()
-        {
-            OnCardUsage += Card_OnCardUsage;
-        }
-
-        private void OnDisable()
-        {
-            OnCardUsage -= Card_OnCardUsage;
-        }
-
         private void Start()
         {
             _energyManager = EnergyManager.Instance;
@@ -52,19 +42,14 @@ namespace Assets.Cards.Usage
 
                 _energyManager.DecreaseCurrentEnergy(currentEnergyCost);
 
-                OnCardUsage?.Invoke(_card, EventArgs.Empty);
+                ExecuteEffects();
+
+                _card.Discard();
             }
             else
             {
                 Debug.Log($"No enrgy for card {_card.name} usage");
             }
-        }
-
-        private void Card_OnCardUsage(object sender, EventArgs e)
-        {
-            ExecuteEffects();
-
-            _card.Discard();
         }
 
         private void ExecuteEffects()

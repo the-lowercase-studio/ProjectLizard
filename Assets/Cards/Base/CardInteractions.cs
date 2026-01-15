@@ -1,4 +1,5 @@
-﻿using Assets.Inputs.Pointer;
+﻿using Assets.Cards.CardsHand;
+using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
 using System;
@@ -84,7 +85,7 @@ namespace Assets.Cards.Base
             {
                 _currentState = CardState.None;
 
-                CardsInHandPositioner.Instance.UpdateCardPlacement(_card);
+                CardsHandPresenter.Instance.UpdateCardPlacement(_card);
             }
         }
 
@@ -109,7 +110,7 @@ namespace Assets.Cards.Base
 
             if (CanTransitToDragState())
             {
-                _card.Visual.SetParent(UITransformsProvider.Instance.FrontPanel);
+                _card.Visual.transform.SetParent(UITransformsProvider.Instance.FrontPanel);
                 _card.Movement.VisualStartFollowingPointer();
 
                 _currentState = CardState.Dragged;
@@ -126,9 +127,9 @@ namespace Assets.Cards.Base
                 _currentState = CardState.ReturningToHand;
 
                 _card.Movement.VisualStopFollowingPointer();
-                _card.Visual.SetParent(_card.transform);
+                _card.Visual.transform.SetParent(_card.transform);
 
-                CardsInHandPositioner.Instance.UpdateCardPlacement(_card, () =>
+                CardsHandPresenter.Instance.UpdateCardPlacement(_card, () =>
                 {
                     var hoveredObjects = PointerHoverHelper
                         .GetUIObjectsUnderPointer()

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Cards.Base
 {
-    public interface ICardMovement
+    public interface ICardMovement : ITweenUser
     {
         Vector2 GetRectAnchoredPosition();
 
@@ -23,7 +23,7 @@ namespace Assets.Cards.Base
     }
 
     [RequireComponent(typeof(ICard))]
-    public class CardMovement : MonoBehaviour, ICardMovement, IDisposable
+    public class CardMovement : MonoBehaviour, ICardMovement
     {
         [SerializeField] private float hoveredCardYOffset = 20f;
         private Card _card;
@@ -39,7 +39,7 @@ namespace Assets.Cards.Base
 
             _rectTransform = _card.gameObject.GetComponent<RectTransform>();
 
-            _visualRectTransform = _card.Visual.gameObject.GetComponent<RectTransform>();
+            _visualRectTransform = _card.Visual.GetComponent<RectTransform>();
         }
 
         private void FixedUpdate()
@@ -47,7 +47,7 @@ namespace Assets.Cards.Base
             if (_isFolowingPointer
                 && Vector2.Distance(_lastTargetPos, PointerPositioner.RawInputPosition) >= PositionConstants.DISTANCE_ACCURACY)
             {
-                _card.Visual.position = PointerPositioner.RawInputPosition;
+                _card.Visual.transform.position = PointerPositioner.RawInputPosition;
                 _lastTargetPos = PointerPositioner.RawInputPosition;
             }
         }
@@ -113,7 +113,7 @@ namespace Assets.Cards.Base
             }
         }
 
-        public void Dispose()
+        public void StopTweens()
         {
             _visualMovementTween.KillIfPlaying();
         }
