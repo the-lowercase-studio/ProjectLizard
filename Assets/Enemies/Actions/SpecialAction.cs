@@ -1,4 +1,4 @@
-using Assets.Enemies.Base.Intentions;
+using Assets.Enemies.Intentions;
 using Assets.Interfaces.Combat;
 using System;
 using UnityEngine;
@@ -6,10 +6,14 @@ using UnityEngine;
 namespace Assets.Enemies.Actions
 {
     [Serializable]
+    [IntentionType(IntentionType.Special)]
     public class SpecialAction : IEnemyAction
     {
         //TODO: currently same as attack action
         [SerializeField] private int _damageAmount;
+
+        public SpecialAction()
+        { }
 
         public SpecialAction(int damageAmount)
         {

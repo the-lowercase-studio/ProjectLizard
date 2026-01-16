@@ -1,14 +1,18 @@
-using Assets.Combat.Shield;
-using Assets.Enemies.Base.Intentions;
+using Assets.Enemies.Intentions;
+using Assets.ShieldSystem;
 using System;
 using UnityEngine;
 
 namespace Assets.Enemies.Actions
 {
     [Serializable]
+    [IntentionType(IntentionType.Defense)]
     public class DefenseAction : IEnemyAction
     {
         [SerializeField] private int _shieldAmount;
+
+        public DefenseAction()
+        { }
 
         public DefenseAction(int shieldAmount)
         {

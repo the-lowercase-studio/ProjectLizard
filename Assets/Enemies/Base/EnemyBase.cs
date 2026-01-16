@@ -1,11 +1,11 @@
 using Assets.Audio;
-using Assets.Combat.Shield;
 using Assets.Effects.StatusEffects;
-using Assets.Enemies.Base.Intentions;
+using Assets.Enemies.Intentions;
 using Assets.Enemies.UI;
 using Assets.Interfaces;
 using Assets.Interfaces.Combat;
 using Assets.Scripts.HealthSystem;
+using Assets.ShieldSystem;
 using Assets.Targeting;
 using Assets.Turns;
 using Assets.VFX;
@@ -24,7 +24,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     public event EventHandler OnCanBeDestroyed;
 
     public IHealth Health { get; private set; }
-    public IShield Shield { get; private set; }
+    public IShieldReceiver Shield { get; private set; }
     public IAudioClipPlayer AudioClipPlayer { get; private set; }
 
     public IDamageable Damageable => this;
@@ -37,7 +37,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     private IntentionSelector _intentionSelector;
     private IntentionConfig _currentIntention;
 
-    public IntentionConfig CurrentIntention => _currentIntention;
+    private TurnManager _turnManager;
 
     protected virtual void Awake()
     {
@@ -47,22 +47,11 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
         _enemyImage = Visual.GetComponent<Image>();
         _intentionSelector = new IntentionSelector();
-
-        if (_intentionIndicator == null)
-        {
-            _intentionIndicator = GetComponentInChildren<IntentionIndicator>();
-        }
     }
 
     protected virtual void OnEnable()
     {
         _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
-
-        if (TurnManager.Instance != null)
-        {
-            TurnManager.Instance.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
-            TurnManager.Instance.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
-        }
 
         _enemyImage.sprite = Config.Sprite;
 
@@ -73,11 +62,15 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     {
         _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
 
-        if (TurnManager.Instance != null)
-        {
-            TurnManager.Instance.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
-            TurnManager.Instance.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
-        }
+        _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
+        _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
+    }
+
+    private void Start()
+    {
+        _turnManager = TurnManager.Instance;
+        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+        _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
     }
 
     private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)

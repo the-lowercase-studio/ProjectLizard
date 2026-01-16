@@ -1,4 +1,4 @@
-using Assets.Enemies.Base.Intentions;
+using Assets.Enemies.Intentions;
 using System.Collections.Generic;
 using UnityEngine;
 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Assets.Enemies.Base.Intentions
+namespace Assets.Enemies.Intentions
 {
     [Serializable]
     public class IntentionConfig

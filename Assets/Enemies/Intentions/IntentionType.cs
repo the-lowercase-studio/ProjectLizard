@@ -1,4 +1,4 @@
-namespace Assets.Enemies.Base.Intentions
+namespace Assets.Enemies.Intentions
 {
     public enum IntentionType
     {

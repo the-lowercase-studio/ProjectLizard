@@ -1,4 +1,4 @@
-using Assets.Enemies.Base.Intentions;
+using Assets.Enemies.Intentions;
 using Assets.Interfaces.Combat;
 using System;
 using UnityEngine;
@@ -6,9 +6,12 @@ using UnityEngine;
 namespace Assets.Enemies.Actions
 {
     [Serializable]
+    [IntentionType(IntentionType.Attack)]
     public class AttackAction : IEnemyAction
     {
         [SerializeField] private int _damageAmount;
+
+        public AttackAction() { }
 
         public AttackAction(int damageAmount)
         {
