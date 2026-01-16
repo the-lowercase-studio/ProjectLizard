@@ -1,4 +1,4 @@
-using Assets.Cards.Usage;
+using Assets.Cards.Base.Usage;
 using Assets.Interfaces;
 using Assets.TweenCustom;
 using System;

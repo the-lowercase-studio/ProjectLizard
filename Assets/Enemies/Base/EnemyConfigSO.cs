@@ -1,3 +1,5 @@
+using Assets.Enemies.Base.Intentions;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Enemy Config", menuName = "Scriptable Objects/Enemy/Enemy Config")]
@@ -15,6 +17,9 @@ public class EnemyConfigSO : ScriptableObject
 
     [Header("Visual")]
     [field: SerializeField] public Sprite Sprite { get; private set; }
+
+    [Header("Intentions & Actions")]
+    [field: SerializeField] public List<IntentionConfig> Intentions { get; private set; } = new();
 
     //[field: SerializeField] public RuntimeAnimatorController AnimatorController { get; private set; }
 

@@ -1,6 +1,8 @@
+using Assets.Scripts.HealthSystem;
+
 namespace Assets.Interfaces.Combat
 {
-    public interface IDamageable
+    public interface IDamageable : IHealthy
     {
         public void TakeDamage(int damage);
 
