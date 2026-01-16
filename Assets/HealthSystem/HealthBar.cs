@@ -1,4 +1,4 @@
-using DG.Tweening;
+using Assets.TweenCustom;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,17 +45,7 @@ namespace Assets.Scripts.HealthSystem
 
         private void Health_OnHealthDecreased(object sender, System.EventArgs e)
         {
-            const float duration = 0.1f, strength = 0.10f, randomness = 90f;
-            const int vibratio = 3;
-            const bool snapping = true, fadeOut = true;
-
-            transform.DOShakePosition(duration,
-                                      strength,
-                                      vibratio,
-                                      randomness,
-                                      snapping,
-                                      fadeOut,
-                                      ShakeRandomnessMode.Harmonic);
+            UIShakeEffects.WeakShake(transform);
         }
 
         private void Health_OnHealthInitialization(object sender, System.EventArgs e)

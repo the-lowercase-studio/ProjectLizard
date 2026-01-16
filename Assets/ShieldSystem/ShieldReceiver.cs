@@ -1,12 +1,36 @@
 using System;
 using UnityEngine;
 
-namespace Assets.Combat.Shield
+namespace Assets.ShieldSystem
 {
-    [Serializable]
-    public class Shield : MonoBehaviour, IShield
+    public interface IShielded
     {
-        [field: SerializeField] public int CurrentShield { get; private set; }
+        public IShieldReceiver Shield { get; }
+    }
+
+    public interface IShieldReceiver
+    {
+        int CurrentShield { get; }
+
+        event EventHandler OnShieldChanged;
+
+        event EventHandler OnShieldDepleted;
+
+        event EventHandler OnShieldGained;
+
+        void AddShield(int amount);
+
+        int ReduceShield(int amount);
+
+        void ClearShield();
+
+        bool HasShield();
+    }
+
+    [Serializable]
+    public class ShieldReceiver : MonoBehaviour, IShieldReceiver
+    {
+        public int CurrentShield { get; private set; }
 
         public event EventHandler OnShieldChanged;
 

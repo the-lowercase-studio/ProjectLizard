@@ -72,7 +72,7 @@ namespace Assets.Turns
                 target.ProcessStatusEffectsOnTurnStart();
             }
 
-            OnEnemyTurnEnd?.Invoke(this, EventArgs.Empty);
+            OnEnemyTurnStart?.Invoke(this, EventArgs.Empty);
 
             EndEnemyTurn();
         }
