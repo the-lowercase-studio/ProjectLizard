@@ -45,6 +45,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
         StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
+        Shield = GetComponent<IShieldReceiver>();
         _enemyImage = Visual.GetComponent<Image>();
         _intentionSelector = new IntentionSelector();
     }
@@ -66,7 +67,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         _turnManager = TurnManager.Instance;
         _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
@@ -117,7 +118,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
 
     private void ExecuteIntention()
     {
-        if (_currentIntention != null && _currentIntention.Action != null)
+        if (_currentIntention?.Action != null)
         {
             _currentIntention.Action.Execute(this);
             _currentIntention = null;
