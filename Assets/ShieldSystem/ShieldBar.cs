@@ -13,8 +13,6 @@ namespace Assets.ShieldSystem
         [SerializeField] private ShieldReceiver _shield;
         [SerializeField] private TextMeshProUGUI _shieldText;
 
-        private int _maxShieldDisplayed;
-
         private void Awake()
         {
             HideBar();
@@ -22,7 +20,7 @@ namespace Assets.ShieldSystem
 
         private void Start()
         {
-            _shield.OnShieldChanged += Shield_OnShieldChanged;
+            _shield.OnGainedShieldChanged += Shield_OnGainedShieldChanged;
             _shield.OnShieldDepleted += Shield_OnShieldDepleted;
             _shield.OnShieldGained += Shield_OnShieldGained;
 
@@ -31,27 +29,25 @@ namespace Assets.ShieldSystem
 
         private void OnDestroy()
         {
-            _shield.OnShieldChanged -= Shield_OnShieldChanged;
+            _shield.OnGainedShieldChanged -= Shield_OnGainedShieldChanged;
             _shield.OnShieldDepleted -= Shield_OnShieldDepleted;
             _shield.OnShieldGained -= Shield_OnShieldGained;
         }
 
-        private void Shield_OnShieldGained(object sender, EventArgs e)
+        private void Shield_OnShieldGained(object sender, int currentShield)
         {
-            _maxShieldDisplayed = _shield.CurrentShield;
-
-            _slider.maxValue = _maxShieldDisplayed;
+            _slider.maxValue = currentShield;
 
             ShowBar();
 
             UpdateBar();
         }
 
-        private void Shield_OnShieldChanged(object sender, EventArgs e)
+        private void Shield_OnGainedShieldChanged(object sender, int currentShield)
         {
-            if (_shield.CurrentShield > _maxShieldDisplayed)
+            if (currentShield > _slider.maxValue)
             {
-                _maxShieldDisplayed = _shield.CurrentShield;
+                _slider.maxValue = currentShield;
             }
 
             UIShakeEffects.WeakShake(transform);
@@ -62,13 +58,11 @@ namespace Assets.ShieldSystem
         private void Shield_OnShieldDepleted(object sender, EventArgs e)
         {
             HideBar();
-
-            _maxShieldDisplayed = 0;
         }
 
         private void UpdateBar()
         {
-            if (_maxShieldDisplayed > 0)
+            if (_slider.maxValue > 0)
             {
                 _slider.value = _shield.CurrentShield;
             }

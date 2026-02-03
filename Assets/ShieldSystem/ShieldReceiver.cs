@@ -12,11 +12,11 @@ namespace Assets.ShieldSystem
     {
         int CurrentShield { get; }
 
-        event EventHandler OnShieldChanged;
+        event EventHandler<int> OnGainedShieldChanged;
 
         event EventHandler OnShieldDepleted;
 
-        event EventHandler OnShieldGained;
+        event EventHandler<int> OnShieldGained;
 
         void AddShield(int amount);
 
@@ -32,11 +32,11 @@ namespace Assets.ShieldSystem
     {
         public int CurrentShield { get; private set; }
 
-        public event EventHandler OnShieldChanged;
+        public event EventHandler<int> OnGainedShieldChanged;
 
         public event EventHandler OnShieldDepleted;
 
-        public event EventHandler OnShieldGained;
+        public event EventHandler<int> OnShieldGained;
 
         public void AddShield(int amount)
         {
@@ -48,11 +48,13 @@ namespace Assets.ShieldSystem
             bool hadNoShield = CurrentShield == 0;
             CurrentShield += amount;
 
-            OnShieldChanged?.Invoke(this, EventArgs.Empty);
-
             if (hadNoShield)
             {
-                OnShieldGained?.Invoke(this, EventArgs.Empty);
+                OnShieldGained?.Invoke(this, CurrentShield);
+            }
+            else
+            {
+                OnGainedShieldChanged?.Invoke(this, CurrentShield);
             }
 
             Debug.Log($"Shield added: {amount}. Current shield: {CurrentShield}");
@@ -85,7 +87,7 @@ namespace Assets.ShieldSystem
                 Debug.Log($"Shield absorbed {amount} damage. Remaining shield: {CurrentShield}");
             }
 
-            OnShieldChanged?.Invoke(this, EventArgs.Empty);
+            OnGainedShieldChanged?.Invoke(this, CurrentShield);
 
             return remainingDamage;
         }
@@ -95,7 +97,6 @@ namespace Assets.ShieldSystem
             if (CurrentShield > 0)
             {
                 CurrentShield = 0;
-                OnShieldChanged?.Invoke(this, EventArgs.Empty);
                 OnShieldDepleted?.Invoke(this, EventArgs.Empty);
             }
         }
