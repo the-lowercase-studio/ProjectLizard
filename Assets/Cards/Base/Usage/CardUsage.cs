@@ -1,4 +1,3 @@
-using Assets.Cards.Base;
 using Assets.Effects;
 using Assets.Energy;
 using Assets.Targeting;
@@ -6,7 +5,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace Assets.Cards.Usage
+namespace Assets.Cards.Base.Usage
 {
     public interface ICardUsage
     {

@@ -1,10 +1,9 @@
-using Assets.Cards.Base;
 using Assets.CustomEventArgs;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Assets.Cards.Usage
+namespace Assets.Cards.Base.Usage
 {
     public class CardUsageArea : MonoBehaviour, IDropHandler
     {

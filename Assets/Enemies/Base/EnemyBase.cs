@@ -1,24 +1,30 @@
 using Assets.Audio;
 using Assets.Effects.StatusEffects;
+using Assets.Enemies.Intentions;
+using Assets.Enemies.UI;
 using Assets.Interfaces;
 using Assets.Interfaces.Combat;
 using Assets.Scripts.HealthSystem;
+using Assets.ShieldSystem;
 using Assets.Targeting;
+using Assets.Turns;
 using Assets.VFX;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyBase : MonoBehaviour, IHealthy, ITarget, IDamageable
+public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
 {
     [field: SerializeField] public GameObject Visual { get; private set; }
     [field: SerializeField] public EnemyConfigSO Config { get; private set; }
     [SerializeField] private VFXPlayer _damageVfxPlayer;
+    [SerializeField] private IntentionIndicator _intentionIndicator;
     private Image _enemyImage;
 
     public event EventHandler OnCanBeDestroyed;
 
     public IHealth Health { get; private set; }
+    public IShieldReceiver Shield { get; private set; }
     public IAudioClipPlayer AudioClipPlayer { get; private set; }
 
     public IDamageable Damageable => this;
@@ -28,13 +34,20 @@ public class EnemyBase : MonoBehaviour, IHealthy, ITarget, IDamageable
     private INeedToCompleteBeforeDisable _enemyDeathSequence;
     public string Name => Config.name;
 
+    private IntentionSelector _intentionSelector;
+    private IntentionConfig _currentIntention;
+
+    private TurnManager _turnManager;
+
     protected virtual void Awake()
     {
         Health = GetComponent<IHealth>();
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
         StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
+        Shield = GetComponent<IShieldReceiver>();
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
         _enemyImage = Visual.GetComponent<Image>();
+        _intentionSelector = new IntentionSelector();
     }
 
     protected virtual void OnEnable()
@@ -49,6 +62,68 @@ public class EnemyBase : MonoBehaviour, IHealthy, ITarget, IDamageable
     protected virtual void OnDisable()
     {
         _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
+
+        _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
+        _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
+    }
+
+    protected virtual void Start()
+    {
+        _turnManager = TurnManager.Instance;
+        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+        _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
+    }
+
+    private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
+    {
+        if (Health.IsAlive())
+        {
+            SelectIntention();
+        }
+    }
+
+    private void TurnManager_OnEnemyTurnEnd(object sender, EventArgs e)
+    {
+        if (Health.IsAlive())
+        {
+            ExecuteIntention();
+        }
+    }
+
+    private void SelectIntention()
+    {
+        if (Config.Intentions != null && Config.Intentions.Count > 0)
+        {
+            _currentIntention = _intentionSelector.SelectIntention(Config.Intentions);
+            _currentIntention.Action.RefreshValue();
+
+            if (_currentIntention != null)
+            {
+                Debug.Log($"{Name} selected intention: {_currentIntention.IntentionType}");
+
+                if (_intentionIndicator != null)
+                {
+                    _intentionIndicator.ShowIntention(_currentIntention);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"{Name} failed to select an intention!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"{Name} has no intentions configured!");
+        }
+    }
+
+    private void ExecuteIntention()
+    {
+        if (_currentIntention?.Action != null)
+        {
+            _currentIntention.Action.Execute(this);
+            _currentIntention = null;
+        }
     }
 
     public virtual void TakeFullHpDamage()
@@ -58,7 +133,17 @@ public class EnemyBase : MonoBehaviour, IHealthy, ITarget, IDamageable
 
     public virtual void TakeDamage(int damage)
     {
-        Health.DecreaseHealth(damage);
+        int remainingDamage = damage;
+
+        if (Shield != null && Shield.HasShield())
+        {
+            remainingDamage = Shield.ReduceShield(damage);
+        }
+
+        if (remainingDamage > 0)
+        {
+            Health.DecreaseHealth(remainingDamage);
+        }
 
         if (Health.IsAlive())
         {

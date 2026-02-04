@@ -52,6 +52,8 @@ namespace Assets.Energy
         public void RefilCurrentEnergy()
         {
             _currentEnergy = _energyPerTurn;
+
+            OnCurrentEnergyChange?.Invoke(this, _currentEnergy);
         }
 
         public void DecreaseCurrentEnergy(int amount)
