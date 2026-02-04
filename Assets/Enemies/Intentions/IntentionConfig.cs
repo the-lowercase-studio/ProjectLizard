@@ -8,13 +8,13 @@ namespace Assets.Enemies.Intentions
     {
         [SerializeField] private IntentionType _intentionType;
         [SerializeField][Range(0, 100)] private int _probability = 33;
-        [SerializeReference] private IEnemyAction _action;
+        [SerializeReference] private EnemyActionBase _action;
 
         public IntentionType IntentionType => _intentionType;
         public int Probability => _probability;
-        public IEnemyAction Action => _action;
+        public EnemyActionBase Action => _action;
 
-        public IntentionConfig(IntentionType intentionType, int probability, IEnemyAction action)
+        public IntentionConfig(IntentionType intentionType, int probability, EnemyActionBase action)
         {
             _intentionType = intentionType;
             _probability = probability;

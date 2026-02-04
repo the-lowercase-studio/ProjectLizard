@@ -13,8 +13,6 @@ public class EnemyConfigSO : ScriptableObject
     [Header("Combat Stats")]
     [field: SerializeField] public int MaxHealth { get; private set; } = 100;
 
-    [field: SerializeField] public int BaseDamage { get; private set; } = 10;
-
     [Header("Visual")]
     [field: SerializeField] public Sprite Sprite { get; private set; }
 

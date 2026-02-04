@@ -7,20 +7,18 @@ namespace Assets.Enemies.Actions
 {
     [Serializable]
     [IntentionType(IntentionType.Special)]
-    public class SpecialAction : IEnemyAction
+    public class SpecialAction : EnemyActionBase
     {
         //TODO: currently same as attack action
-        [SerializeField] private int _damageAmount;
-
         public SpecialAction()
         { }
 
-        public SpecialAction(int damageAmount)
+        public SpecialAction(int minDamage, int maxDamage)
+            : base(minDamage, maxDamage)
         {
-            _damageAmount = damageAmount;
         }
 
-        public void Execute(EnemyBase enemy)
+        public override void Execute(EnemyBase enemy)
         {
             //TODO: change when charactersParty will be aded to game
             GameObject charactersParty = null;
@@ -29,9 +27,8 @@ namespace Assets.Enemies.Actions
             {
                 if (charactersParty.TryGetComponent(out IDamageable damageable))
                 {
-                    int finalDamage = _damageAmount > 0 ? _damageAmount : (enemy.Config.BaseDamage * 2);
-                    damageable.TakeDamage(finalDamage);
-                    Debug.Log($"{enemy.Name} uses special attack for {finalDamage} damage!");
+                    damageable.TakeDamage(_currentValue);
+                    Debug.Log($"{enemy.Name} uses special attack for {_currentValue} damage!");
                 }
             }
             else

@@ -7,35 +7,25 @@ namespace Assets.Enemies.Actions
 {
     [Serializable]
     [IntentionType(IntentionType.Defense)]
-    public class DefenseAction : IEnemyAction
+    public class DefenseAction : EnemyActionBase
     {
-        [SerializeField] private int _shieldAmount;
-
         public DefenseAction()
         { }
 
-        public DefenseAction(int shieldAmount)
-        {
-            _shieldAmount = shieldAmount;
-        }
+        public DefenseAction(int minDamage, int maxDamage)
+            : base(minDamage, maxDamage)
+        { }
 
-        public void Execute(EnemyBase enemy)
+        public override void Execute(EnemyBase enemy)
         {
-            if (_shieldAmount > 0 && enemy.Health.IsAlive())
+            if (enemy is IShielded shielded && shielded.Shield != null)
             {
-                if (enemy is IShielded shielded && shielded.Shield != null)
-                {
-                    shielded.Shield.AddShield(_shieldAmount);
-                    Debug.Log($"{enemy.Name} gains {_shieldAmount} shield!");
-                }
-                else
-                {
-                    Debug.LogWarning($"{enemy.Name} tried to gain shield but has no Shield component!");
-                }
+                shielded.Shield.AddShield(_currentValue);
+                Debug.Log($"{enemy.Name} gains {_currentValue} shield!");
             }
             else
             {
-                Debug.Log($"{enemy.Name} takes a defensive stance!");
+                Debug.LogWarning($"{enemy.Name} tried to gain shield but has no Shield component!");
             }
         }
     }

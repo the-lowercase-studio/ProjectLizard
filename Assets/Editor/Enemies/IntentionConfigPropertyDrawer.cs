@@ -151,7 +151,7 @@ namespace Assets.Editor.Enemies
         {
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IEnemyAction).IsAssignableFrom(type))
+                .Where(type => !type.IsAbstract && !type.IsInterface && typeof(EnemyActionBase).IsAssignableFrom(type))
                 .Where(type => HasMatchingIntentionType(type, intentionType))
                 .OrderBy(type => type.Name)
                 .ToList();

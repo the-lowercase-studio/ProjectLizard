@@ -44,8 +44,8 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         Health = GetComponent<IHealth>();
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
         StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
-        _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
         Shield = GetComponent<IShieldReceiver>();
+        _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
         _enemyImage = Visual.GetComponent<Image>();
         _intentionSelector = new IntentionSelector();
     }
@@ -95,6 +95,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         if (Config.Intentions != null && Config.Intentions.Count > 0)
         {
             _currentIntention = _intentionSelector.SelectIntention(Config.Intentions);
+            _currentIntention.Action.RefreshValue();
 
             if (_currentIntention != null)
             {
@@ -102,7 +103,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
 
                 if (_intentionIndicator != null)
                 {
-                    _intentionIndicator.ShowIntention(_currentIntention.IntentionType);
+                    _intentionIndicator.ShowIntention(_currentIntention);
                 }
             }
             else
