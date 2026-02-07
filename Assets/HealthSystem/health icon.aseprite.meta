@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: aead7672c5eae1342adbd6925f897f5f
+guid: b6a4ecce3ba307d408ff462ce4d97603
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -127,7 +127,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: kartabase
+  - name: health icon
     originalName: 
     pivot: {x: 0.5, y: 0}
     alignment: 9
@@ -137,9 +137,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 180
-      height: 260
-    spriteID: 99e6998dd5ef0bf46b9a30d64d06307f
+      width: 12
+      height: 12
+    spriteID: b265558bcd6c351468b620db19e18559
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -153,45 +153,33 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 325593086
+      value0: 764639
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: kartabase
+    name: health icon
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: kartabasetest
+    - name: health icon
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 0
         y: 0
-        width: 180
-        height: 260
-      spriteId: 99e6998dd5ef0bf46b9a30d64d06307f
+        width: 12
+        height: 12
+      spriteId: b265558bcd6c351468b620db19e18559
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
     parentIndex: -1
   tileSets: []
-  platformSettings:
-  - name: Default
-    overridden: 0
-    ignorePlatformSupport: 0
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    androidETC2FallbackOverride: 0
+  platformSettings: []
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 180, y: 260}
-  previousTextureSize: {x: 256, y: 512}
+  canvasSize: {x: 12, y: 12}
+  previousTextureSize: {x: 32, y: 32}

@@ -1,5 +1,4 @@
 using Assets.Enemies.Intentions;
-using Assets.Interfaces.Combat;
 using System;
 using UnityEngine;
 
@@ -18,14 +17,11 @@ namespace Assets.Enemies.Actions
 
         public override void Execute(EnemyBase enemy)
         {
-            //TODO: change when charactersParty will be aded to game
-            GameObject charactersParty = null;
-
-            if (charactersParty != null)
+            if (Target != null)
             {
-                if (charactersParty.TryGetComponent(out IDamageable damageable))
+                if (Target.Damageable != null)
                 {
-                    damageable.TakeDamage(_currentValue);
+                    Target.Damageable.TakeDamage(_currentValue);
                     Debug.Log($"{enemy.Name} attacks for {_currentValue} damage!");
                 }
             }

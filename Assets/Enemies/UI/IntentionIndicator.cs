@@ -35,7 +35,6 @@ namespace Assets.Enemies.UI
             }
 
             int value = intention.Action.GetValue();
-            Debug.Log($"VALUE TO SHOW: {value}");
             _valueText.text = value > 0 ? value.ToString() : string.Empty;
         }
     }

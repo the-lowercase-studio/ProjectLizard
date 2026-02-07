@@ -24,7 +24,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     public event EventHandler OnCanBeDestroyed;
 
     public IHealth Health { get; private set; }
-    public IShieldReceiver Shield { get; private set; }
+    public IShieldReceiver ShieldReceiver { get; private set; }
     public IAudioClipPlayer AudioClipPlayer { get; private set; }
 
     public IDamageable Damageable => this;
@@ -44,7 +44,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         Health = GetComponent<IHealth>();
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
         StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
-        Shield = GetComponent<IShieldReceiver>();
+        ShieldReceiver = GetComponent<IShieldReceiver>();
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
         _enemyImage = Visual.GetComponent<Image>();
         _intentionSelector = new IntentionSelector();
@@ -135,9 +135,9 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     {
         int remainingDamage = damage;
 
-        if (Shield != null && Shield.HasShield())
+        if (ShieldReceiver != null && ShieldReceiver.HasShield())
         {
-            remainingDamage = Shield.ReduceShield(damage);
+            remainingDamage = ShieldReceiver.ReduceShield(damage);
         }
 
         if (remainingDamage > 0)
