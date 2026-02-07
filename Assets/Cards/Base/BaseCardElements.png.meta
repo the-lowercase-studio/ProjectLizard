@@ -1,22 +1,22 @@
 fileFormatVersion: 2
-guid: e97bb1f5ffa4d23459a4ca227953695c
+guid: d798925a97b61e64bba5a7d313d9b8ae
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8792712691155956674
-    second: base_card_blackwhite_0
+      213: -419958125018995103
+    second: BaseCardElements_0
   - first:
-      213: -6966250857795247374
-    second: base_card_blackwhite_1
+      213: -7760809469869838494
+    second: BaseCardElements_1
   - first:
-      213: -1798240842585858951
-    second: base_card_blackwhite_2
+      213: -6728229073256582725
+    second: BaseCardElements_2
   - first:
-      213: 432835768591792718
-    second: base_card_blackwhite_3
+      213: 923340345510013724
+    second: BaseCardElements_3
   - first:
-      213: 3809913999998432948
-    second: base_card_blackwhite_4
+      213: 6015963656635118103
+    second: BaseCardElements_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -87,7 +87,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -125,7 +125,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: base_card_blackwhite_0
+      name: BaseCardElements_Background
       rect:
         serializedVersion: 2
         x: 0
@@ -133,21 +133,21 @@ TextureImporter:
         width: 142
         height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2c37b685b9df50a70800000000000000
-      internalID: 8792712691155956674
+      spriteID: 16624b17f420c2af0800000000000000
+      internalID: -419958125018995103
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: base_card_blackwhite_1
+      name: BaseCardElements_DescriptionField
       rect:
         serializedVersion: 2
         x: 14
@@ -155,21 +155,21 @@ TextureImporter:
         width: 115
         height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2f2aadce0c7e25f90800000000000000
-      internalID: -6966250857795247374
+      spriteID: 26fabead7e01c4490800000000000000
+      internalID: -7760809469869838494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: base_card_blackwhite_2
+      name: BaseCardElements_TitleField
       rect:
         serializedVersion: 2
         x: 14
@@ -177,21 +177,21 @@ TextureImporter:
         width: 115
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 97c121d2b7d5b07e0800000000000000
-      internalID: -1798240842585858951
+      spriteID: bb1f5193e4780a2a0800000000000000
+      internalID: -6728229073256582725
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: base_card_blackwhite_3
+      name: BaseCardElements_BorderField
       rect:
         serializedVersion: 2
         x: 0
@@ -199,21 +199,21 @@ TextureImporter:
         width: 142
         height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e4a3ff896ddb10600800000000000000
-      internalID: 432835768591792718
+      spriteID: c1b29e4f62d50dc00800000000000000
+      internalID: 923340345510013724
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: base_card_blackwhite_4
+      name: BaseCardElements_CostBackground
       rect:
         serializedVersion: 2
         x: 6
@@ -221,15 +221,15 @@ TextureImporter:
         width: 40
         height: 37
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4b6b1b2e8988fd430800000000000000
-      internalID: 3809913999998432948
+      spriteID: 712756f521ffc7350800000000000000
+      internalID: 6015963656635118103
       vertices: []
       indices: 
       edges: []
@@ -238,7 +238,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: dc7254c52c1f19342bb099ea8f6f6fd3
     internalID: 0
     vertices: []
     indices: 
@@ -248,11 +248,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      base_card_blackwhite_0: 8792712691155956674
-      base_card_blackwhite_1: -6966250857795247374
-      base_card_blackwhite_2: -1798240842585858951
-      base_card_blackwhite_3: 432835768591792718
-      base_card_blackwhite_4: 3809913999998432948
+      BaseCardElements_Background: -419958125018995103
+      BaseCardElements_BorderField: 923340345510013724
+      BaseCardElements_CostBackground: 6015963656635118103
+      BaseCardElements_DescriptionField: -7760809469869838494
+      BaseCardElements_TitleField: -6728229073256582725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
