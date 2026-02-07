@@ -5,7 +5,7 @@ namespace Assets.ShieldSystem
 {
     public interface IShielded
     {
-        public IShieldReceiver Shield { get; }
+        public IShieldReceiver ShieldReceiver { get; }
     }
 
     public interface IShieldReceiver

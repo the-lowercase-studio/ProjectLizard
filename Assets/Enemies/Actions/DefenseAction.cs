@@ -18,9 +18,9 @@ namespace Assets.Enemies.Actions
 
         public override void Execute(EnemyBase enemy)
         {
-            if (enemy is IShielded shielded && shielded.Shield != null)
+            if (enemy is IShielded shielded && shielded.ShieldReceiver != null)
             {
-                shielded.Shield.AddShield(_currentValue);
+                shielded.ShieldReceiver.AddShield(_currentValue);
                 Debug.Log($"{enemy.Name} gains {_currentValue} shield!");
             }
             else

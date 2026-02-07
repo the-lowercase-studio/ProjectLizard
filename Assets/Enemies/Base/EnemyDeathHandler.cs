@@ -1,60 +1,26 @@
-﻿using Assets.Interfaces;
-using Assets.VFX;
-using System;
+﻿using Assets.Audio;
+using Assets.Scripts.DeathHandlers;
+using Assets.Scripts.HealthSystem;
 using UnityEngine;
 
 namespace Assets.Scripts.Enemies
 {
     [RequireComponent(typeof(EnemyBase))]
-    public class EnemyDeathHandler : MonoBehaviour, INeedToCompleteBeforeDisable
+    public class EnemyDeathHandler : DeathHandlerBase
     {
-        [SerializeField] private VFXPlayer _deathVfxPlayer;
         private EnemyBase _enemy;
-        private byte _startEffectsToFinish = 2;
-        private byte _effectsToFinish;
 
-        public event EventHandler OnCompleted;
+        protected override IHealth Health => _enemy.Health;
+        protected override IAudioClipPlayer AudioClipPlayer => _enemy.AudioClipPlayer;
 
         private void Awake()
         {
             _enemy = GetComponent<EnemyBase>();
         }
 
-        private void OnDisable()
-        {
-            _deathVfxPlayer.OnVFXFinished -= OnDeathEffectFinishedPlaying;
-            _enemy.AudioClipPlayer.OnAudioClipFinished -= OnDeathEffectFinishedPlaying;
-
-            _enemy.Health.OnNoHealth -= Health_OnNoHealth;
-        }
-
-        private void Start()
-        {
-            _effectsToFinish = _startEffectsToFinish;
-
-            _deathVfxPlayer.OnVFXFinished += OnDeathEffectFinishedPlaying;
-            _enemy.AudioClipPlayer.OnAudioClipFinished += OnDeathEffectFinishedPlaying;
-
-            _enemy.Health.OnNoHealth += Health_OnNoHealth;
-        }
-
-        private void Health_OnNoHealth(object sender, EventArgs e)
+        protected override void HideVisuals()
         {
             _enemy.Visual.SetActive(false);
-
-            _deathVfxPlayer.Play(new VFXPlayConfig());
-
-            //_enemy.AudioClipPlayer.Play("Death");
-        }
-
-        private void OnDeathEffectFinishedPlaying(object sender, EventArgs e)
-        {
-            _effectsToFinish--;
-
-            if (_effectsToFinish == 0)
-            {
-                OnCompleted?.Invoke(this, EventArgs.Empty);
-            }
         }
     }
 }

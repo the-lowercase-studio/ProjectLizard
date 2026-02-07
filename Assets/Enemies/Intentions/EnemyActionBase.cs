@@ -1,4 +1,5 @@
-using Assets.Enemies.Actions;
+using Assets.CustomTypes;
+using Assets.Targeting;
 using UnityEngine;
 
 namespace Assets.Enemies.Intentions
@@ -16,6 +17,7 @@ namespace Assets.Enemies.Intentions
     {
         [SerializeField] protected ValueRange _valueRange;
         protected int _currentValue;
+        protected ITarget Target => PlayerParty.Instance;
 
         protected EnemyActionBase()
         {

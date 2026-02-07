@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Assets.Enemies.Actions
+namespace Assets.CustomTypes
 {
     [Serializable]
     public struct ValueRange

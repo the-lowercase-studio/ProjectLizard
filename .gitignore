@@ -84,4 +84,8 @@ crashlytics-build.properties
 !/Assets/
 !/ProjectSettings/
 
+# Only for local
+*.md
+*.md.meta
+
 # ======
