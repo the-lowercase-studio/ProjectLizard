@@ -33,9 +33,7 @@ namespace Assets.ShieldSystem
         public int CurrentShield { get; private set; }
 
         public event EventHandler<int> OnGainedShieldChanged;
-
         public event EventHandler OnShieldDepleted;
-
         public event EventHandler<int> OnShieldGained;
 
         public void AddShield(int amount)

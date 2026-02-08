@@ -2,6 +2,7 @@
 using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
+using Reflex.Attributes;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -25,6 +26,10 @@ namespace Assets.Cards.Base
         public event EventHandler<PointerEventData> OnDragStart;
 
         public event EventHandler<PointerEventData> OnDragEnd;
+
+        [Inject] private ICardsHandPresenter _cardsHandPresenter;
+        [Inject] private IUITransformsProvider _uiTransformsProvider;
+        [Inject] private IPointerPositioner _pointerPositioner;
 
         private Card _card;
         private CardState _currentState = CardState.None;
@@ -85,7 +90,7 @@ namespace Assets.Cards.Base
             {
                 _currentState = CardState.None;
 
-                CardsHandPresenter.Instance.UpdateCardPlacement(_card);
+                _cardsHandPresenter.UpdateCardPlacement(_card);
             }
         }
 
@@ -110,7 +115,7 @@ namespace Assets.Cards.Base
 
             if (CanTransitToDragState())
             {
-                _card.Visual.transform.SetParent(UITransformsProvider.Instance.FrontPanel);
+                _card.Visual.transform.SetParent(_uiTransformsProvider.FrontPanel);
                 _card.Movement.VisualStartFollowingPointer();
 
                 _currentState = CardState.Dragged;
@@ -129,10 +134,10 @@ namespace Assets.Cards.Base
                 _card.Movement.VisualStopFollowingPointer();
                 _card.Visual.transform.SetParent(_card.transform);
 
-                CardsHandPresenter.Instance.UpdateCardPlacement(_card, () =>
+                _cardsHandPresenter.UpdateCardPlacement(_card, () =>
                 {
                     var hoveredObjects = PointerHoverHelper
-                        .GetUIObjectsUnderPointer()
+                        .GetUIObjectsUnderPointer(_pointerPositioner.RawInputPosition)
                         .Where(o => o.layer == 6);
 
                     if (hoveredObjects.Any(o => o.transform.parent == _card.Visual))

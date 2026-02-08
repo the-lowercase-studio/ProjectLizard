@@ -19,6 +19,7 @@ namespace Assets.Effects.StatusEffects
         public string EffectName { get; protected set; }
         public float Duration { get; protected set; }
         public int RemainingTurns { get; protected set; }
+
         protected IStatusEffectReceiver Target { get; private set; }
 
         protected StatusEffectBase(string effectName, byte turns)

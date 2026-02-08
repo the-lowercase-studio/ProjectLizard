@@ -9,6 +9,7 @@ using Assets.ShieldSystem;
 using Assets.Targeting;
 using Assets.Turns;
 using Assets.VFX;
+using Reflex.Attributes;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,27 +18,26 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
 {
     [field: SerializeField] public GameObject Visual { get; private set; }
     [field: SerializeField] public EnemyConfigSO Config { get; private set; }
-    [SerializeField] private VFXPlayer _damageVfxPlayer;
-    [SerializeField] private IntentionIndicator _intentionIndicator;
-    private Image _enemyImage;
-
-    public event EventHandler OnCanBeDestroyed;
 
     public IHealth Health { get; private set; }
     public IShieldReceiver ShieldReceiver { get; private set; }
     public IAudioClipPlayer AudioClipPlayer { get; private set; }
-
     public IDamageable Damageable => this;
-
     public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
-
-    private INeedToCompleteBeforeDisable _enemyDeathSequence;
     public string Name => Config.name;
 
+    public event EventHandler OnCanBeDestroyed;
+
+    [Inject] private ITurnManager _turnManager;
+    [Inject] private IPlayerParty _playerParty;
+
+    [SerializeField] private VFXPlayer _damageVfxPlayer;
+    [SerializeField] private IntentionIndicator _intentionIndicator;
+
+    private Image _enemyImage;
+    private INeedToCompleteBeforeDisable _enemyDeathSequence;
     private IntentionSelector _intentionSelector;
     private IntentionConfig _currentIntention;
-
-    private TurnManager _turnManager;
 
     protected virtual void Awake()
     {
@@ -69,7 +69,6 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
 
     protected virtual void Start()
     {
-        _turnManager = TurnManager.Instance;
         _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
         _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
     }
@@ -121,7 +120,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     {
         if (_currentIntention?.Action != null)
         {
-            _currentIntention.Action.Execute(this);
+            _currentIntention.Action.Execute(this, _playerParty);
             _currentIntention = null;
         }
     }

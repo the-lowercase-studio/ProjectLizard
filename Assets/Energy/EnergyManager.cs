@@ -1,12 +1,39 @@
 using Assets.Turns;
+using Reflex.Attributes;
 using System;
 using UnityEngine;
 
 namespace Assets.Energy
 {
-    public sealed class EnergyManager : MonoBehaviour
+    public interface IEnergyManager
     {
-        public static EnergyManager Instance { get; private set; }
+        int EnergyPerTurn { get; }
+        int CurrentEnergy { get; }
+
+        event EventHandler<int> OnCurrentEnergyChange;
+
+        event EventHandler<int> OnEnergyPerTurnChange;
+
+        void RefilCurrentEnergy();
+
+        void DecreaseCurrentEnergy(int amount);
+
+        void IncreaseCurrentEnergy(int amount);
+
+        void DecreaseEnergyPerTurn(int amount);
+
+        void IncreaseEnergyPerTurn(int amount);
+    }
+
+    public sealed class EnergyManager : MonoBehaviour, IEnergyManager
+    {
+        public int EnergyPerTurn => _energyPerTurn;
+        public int CurrentEnergy => _currentEnergy;
+
+        public event EventHandler<int> OnCurrentEnergyChange;
+        public event EventHandler<int> OnEnergyPerTurnChange;
+
+        [Inject] private ITurnManager _turnManager;
 
         private const byte START_ENERGY_PER_TURN = 3;
         private const byte MAX_ENERGY_PER_TURN = 9;
@@ -14,33 +41,8 @@ namespace Assets.Energy
         private int _energyPerTurn = START_ENERGY_PER_TURN;
         private int _currentEnergy = START_ENERGY_PER_TURN;
 
-        public event EventHandler<int> OnCurrentEnergyChange;
-
-        public event EventHandler<int> OnEnergyPerTurnChange;
-
-        public int EnergyPerTurn => _energyPerTurn;
-        public int CurrentEnergy => _currentEnergy;
-
-        private TurnManager _turnManager;
-
-        private EnergyManager()
-        { }
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
         private void Start()
         {
-            _turnManager = TurnManager.Instance;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
         }
 

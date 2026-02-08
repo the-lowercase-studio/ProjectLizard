@@ -15,12 +15,12 @@ public interface IPartyCharacter : IAudioClipSource
 public class PartyCharacter : MonoBehaviour, IPartyCharacter
 {
     [field: SerializeField] public CharacterConfigSO Config { get; private set; }
-    [SerializeField] private Sprite _characterSprite;
 
     public IAudioClipPlayer AudioClipPlayer { get; private set; }
     public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
-
     public string Name => Config.Name;
+
+    [SerializeField] private Sprite _characterSprite;
 
     public void Initialize(CharacterConfigSO config)
     {

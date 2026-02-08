@@ -9,14 +9,15 @@ namespace Assets.Scripts.DeathHandlers
 {
     public abstract class DeathHandlerBase : MonoBehaviour, INeedToCompleteBeforeDisable
     {
-        [SerializeField] protected VFXPlayer _deathVfxPlayer;
-        private byte _startEffectsToFinish = 2;
-        private byte _effectsToFinish;
-
         public event EventHandler OnCompleted;
 
         protected abstract IHealth Health { get; }
         protected abstract IAudioClipPlayer AudioClipPlayer { get; }
+
+        [SerializeField] protected VFXPlayer _deathVfxPlayer;
+
+        private byte _startEffectsToFinish = 2;
+        private byte _effectsToFinish;
 
         protected virtual void OnDisable()
         {

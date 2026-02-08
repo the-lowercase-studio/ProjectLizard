@@ -7,6 +7,7 @@ using Assets.ShieldSystem;
 using Assets.Targeting;
 using Assets.Turns;
 using Assets.VFX;
+using Reflex.Attributes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,16 @@ public interface IPlayerParty : ITarget, IDamageable, IShielded, IAudioClipSourc
 
 public sealed class PlayerParty : MonoBehaviour, IPlayerParty
 {
-    public static PlayerParty Instance { get; private set; }
+    public IHealth Health { get; private set; }
+    public IShieldReceiver ShieldReceiver { get; private set; }
+    public IAudioClipPlayer AudioClipPlayer { get; private set; }
+    public IDamageable Damageable => this;
+    public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
+    public string Name => "Player Party";
+
+    public event EventHandler OnPartyDestroyed;
+
+    [Inject] private ITurnManager _turnManager;
 
     [Header("Character Setup")]
     [SerializeField] private CharacterConfigSO _mainCharacterConfig;
@@ -35,37 +45,11 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
 
     [SerializeField] private VFXPlayer _damageVfxPlayer;
 
-    public event EventHandler OnPartyDestroyed;
-
-    public IHealth Health { get; private set; }
-    public IShieldReceiver ShieldReceiver { get; private set; }
-    public IAudioClipPlayer AudioClipPlayer { get; private set; }
-
-    public IDamageable Damageable => this;
-
-    public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
-
     private INeedToCompleteBeforeDisable _partyDeathSequence;
-    public string Name => "Player Party";
-
     private List<PartyCharacter> _partyCharacters = new();
-    private TurnManager _turnManager;
-
-    private PlayerParty()
-    {
-    }
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         Health = GetComponent<IHealth>();
         AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
         StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
@@ -88,7 +72,6 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
 
     private void Start()
     {
-        _turnManager = TurnManager.Instance;
         _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
         _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
 

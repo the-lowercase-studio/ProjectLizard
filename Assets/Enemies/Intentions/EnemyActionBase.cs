@@ -10,14 +10,13 @@ namespace Assets.Enemies.Intentions
 
         int GetValue();
 
-        void Execute(EnemyBase enemy);
+        void Execute(EnemyBase enemy, ITarget target);
     }
 
     public abstract class EnemyActionBase : IEnemyAction
     {
         [SerializeField] protected ValueRange _valueRange;
         protected int _currentValue;
-        protected ITarget Target => PlayerParty.Instance;
 
         protected EnemyActionBase()
         {
@@ -30,7 +29,7 @@ namespace Assets.Enemies.Intentions
             RefreshValue();
         }
 
-        public abstract void Execute(EnemyBase enemy);
+        public abstract void Execute(EnemyBase enemy, ITarget target);
 
         public int GetValue() => _currentValue;
 

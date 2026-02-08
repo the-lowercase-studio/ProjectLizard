@@ -4,27 +4,15 @@ using UnityEngine;
 
 namespace Assets.Targeting
 {
-    public class TargetsManager : MonoBehaviour
+    public interface ITargetsManager
     {
-        public static TargetsManager Instance;
+        IEnumerable<ITarget> GetTargets(TargetsMode mode);
+    }
 
+    public class TargetsManager : MonoBehaviour, ITargetsManager
+    {
         //TODO: Change to some kind of retrieve from Enemies Spawning Manager
         [SerializeField] private GameObject _enemiesContainer;
-
-        private TargetsManager()
-        { }
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
 
         public IEnumerable<ITarget> GetTargets(TargetsMode mode)
         {
