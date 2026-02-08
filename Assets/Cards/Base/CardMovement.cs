@@ -1,4 +1,5 @@
-﻿using Assets.Constants;
+﻿using Assets.Cards.Constants;
+using Assets.Constants;
 using Assets.Inputs.Pointer;
 using Assets.TweenCustom;
 using DG.Tweening;
@@ -27,8 +28,6 @@ namespace Assets.Cards.Base
     public class CardMovement : MonoBehaviour, ICardMovement
     {
         [Inject] private IPointerPositioner _pointerPositioner;
-
-        [SerializeField] private float hoveredCardYOffset = 20f;
 
         private Card _card;
         private RectTransform _rectTransform;
@@ -94,7 +93,7 @@ namespace Assets.Cards.Base
 
             SetVisualRectAnchoredPosition(new Vector2(
                     pos.x,
-                    pos.y + hoveredCardYOffset
+                    pos.y + CardConstants.Movement.HOVERED_CARD_Y_OFFSET
                 ),
                 new TweenConfig(MovementConstants.Tween.CARD_HOVER_UP_MOVEMENT_DURATION, callback)
             );

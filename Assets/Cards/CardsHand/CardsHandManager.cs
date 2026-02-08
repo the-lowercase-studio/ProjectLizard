@@ -118,7 +118,7 @@ namespace Assets.Cards.CardsHand
 
         private void FillHand()
         {
-            for (int i = 0; i < CardConstants.START_CARDS_NUMBER; i++)
+            for (int i = 0; i < CardConstants.Hand.START_CARDS_NUMBER; i++)
             {
                 AddCard(_testConfig);
             }

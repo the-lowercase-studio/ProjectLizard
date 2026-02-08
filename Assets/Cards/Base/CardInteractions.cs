@@ -1,4 +1,5 @@
 ﻿using Assets.Cards.CardsHand;
+using Assets.Cards.Constants;
 using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
@@ -31,6 +32,8 @@ namespace Assets.Cards.Base
         [Inject] private IUITransformsProvider _uiTransformsProvider;
         [Inject] private IPointerPositioner _pointerPositioner;
 
+        private static bool _isAnyCardBeingDragged = false;
+
         private Card _card;
         private CardState _currentState = CardState.None;
         private CanvasGroup _canvasGroup;
@@ -51,6 +54,11 @@ namespace Assets.Cards.Base
         {
             OnDragStart -= Interactions_OnDragStart;
             OnDragEnd -= Interactions_OnDragEnd;
+
+            if (_currentState == CardState.Dragged)
+            {
+                _isAnyCardBeingDragged = false;
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -78,6 +86,8 @@ namespace Assets.Cards.Base
                 _currentState = CardState.Hovered;
 
                 _card.Movement.LiftCardUp();
+                _card.Rotation.SetZVisualRotation(0f, withTweening: true);
+                _card.Scaler.ScaleVisualUp();
             }
         }
 
@@ -90,6 +100,7 @@ namespace Assets.Cards.Base
             {
                 _currentState = CardState.None;
 
+                _card.Scaler.ResetVisualScale(withTweening: true);
                 _cardsHandPresenter.UpdateCardPlacement(_card);
             }
         }
@@ -100,11 +111,13 @@ namespace Assets.Cards.Base
 
         private void Interactions_OnDragStart(object sender, PointerEventData e)
         {
+            _isAnyCardBeingDragged = true;
             _canvasGroup.blocksRaycasts = false;
         }
 
         private void Interactions_OnDragEnd(object sender, PointerEventData e)
         {
+            _isAnyCardBeingDragged = false;
             _canvasGroup.blocksRaycasts = true;
         }
 
@@ -117,6 +130,7 @@ namespace Assets.Cards.Base
             {
                 _card.Visual.transform.SetParent(_uiTransformsProvider.FrontPanel);
                 _card.Movement.VisualStartFollowingPointer();
+                _card.Scaler.ResetVisualScale();
 
                 _currentState = CardState.Dragged;
             }
@@ -144,11 +158,14 @@ namespace Assets.Cards.Base
                     {
                         _currentState = CardState.Hovered;
                         _card.Movement.LiftCardUp();
+                        _card.Rotation.SetZVisualRotation(0f, withTweening: true);
+                        _card.Scaler.ScaleVisualUp(1.4f, withTweening: true);
                         OnHoverStart?.Invoke(this, eventData);
                     }
                     else
                     {
                         _currentState = CardState.None;
+                        _card.Scaler.ResetVisualScale(withTweening: true);
                     }
                 });
             }
@@ -156,7 +173,7 @@ namespace Assets.Cards.Base
 
         private bool CanTransitToHoveredState()
         {
-            return _currentState == CardState.None;
+            return _currentState == CardState.None && !_isAnyCardBeingDragged;
         }
 
         private bool CanTransitToDragState()
