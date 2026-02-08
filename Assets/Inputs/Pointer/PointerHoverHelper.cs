@@ -7,11 +7,11 @@ namespace Assets.Inputs.Pointer
 {
     public static class PointerHoverHelper
     {
-        public static IEnumerable<GameObject> GetUIObjectsUnderPointer()
+        public static IEnumerable<GameObject> GetUIObjectsUnderPointer(Vector2 pointerPosition)
         {
             PointerEventData eventData = new PointerEventData(EventSystem.current);
 
-            eventData.position = PointerPositioner.RawInputPosition;
+            eventData.position = pointerPosition;
 
             List<RaycastResult> results = new List<RaycastResult>();
 
@@ -20,9 +20,9 @@ namespace Assets.Inputs.Pointer
             return results.Select(item => item.gameObject);
         }
 
-        public static GameObject GetHoveredGameObject()
+        public static GameObject GetHoveredGameObject(Vector2 pointerPositionInput)
         {
-            Ray ray = Camera.main.ScreenPointToRay(InputHandler.Instance.PointerPositionInput);
+            Ray ray = Camera.main.ScreenPointToRay(pointerPositionInput);
 
             if (Physics.Raycast(ray, out var hit))
             {

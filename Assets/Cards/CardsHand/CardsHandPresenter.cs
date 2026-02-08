@@ -1,6 +1,7 @@
 using Assets.Cards.Base;
 using Assets.CustomEventArgs;
 using Assets.TweenCustom;
+using Reflex.Attributes;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -8,9 +9,20 @@ using UnityEngine.UI;
 
 namespace Assets.Cards.CardsHand
 {
-    public class CardsHandPresenter : MonoBehaviour
+    public interface ICardsHandPresenter
     {
-        public static CardsHandPresenter Instance { get; private set; }
+        void UpdateAllCardsPlacement(Action onPlacementMovementEnd = null);
+
+        void UpdateCardPlacement(ICard card, Action onPlacementMovementEnd = null);
+
+        void HideHand();
+
+        void ShowHand();
+    }
+
+    public class CardsHandPresenter : MonoBehaviour, ICardsHandPresenter
+    {
+        [Inject] private ICardsHandManager _handManager;
 
         [Header("Cards defaults")]
         [SerializeField] private byte _startCardsCount = 5;
@@ -27,26 +39,14 @@ namespace Assets.Cards.CardsHand
         [SerializeField][Range(-36, 0)] private float _cardsSpacingDecreaser = -16f;
 
         private HorizontalLayoutGroup _cardsGroup;
-        private CardsHandManager _handManager;
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-
             _cardsGroup = GetComponent<HorizontalLayoutGroup>();
         }
 
         private void Start()
         {
-            _handManager = CardsHandManager.Instance;
-
             UpdateCardsOverlapping();
 
             _handManager.OnHandChange += HandManager_OnHandChange;

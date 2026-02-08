@@ -1,4 +1,5 @@
 using Assets.Enemies.Intentions;
+using Assets.Targeting;
 using System;
 using UnityEngine;
 
@@ -16,13 +17,13 @@ namespace Assets.Enemies.Actions
             : base(minDamage, maxDamage)
         { }
 
-        public override void Execute(EnemyBase enemy)
+        public override void Execute(EnemyBase enemy, ITarget target)
         {
-            if (Target != null)
+            if (target != null)
             {
-                if (Target.Damageable != null)
+                if (target.Damageable != null)
                 {
-                    Target.Damageable.TakeDamage(_currentValue);
+                    target.Damageable.TakeDamage(_currentValue);
                     Debug.Log($"{enemy.Name} attacks for {_currentValue} damage!");
                 }
             }

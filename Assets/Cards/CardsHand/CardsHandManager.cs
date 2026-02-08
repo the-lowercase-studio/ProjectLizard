@@ -1,20 +1,34 @@
 using Assets.CustomEventArgs;
+using Reflex.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using UnityEngine;
 using Assets.Cards.Base;
-using Assets.Turns;
 using Assets.Cards.Constants;
+using Assets.Turns;
 
 namespace Assets.Cards.CardsHand
 {
-    public class CardsHandManager : MonoBehaviour
+    public interface ICardsHandManager
     {
-        public static CardsHandManager Instance { get; private set; }
+        event EventHandler<EnumerableCollectionChangeEventArgs<ICard>> OnHandChange;
 
+        ImmutableArray<ICard> GetCards();
+
+        int CountCards();
+
+        void AddCard(CardConfigBaseSO config);
+
+        void RemoveCard(ICard card);
+    }
+
+    public class CardsHandManager : MonoBehaviour, ICardsHandManager
+    {
         public event EventHandler<EnumerableCollectionChangeEventArgs<ICard>> OnHandChange;
+
+        [Inject] private ITurnManager _turnManager;
 
         [SerializeField] private CardConfigBaseSO _testConfig;
         [SerializeField] private Card _cardPrefab;
@@ -22,38 +36,8 @@ namespace Assets.Cards.CardsHand
 
         private List<ICard> _cards = new();
 
-        private TurnManager _turnManager;
-
-        private CardsHandManager()
-        { }
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        //private void OnEnable()
-        //{
-        //    _energyManager = EnergyManager.Instance;
-
-        //    Canvas.willRenderCanvases += Canvas_willRenderCanvases;
-        //}
-
-        //private void OnDisable()
-        //{
-        //    Canvas.willRenderCanvases -= Canvas_willRenderCanvases;
-        //}
-
         public IEnumerator Start()
         {
-            _turnManager = TurnManager.Instance;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
             _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
 

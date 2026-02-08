@@ -2,6 +2,7 @@
 using Assets.Inputs.Pointer;
 using Assets.TweenCustom;
 using DG.Tweening;
+using Reflex.Attributes;
 using System;
 using UnityEngine;
 
@@ -25,7 +26,10 @@ namespace Assets.Cards.Base
     [RequireComponent(typeof(ICard))]
     public class CardMovement : MonoBehaviour, ICardMovement
     {
+        [Inject] private IPointerPositioner _pointerPositioner;
+
         [SerializeField] private float hoveredCardYOffset = 20f;
+
         private Card _card;
         private RectTransform _rectTransform;
         private RectTransform _visualRectTransform;
@@ -45,10 +49,10 @@ namespace Assets.Cards.Base
         private void FixedUpdate()
         {
             if (_isFolowingPointer
-                && Vector2.Distance(_lastTargetPos, PointerPositioner.RawInputPosition) >= PositionConstants.DISTANCE_ACCURACY)
+                && Vector2.Distance(_lastTargetPos, _pointerPositioner.RawInputPosition) >= PositionConstants.DISTANCE_ACCURACY)
             {
-                _card.Visual.transform.position = PointerPositioner.RawInputPosition;
-                _lastTargetPos = PointerPositioner.RawInputPosition;
+                _card.Visual.transform.position = _pointerPositioner.RawInputPosition;
+                _lastTargetPos = _pointerPositioner.RawInputPosition;
             }
         }
 
