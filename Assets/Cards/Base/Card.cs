@@ -30,6 +30,7 @@ namespace Assets.Cards.Base
     {
         [field: SerializeField] public CardConfigBaseSO Config { get; private set; }
         [field: SerializeField] public GameObject Visual { get; private set; }
+
         public ICardMovement Movement { get; private set; }
         public ICardRotation Rotation { get; private set; }
         public ICardInteractions Interactions { get; private set; }

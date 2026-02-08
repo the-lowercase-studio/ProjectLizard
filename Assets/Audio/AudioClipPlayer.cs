@@ -23,9 +23,9 @@ namespace Assets.Audio
             public AudioClipConfig[] ClipVariants;
         }
 
-        [SerializeField] private AudioClipPlayerConfig[] _audioClipPlayerConfigs;
-
         public event EventHandler OnAudioClipFinished;
+
+        [SerializeField] private AudioClipPlayerConfig[] _audioClipPlayerConfigs;
 
         private AudioSource _audioSource;
 

@@ -2,23 +2,17 @@
 
 namespace Assets.UI
 {
-    public class UITransformsProvider : MonoBehaviour
+    public interface IUITransformsProvider
     {
-        public static UITransformsProvider Instance { get; private set; }
-        [field: SerializeField] public RectTransform FrontPanel;
-        [field: SerializeField] public RectTransform BackPanel;
-        [field: SerializeField] public RectTransform CardsHolder;
+        RectTransform FrontPanel { get; }
+        RectTransform BackPanel { get; }
+        RectTransform CardsHolder { get; }
+    }
 
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
+    public class UITransformsProvider : MonoBehaviour, IUITransformsProvider
+    {
+        [field: SerializeField] public RectTransform FrontPanel { get; private set; }
+        [field: SerializeField] public RectTransform BackPanel { get; private set; }
+        [field: SerializeField] public RectTransform CardsHolder { get; private set; }
     }
 }

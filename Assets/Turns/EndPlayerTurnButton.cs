@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using Reflex.Attributes;
+using UnityEngine;
 
 namespace Assets.Turns
 {
     public class EndPlayerTurnButton : MonoBehaviour
     {
+        [Inject] private ITurnManager _turnManager;
+
         [SerializeField] private GameObject _button;
-        private TurnManager _turnManager;
 
         private void Start()
         {
-            _turnManager = TurnManager.Instance;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
             _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
         }

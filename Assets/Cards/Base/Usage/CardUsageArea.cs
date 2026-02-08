@@ -7,23 +7,9 @@ namespace Assets.Cards.Base.Usage
 {
     public class CardUsageArea : MonoBehaviour, IDropHandler
     {
-        public static CardUsageArea Instance { get; private set; }
-
         public event EventHandler<CardDropEventArgs> OnCardDrop;
 
         public event EventHandler<PointerEventData> OnDrop;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
 
         private void OnEnable()
         {

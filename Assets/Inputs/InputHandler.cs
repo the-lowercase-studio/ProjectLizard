@@ -6,27 +6,26 @@ using UnityEngine.InputSystem;
 
 namespace Assets.Inputs
 {
-    public class InputHandler : MonoBehaviour
+    public interface IInputHandler
     {
+        Vector2 PointerPositionInput { get; }
+
+        void AddActionToOnPointerClick(Action<PointerClickEventArgs> action);
+    }
+
+    public class InputHandler : MonoBehaviour, IInputHandler
+    {
+        public Vector2 PointerPositionInput { get; private set; }
+
         [SerializeField] private GlobalInputActions globalInputActions;
 
         private InputAction pointerPositionAction;
         private InputAction pointerClick;
-        public Vector2 PointerPositionInput { get; private set; }
-        public static InputHandler Instance { get; private set; }
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                globalInputActions = new GlobalInputActions();
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(Instance);
-            }
+            globalInputActions = new GlobalInputActions();
+            DontDestroyOnLoad(gameObject);
         }
 
         private void OnEnable()
@@ -53,7 +52,7 @@ namespace Assets.Inputs
                 return;
             }
 
-            var pointerClickEventArgs = new PointerClickEventArgs(PointerPositionInput, PointerHoverHelper.GetHoveredGameObject());
+            var pointerClickEventArgs = new PointerClickEventArgs(PointerPositionInput, PointerHoverHelper.GetHoveredGameObject(PointerPositionInput));
             pointerClick.performed += _ => action.Invoke(pointerClickEventArgs);
         }
     }

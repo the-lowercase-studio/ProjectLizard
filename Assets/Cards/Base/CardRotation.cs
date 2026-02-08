@@ -19,6 +19,7 @@ namespace Assets.Cards.Base
     public class CardRotation : MonoBehaviour, ICardRotation
     {
         private const float ROTATION_TWEEN_DURATION = 0.4f;
+
         private Card _card;
         private Tween _visualRotationTween;
 

@@ -31,11 +31,8 @@ namespace Assets.VFX
         public event EventHandler OnVFXFinished;
 
         private ParticleSystem[] _particleSystems;
-
         private bool _particlesStartedPlaying;
-
         private float _longestParticleDuration;
-
         private VFXPlayConfig _vfxPlayConfig;
 
         private void Awake()

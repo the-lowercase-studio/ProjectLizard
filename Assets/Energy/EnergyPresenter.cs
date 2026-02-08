@@ -1,4 +1,5 @@
 ﻿using Assets.Turns;
+using Reflex.Attributes;
 using TMPro;
 using UnityEngine;
 
@@ -6,18 +7,17 @@ namespace Assets.Energy
 {
     public class EnergyPresenter : MonoBehaviour
     {
+        [Inject] private IEnergyManager _energyManager;
+        [Inject] private ITurnManager _turnManager;
+
         [SerializeField] private GameObject _visual;
         [SerializeField] private TextMeshProUGUI _energyText;
-        private EnergyManager _energyManager;
-        private TurnManager _turnManager;
 
         private void Start()
         {
-            _energyManager = EnergyManager.Instance;
             _energyManager.OnCurrentEnergyChange += EnergyManager_OnCurrentEnergyChange;
             _energyManager.OnEnergyPerTurnChange += EnergyManager_OnEnergyPerTurnChange;
 
-            _turnManager = TurnManager.Instance;
             _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
 

@@ -1,5 +1,6 @@
 using Assets.Enemies.Intentions;
 using Assets.ShieldSystem;
+using Assets.Targeting;
 using System;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace Assets.Enemies.Actions
             : base(minDamage, maxDamage)
         { }
 
-        public override void Execute(EnemyBase enemy)
+        public override void Execute(EnemyBase enemy, ITarget target)
         {
             if (enemy is IShielded shielded && shielded.ShieldReceiver != null)
             {

@@ -39,13 +39,9 @@ namespace Assets.Scripts.HealthSystem
         public int CurrentHealth { get; private set; }
 
         public event EventHandler OnNoHealth;
-
         public event EventHandler OnHealthChange;
-
         public event EventHandler OnHealthDecreased;
-
         public event EventHandler OnHealthIncreased;
-
         public event EventHandler OnHealthInitialization;
 
         private bool _isAlive;
