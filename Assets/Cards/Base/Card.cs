@@ -12,6 +12,7 @@ namespace Assets.Cards.Base
         GameObject Visual { get; }
         ICardMovement Movement { get; }
         ICardRotation Rotation { get; }
+        ICardScaler Scaler { get; }
         ICardInteractions Interactions { get; }
         ICardUsage CardUsage { get; }
 
@@ -33,6 +34,7 @@ namespace Assets.Cards.Base
 
         public ICardMovement Movement { get; private set; }
         public ICardRotation Rotation { get; private set; }
+        public ICardScaler Scaler { get; private set; }
         public ICardInteractions Interactions { get; private set; }
         public ICardUsage CardUsage { get; private set; }
 
@@ -42,6 +44,7 @@ namespace Assets.Cards.Base
         {
             Movement = GetComponent<ICardMovement>();
             Rotation = GetComponent<ICardRotation>();
+            Scaler = GetComponent<ICardScaler>();
             Interactions = GetComponent<ICardInteractions>();
             CardUsage = GetComponent<ICardUsage>();
         }

@@ -1,4 +1,5 @@
 ﻿using Assets.Cards.CardsHand;
+using Assets.Cards.Constants;
 using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
 using Assets.UI;
@@ -28,21 +29,27 @@ namespace Assets.Cards.Base
         public event EventHandler<PointerEventData> OnDragEnd;
 
         [Inject] private ICardsHandPresenter _cardsHandPresenter;
-        [Inject] private IUITransformsProvider _uiTransformsProvider;
         [Inject] private IPointerPositioner _pointerPositioner;
+
+        private static bool _isAnyCardBeingDragged = false;
 
         private Card _card;
         private CardState _currentState = CardState.None;
         private CanvasGroup _canvasGroup;
+        private Canvas _visualCanvas;
 
         private void Awake()
         {
             _card = GetComponent<Card>();
             _canvasGroup = _card.Visual.GetComponent<CanvasGroup>();
+            _visualCanvas = _card.Visual.GetComponent<Canvas>();
         }
 
         private void OnEnable()
         {
+            _visualCanvas.overrideSorting = true;
+            _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
+
             OnDragStart += Interactions_OnDragStart;
             OnDragEnd += Interactions_OnDragEnd;
         }
@@ -51,6 +58,11 @@ namespace Assets.Cards.Base
         {
             OnDragStart -= Interactions_OnDragStart;
             OnDragEnd -= Interactions_OnDragEnd;
+
+            if (_currentState == CardState.Dragged)
+            {
+                _isAnyCardBeingDragged = false;
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -77,7 +89,11 @@ namespace Assets.Cards.Base
             {
                 _currentState = CardState.Hovered;
 
+                _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
+
                 _card.Movement.LiftCardUp();
+                _card.Rotation.SetZVisualRotation(0f, withTweening: true);
+                _card.Scaler.ScaleVisualUp();
             }
         }
 
@@ -90,6 +106,9 @@ namespace Assets.Cards.Base
             {
                 _currentState = CardState.None;
 
+                _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
+
+                _card.Scaler.ResetVisualScale();
                 _cardsHandPresenter.UpdateCardPlacement(_card);
             }
         }
@@ -100,11 +119,13 @@ namespace Assets.Cards.Base
 
         private void Interactions_OnDragStart(object sender, PointerEventData e)
         {
+            _isAnyCardBeingDragged = true;
             _canvasGroup.blocksRaycasts = false;
         }
 
         private void Interactions_OnDragEnd(object sender, PointerEventData e)
         {
+            _isAnyCardBeingDragged = false;
             _canvasGroup.blocksRaycasts = true;
         }
 
@@ -115,8 +136,8 @@ namespace Assets.Cards.Base
 
             if (CanTransitToDragState())
             {
-                _card.Visual.transform.SetParent(_uiTransformsProvider.FrontPanel);
                 _card.Movement.VisualStartFollowingPointer();
+                _card.Scaler.ResetVisualScale();
 
                 _currentState = CardState.Dragged;
             }
@@ -132,7 +153,6 @@ namespace Assets.Cards.Base
                 _currentState = CardState.ReturningToHand;
 
                 _card.Movement.VisualStopFollowingPointer();
-                _card.Visual.transform.SetParent(_card.transform);
 
                 _cardsHandPresenter.UpdateCardPlacement(_card, () =>
                 {
@@ -143,12 +163,21 @@ namespace Assets.Cards.Base
                     if (hoveredObjects.Any(o => o.transform.parent == _card.Visual))
                     {
                         _currentState = CardState.Hovered;
+
+                        _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
+
                         _card.Movement.LiftCardUp();
+                        _card.Rotation.SetZVisualRotation(0f, withTweening: true);
+                        _card.Scaler.ScaleVisualUp();
                         OnHoverStart?.Invoke(this, eventData);
                     }
                     else
                     {
                         _currentState = CardState.None;
+
+                        _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
+
+                        _card.Scaler.ResetVisualScale();
                     }
                 });
             }
@@ -156,7 +185,7 @@ namespace Assets.Cards.Base
 
         private bool CanTransitToHoveredState()
         {
-            return _currentState == CardState.None;
+            return _currentState == CardState.None && !_isAnyCardBeingDragged;
         }
 
         private bool CanTransitToDragState()
