@@ -1,7 +1,6 @@
 ﻿using Assets.Cards.CardsHand;
 using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
-using Assets.UI;
 using Reflex.Attributes;
 using System;
 using System.Linq;

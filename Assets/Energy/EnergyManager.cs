@@ -41,7 +41,7 @@ namespace Assets.Energy
         private int _energyPerTurn = START_ENERGY_PER_TURN;
         private int _currentEnergy = START_ENERGY_PER_TURN;
 
-        private void Start()
+        private void OnEnable()
         {
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
         }

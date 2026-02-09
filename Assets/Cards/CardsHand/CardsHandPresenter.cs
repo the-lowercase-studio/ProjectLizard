@@ -45,11 +45,16 @@ namespace Assets.Cards.CardsHand
             _cardsGroup = GetComponent<HorizontalLayoutGroup>();
         }
 
-        private void Start()
+        private void OnEnable()
         {
             UpdateCardsOverlapping();
 
             _handManager.OnHandChange += HandManager_OnHandChange;
+        }
+
+        private void OnDisable()
+        {
+            _handManager.OnHandChange -= HandManager_OnHandChange;
         }
 
         private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)

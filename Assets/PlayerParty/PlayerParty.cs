@@ -60,6 +60,10 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
     private void OnEnable()
     {
         _partyDeathSequence.OnCompleted += PartyDeathSequence_OnCompleted;
+        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+        _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
+
+        SpawnMainCharacter();
     }
 
     private void OnDisable()
@@ -68,14 +72,6 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
 
         _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
         _turnManager.OnPlayerTurnEnd -= TurnManager_OnPlayerTurnEnd;
-    }
-
-    private void Start()
-    {
-        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
-        _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
-
-        SpawnMainCharacter();
     }
 
     private void SpawnMainCharacter()

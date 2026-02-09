@@ -53,6 +53,8 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
     protected virtual void OnEnable()
     {
         _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
+        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+        _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
 
         _enemyImage.sprite = Config.Sprite;
 
@@ -65,12 +67,6 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
 
         _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
         _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
-    }
-
-    protected virtual void Start()
-    {
-        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
-        _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
     }
 
     private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
