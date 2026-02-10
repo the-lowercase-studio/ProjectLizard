@@ -19,6 +19,8 @@ namespace Assets.Cards.Base
 
         void SetVisualRectAnchoredPosition(Vector2 pos, TweenConfig config);
 
+        void AlignVisualWithRoot(bool withTweening = true);
+
         void VisualStartFollowingPointer();
 
         void VisualStopFollowingPointer();
@@ -113,6 +115,31 @@ namespace Assets.Cards.Base
                     .DOAnchorPos(pos, config.TweenDuration)
                     .SetEase(Ease.OutSine)
                     .OnComplete(() => config.Callback?.Invoke());
+            }
+        }
+
+        public void AlignVisualWithRoot(bool withTweening = true)
+        {
+            if (_visualRectTransform == null)
+            {
+                return;
+            }
+
+            float visualHeight = _visualRectTransform.rect.height;
+            float yOffset = -(visualHeight / 2f) + CardConstants.Hand.Placement.Y_OFFSET;
+
+            Vector2 targetPosition = new Vector2(0f, yOffset);
+
+            if (withTweening)
+            {
+                SetVisualRectAnchoredPosition(
+                    targetPosition,
+                    new TweenConfig(MovementConstants.Tween.CARD_HOVER_UP_MOVEMENT_DURATION)
+                );
+            }
+            else
+            {
+                SetVisualRectAnchoredPosition(targetPosition, default(TweenConfig));
             }
         }
 
