@@ -6,6 +6,11 @@
         {
             public const int START_CARDS_NUMBER = 5;
             public const int MAX_CARDS_NUMBER = 9;
+
+            public static class Placement
+            {
+                public const int Y_OFFSET = 64;
+            }
         }
 
         public static class Movement

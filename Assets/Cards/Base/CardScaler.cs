@@ -15,6 +15,15 @@ namespace Assets.Cards.Base
         void ResetVisualScale(bool withTweening = true);
 
         Vector3 GetVisualScale();
+
+        void SetVisualPivotToBottom();
+
+        void RestoreVisualPivotToCenter();
+
+        void ScaleVisualUpFromBottom(float scaleFactor = CardConstants.Scaling.DEFAULT_SCALING_FACTOR,
+            bool withTweening = true);
+
+        void ResetVisualScaleFromBottom(bool withTweening = true);
     }
 
     [RequireComponent(typeof(Card))]
@@ -23,15 +32,19 @@ namespace Assets.Cards.Base
         private Card _card;
         private Tween _visualScaleTween;
         private Vector3 _originalScale = Vector3.one;
+        private Vector2 _originalPivot = new Vector2(0.5f, 0.5f);
+        private RectTransform _visualRectTransform;
 
         private void Awake()
         {
             _card = GetComponent<Card>();
+            _visualRectTransform = _card.Visual.GetComponent<RectTransform>();
         }
 
         private void OnEnable()
         {
             _originalScale = _card.Visual.transform.localScale;
+            _originalPivot = _visualRectTransform.pivot;
         }
 
         public void SetVisualScale(Vector3 scale, bool withTweening = true)
@@ -74,6 +87,75 @@ namespace Assets.Cards.Base
             }
 
             return Vector3.one;
+        }
+
+        public void SetVisualPivotToBottom()
+        {
+            if (_visualRectTransform == null)
+            {
+                return;
+            }
+
+            Vector2 currentPivot = _visualRectTransform.pivot;
+            Vector2 targetPivot = new Vector2(0.5f, 0f); // Bottom center
+
+            if (currentPivot == targetPivot)
+            {
+                return;
+            }
+
+            Vector2 currentPosition = _visualRectTransform.anchoredPosition;
+            Rect rect = _visualRectTransform.rect;
+            Vector3 currentScale = _visualRectTransform.localScale;
+
+            Vector2 pivotDelta = targetPivot - currentPivot;
+            Vector2 positionOffset = new Vector2(
+                pivotDelta.x * rect.width * currentScale.x,
+                pivotDelta.y * rect.height * currentScale.y
+            );
+
+            _visualRectTransform.pivot = targetPivot;
+            _visualRectTransform.anchoredPosition = currentPosition + positionOffset;
+        }
+
+        public void RestoreVisualPivotToCenter()
+        {
+            if (_visualRectTransform == null)
+            {
+                return;
+            }
+
+            Vector2 currentPivot = _visualRectTransform.pivot;
+
+            if (currentPivot == _originalPivot)
+            {
+                return;
+            }
+
+            Vector2 currentPosition = _visualRectTransform.anchoredPosition;
+            Rect rect = _visualRectTransform.rect;
+            Vector3 currentScale = _visualRectTransform.localScale;
+
+            Vector2 pivotDelta = _originalPivot - currentPivot;
+            Vector2 positionOffset = new Vector2(
+                pivotDelta.x * rect.width * currentScale.x,
+                pivotDelta.y * rect.height * currentScale.y
+            );
+
+            _visualRectTransform.pivot = _originalPivot;
+            _visualRectTransform.anchoredPosition = currentPosition + positionOffset;
+        }
+
+        public void ScaleVisualUpFromBottom(float scaleFactor = CardConstants.Scaling.DEFAULT_SCALING_FACTOR, bool withTweening = true)
+        {
+            SetVisualPivotToBottom();
+            ScaleVisualUp(scaleFactor, withTweening);
+        }
+
+        public void ResetVisualScaleFromBottom(bool withTweening = true)
+        {
+            ResetVisualScale(withTweening);
+            RestoreVisualPivotToCenter();
         }
 
         public void StopTweens()

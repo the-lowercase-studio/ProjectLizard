@@ -91,7 +91,8 @@ namespace Assets.Cards.Base
 
                 _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
 
-                _card.Movement.LiftCardUp();
+                _card.Scaler.SetVisualPivotToBottom();
+                _card.Movement.AlignVisualWithRoot(withTweening: true);
                 _card.Rotation.SetZVisualRotation(0f, withTweening: true);
                 _card.Scaler.ScaleVisualUp();
             }
@@ -108,7 +109,7 @@ namespace Assets.Cards.Base
 
                 _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
 
-                _card.Scaler.ResetVisualScale();
+                _card.Scaler.ResetVisualScaleFromBottom();
                 _cardsHandPresenter.UpdateCardPlacement(_card);
             }
         }
@@ -137,7 +138,7 @@ namespace Assets.Cards.Base
             if (CanTransitToDragState())
             {
                 _card.Movement.VisualStartFollowingPointer();
-                _card.Scaler.ResetVisualScale();
+                _card.Scaler.ResetVisualScaleFromBottom();
 
                 _currentState = CardState.Dragged;
             }
@@ -166,9 +167,11 @@ namespace Assets.Cards.Base
 
                         _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
 
-                        _card.Movement.LiftCardUp();
+                        _card.Scaler.SetVisualPivotToBottom();
+                        _card.Movement.AlignVisualWithRoot();
                         _card.Rotation.SetZVisualRotation(0f, withTweening: true);
                         _card.Scaler.ScaleVisualUp();
+
                         OnHoverStart?.Invoke(this, eventData);
                     }
                     else
