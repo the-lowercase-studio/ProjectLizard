@@ -46,7 +46,7 @@ public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
         StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
         ShieldReceiver = GetComponent<IShieldReceiver>();
         _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
-        _enemyImage = Visual.GetComponent<Image>();
+        _enemyImage = Visual.transform.GetChild(0).GetComponent<Image>();
         _intentionSelector = new IntentionSelector();
     }
 
