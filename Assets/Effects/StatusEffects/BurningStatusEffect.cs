@@ -1,3 +1,4 @@
+using Assets.Effects;
 using Assets.Interfaces.Combat;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Assets.Effects.StatusEffects
         private readonly int damagePerTurn;
         private GameObject visualEffect;
 
-        public BurningStatusEffect(byte turns, int damagePerTurn) : base("Burning", turns)
+        public BurningStatusEffect(byte turns, int damagePerTurn) : base("Burning", turns, EffectType.Burn)
         {
             this.damagePerTurn = damagePerTurn;
         }

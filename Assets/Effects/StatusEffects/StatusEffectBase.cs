@@ -1,9 +1,12 @@
+using Assets.Effects;
+
 namespace Assets.Effects.StatusEffects
 {
     public interface IStatusEffect
     {
         string EffectName { get; }
         int RemainingTurns { get; }
+        EffectType EffectType { get; }
 
         void Apply(IStatusEffectReceiver target);
 
@@ -19,13 +22,15 @@ namespace Assets.Effects.StatusEffects
         public string EffectName { get; protected set; }
         public float Duration { get; protected set; }
         public int RemainingTurns { get; protected set; }
+        public EffectType EffectType { get; protected set; }
 
         protected IStatusEffectReceiver Target { get; private set; }
 
-        protected StatusEffectBase(string effectName, byte turns)
+        protected StatusEffectBase(string effectName, byte turns, EffectType effectType = EffectType.None)
         {
             EffectName = effectName;
             RemainingTurns = turns;
+            EffectType = effectType;
         }
 
         public void Apply(IStatusEffectReceiver target)

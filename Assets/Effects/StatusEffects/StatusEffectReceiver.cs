@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,11 +17,15 @@ namespace Assets.Effects.StatusEffects
         bool HasStatusEffect(string effectName);
 
         List<IStatusEffect> GetActiveEffects();
+
+        event EventHandler OnEffectsChanged;
     }
 
     public class StatusEffectReceiver : MonoBehaviour, IStatusEffectReceiver
     {
         private List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
+
+        public event EventHandler OnEffectsChanged;
 
         public void ApplyStatusEffect(IStatusEffect effect)
         {
@@ -37,12 +42,16 @@ namespace Assets.Effects.StatusEffects
             _activeEffects.Add(effect);
 
             Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+
+            OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void RemoveStatusEffect(IStatusEffect effect)
         {
             _activeEffects.Remove(effect);
             Debug.Log($"Status effect '{effect.EffectName}' removed from {gameObject.name}");
+
+            OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void ProcessStatusEffectsOnTurnStart()
