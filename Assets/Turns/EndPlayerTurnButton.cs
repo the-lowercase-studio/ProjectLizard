@@ -9,7 +9,7 @@ namespace Assets.Turns
 
         [SerializeField] private GameObject _button;
 
-        private void Start()
+        private void OnEnable()
         {
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
             _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;

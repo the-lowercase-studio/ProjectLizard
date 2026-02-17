@@ -1,5 +1,5 @@
-using Assets.Effects;
 using Assets.Interfaces.Combat;
+using Assets.Turns;
 using UnityEngine;
 
 namespace Assets.Effects.StatusEffects
@@ -8,7 +8,8 @@ namespace Assets.Effects.StatusEffects
     {
         private GameObject _visualEffect;
 
-        public StunStatusEffect(byte turns) : base("Stunned", turns, EffectType.Stun)
+        public StunStatusEffect(byte turns)
+            : base("Stunned", turns, TurnExecutionState.OnPlayerTurnStart, EffectType.Stun)
         {
         }
 

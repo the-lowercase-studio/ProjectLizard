@@ -1,22 +1,24 @@
-using Assets.Effects;
 using Assets.Interfaces.Combat;
+using Assets.Turns;
 using UnityEngine;
 
 namespace Assets.Effects.StatusEffects
 {
     public class BurningStatusEffect : StatusEffectBase
     {
-        private readonly int damagePerTurn;
-        private GameObject visualEffect;
+        private readonly int _damagePerTurn;
+        private GameObject _visualEffect;
 
-        public BurningStatusEffect(byte turns, int damagePerTurn) : base("Burning", turns, EffectType.Burn)
+        public BurningStatusEffect(byte turns, int damagePerTurn)
+            : base("Burning", turns, TurnExecutionState.OnEnemyTurnStart, EffectType.Burn)
         {
-            this.damagePerTurn = damagePerTurn;
+            _damagePerTurn = damagePerTurn;
+            EffectValueDisplay = _damagePerTurn.ToString();
         }
 
         protected override void OnApply()
         {
-            Debug.Log($"Burning applied! Will last {RemainingTurns} turns, dealing {damagePerTurn} damage per turn.");
+            Debug.Log($"Burning applied! Will last {RemainingTurns} turns, dealing {_damagePerTurn} damage per turn.");
 
             SpawnVisualEffect();
         }
@@ -25,8 +27,8 @@ namespace Assets.Effects.StatusEffects
         {
             if (Target is IDamageable damageable)
             {
-                damageable.TakeDamage(damagePerTurn);
-                Debug.Log($"Burning dealt {damagePerTurn} damage. {RemainingTurns} turns remaining.");
+                damageable.TakeDamage(_damagePerTurn);
+                Debug.Log($"Burning dealt {_damagePerTurn} damage. {RemainingTurns} turns remaining.");
             }
         }
 
@@ -44,9 +46,9 @@ namespace Assets.Effects.StatusEffects
 
         private void RemoveVisualEffect()
         {
-            if (visualEffect != null)
+            if (_visualEffect != null)
             {
-                Object.Destroy(visualEffect);
+                Object.Destroy(_visualEffect);
             }
         }
     }

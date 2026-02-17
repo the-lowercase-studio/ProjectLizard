@@ -1,4 +1,4 @@
-using Assets.Effects;
+using Assets.Turns;
 
 namespace Assets.Effects.StatusEffects
 {
@@ -7,12 +7,12 @@ namespace Assets.Effects.StatusEffects
         string EffectName { get; }
         int RemainingTurns { get; }
         EffectType EffectType { get; }
+        TurnExecutionState ExecutionState { get; }
+        string EffectValueDisplay { get; }
 
         void Apply(IStatusEffectReceiver target);
 
-        void OnTurnStart();
-
-        void OnTurnEnd();
+        void PerformEffect();
 
         void Remove();
     }
@@ -23,14 +23,18 @@ namespace Assets.Effects.StatusEffects
         public float Duration { get; protected set; }
         public int RemainingTurns { get; protected set; }
         public EffectType EffectType { get; protected set; }
+        public TurnExecutionState ExecutionState { get; protected set; }
+        public virtual string EffectValueDisplay { get; protected set; }
 
         protected IStatusEffectReceiver Target { get; private set; }
 
-        protected StatusEffectBase(string effectName, byte turns, EffectType effectType = EffectType.None)
+        protected StatusEffectBase(string effectName, byte turns, TurnExecutionState executionState, EffectType effectType = EffectType.None)
         {
             EffectName = effectName;
             RemainingTurns = turns;
+            ExecutionState = executionState;
             EffectType = effectType;
+            EffectValueDisplay = string.Empty;
         }
 
         public void Apply(IStatusEffectReceiver target)
@@ -40,18 +44,12 @@ namespace Assets.Effects.StatusEffects
             OnApply();
         }
 
-        public void OnTurnStart()
+        public void PerformEffect()
         {
             if (RemainingTurns > 0)
             {
                 ProcessTurnEffect();
-            }
-        }
 
-        public void OnTurnEnd()
-        {
-            if (RemainingTurns > 0)
-            {
                 RemainingTurns--;
 
                 if (RemainingTurns == 0)

@@ -10,10 +10,6 @@ namespace Assets.Effects.StatusEffects
 
         void RemoveStatusEffect(IStatusEffect effect);
 
-        void ProcessStatusEffectsOnTurnStart();
-
-        void ProcessStatusEffectsOnTurnEnd();
-
         bool HasStatusEffect(string effectName);
 
         List<IStatusEffect> GetActiveEffects();
@@ -52,22 +48,6 @@ namespace Assets.Effects.StatusEffects
             Debug.Log($"Status effect '{effect.EffectName}' removed from {gameObject.name}");
 
             OnEffectsChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void ProcessStatusEffectsOnTurnStart()
-        {
-            for (int i = _activeEffects.Count - 1; i >= 0; i--)
-            {
-                _activeEffects[i].OnTurnStart();
-            }
-        }
-
-        public void ProcessStatusEffectsOnTurnEnd()
-        {
-            for (int i = _activeEffects.Count - 1; i >= 0; i--)
-            {
-                _activeEffects[i].OnTurnEnd();
-            }
         }
 
         public bool HasStatusEffect(string effectName)

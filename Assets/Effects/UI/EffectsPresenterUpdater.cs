@@ -16,33 +16,56 @@ namespace Assets.Effects.UI
         private void Awake()
         {
             _effectReceiver = GetComponent<IStatusEffectReceiver>();
-
             _effectsPresenter = GetComponentInChildren<IEffectsPresenter>();
             _effectsPresenter.Initialize(_effectReceiver);
-
             _effectReceiver.OnEffectsChanged += OnEffectsChanged;
         }
 
         private void Start()
         {
-            _turnManager.OnPlayerTurnStart += OnTurnChanged;
-            _turnManager.OnEnemyTurnStart += OnTurnChanged;
-            _turnManager.OnEnemyTurnEnd += OnTurnChanged;
+            _turnManager.OnPlayerTurnStart += OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnStart += OnEnemyTurnStart;
+            _turnManager.OnEnemyTurnEnd += OnEnemyTurnEnd;
 
             UpdateEffectsDisplay();
         }
 
         private void OnDestroy()
         {
-            _turnManager.OnPlayerTurnStart -= OnTurnChanged;
-            _turnManager.OnEnemyTurnStart -= OnTurnChanged;
-            _turnManager.OnEnemyTurnEnd -= OnTurnChanged;
+            _turnManager.OnPlayerTurnStart -= OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnStart -= OnEnemyTurnStart;
+            _turnManager.OnEnemyTurnEnd -= OnEnemyTurnEnd;
             _effectReceiver.OnEffectsChanged -= OnEffectsChanged;
         }
 
-        public void UpdateEffectsDisplay()
+        private void OnPlayerTurnStart(object sender, System.EventArgs e)
         {
-            _effectsPresenter.UpdateEffectsDisplay();
+            ProcessEffectsForTurnState(TurnExecutionState.OnPlayerTurnStart);
+        }
+
+        private void OnEnemyTurnStart(object sender, System.EventArgs e)
+        {
+            ProcessEffectsForTurnState(TurnExecutionState.OnEnemyTurnStart);
+        }
+
+        private void OnEnemyTurnEnd(object sender, System.EventArgs e)
+        {
+            ProcessEffectsForTurnState(TurnExecutionState.OnEnemyTurnEnd);
+        }
+
+        private void ProcessEffectsForTurnState(TurnExecutionState turnState)
+        {
+            var activeEffects = _effectReceiver.GetActiveEffects();
+
+            foreach (var effect in activeEffects)
+            {
+                if (effect.ExecutionState == turnState)
+                {
+                    effect.PerformEffect();
+                }
+            }
+
+            UpdateEffectsDisplay();
         }
 
         private void OnEffectsChanged(object sender, System.EventArgs e)
@@ -50,9 +73,9 @@ namespace Assets.Effects.UI
             UpdateEffectsDisplay();
         }
 
-        private void OnTurnChanged(object sender, System.EventArgs e)
+        public void UpdateEffectsDisplay()
         {
-            UpdateEffectsDisplay();
+            _effectsPresenter.UpdateEffectsDisplay();
         }
     }
 }

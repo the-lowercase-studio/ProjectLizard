@@ -1,4 +1,3 @@
-using Assets.Effects.StatusEffects;
 using Assets.Targeting;
 using System;
 using System.Collections;
@@ -37,8 +36,11 @@ namespace Assets.Turns
         public int CurrentTurn { get; private set; } = 1;
 
         public event EventHandler OnPlayerTurnStart;
+
         public event EventHandler OnPlayerTurnEnd;
+
         public event EventHandler OnEnemyTurnStart;
+
         public event EventHandler OnEnemyTurnEnd;
 
         private List<ITarget> targets = new();
@@ -72,11 +74,6 @@ namespace Assets.Turns
         {
             yield return new WaitForSeconds(0.5f);
 
-            foreach (IStatusEffectReceiver target in targets)
-            {
-                target.ProcessStatusEffectsOnTurnStart();
-            }
-
             OnEnemyTurnStart?.Invoke(this, EventArgs.Empty);
 
             EndEnemyTurn();
@@ -90,11 +87,6 @@ namespace Assets.Turns
         private IEnumerator EndEnemyTurnWithWait()
         {
             yield return new WaitForSeconds(0.5f);
-
-            foreach (IStatusEffectReceiver target in targets)
-            {
-                target.ProcessStatusEffectsOnTurnEnd();
-            }
 
             CurrentTurn++;
 

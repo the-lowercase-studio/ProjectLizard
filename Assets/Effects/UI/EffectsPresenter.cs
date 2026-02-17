@@ -18,6 +18,19 @@ namespace Assets.Effects.UI
         private IStatusEffectReceiver _targetReceiver;
         private Dictionary<string, EffectPresenter> _activePresenters = new Dictionary<string, EffectPresenter>();
 
+        private void OnDestroy()
+        {
+            foreach (var presenter in _activePresenters.Values)
+            {
+                if (presenter != null)
+                {
+                    Destroy(presenter.gameObject);
+                }
+            }
+
+            _activePresenters.Clear();
+        }
+
         public void Initialize(IStatusEffectReceiver receiver)
         {
             _targetReceiver = receiver;
@@ -73,19 +86,6 @@ namespace Assets.Effects.UI
                 Destroy(presenter.gameObject);
                 _activePresenters.Remove(effectName);
             }
-        }
-
-        private void OnDestroy()
-        {
-            foreach (var presenter in _activePresenters.Values)
-            {
-                if (presenter != null)
-                {
-                    Destroy(presenter.gameObject);
-                }
-            }
-
-            _activePresenters.Clear();
         }
     }
 }

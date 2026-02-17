@@ -34,6 +34,7 @@ namespace Assets.Effects.UI
         [SerializeField] private Image _effectIcon;
         [SerializeField] private GameObject _counterContainer;
         [SerializeField] private TextMeshProUGUI _turnCounterText;
+        [SerializeField] private TextMeshProUGUI _effectValueText;
 
         private IStatusEffect _trackedEffect;
 
@@ -47,11 +48,24 @@ namespace Assets.Effects.UI
 
         public void UpdateDisplay()
         {
-            if (_trackedEffect == null) return;
+            if (_trackedEffect == null)
+            {
+                return;
+            }
 
             int remainingTurns = _trackedEffect.RemainingTurns;
             _turnCounterText.text = remainingTurns.ToString();
             _counterContainer.SetActive(remainingTurns > 0);
+
+            if (!string.IsNullOrEmpty(_trackedEffect.EffectValueDisplay))
+            {
+                _effectValueText.text = _trackedEffect.EffectValueDisplay;
+                _effectValueText.gameObject.SetActive(true);
+            }
+            else
+            {
+                _effectValueText.gameObject.SetActive(false);
+            }
         }
 
         public bool IsEffectExpired()
