@@ -6,14 +6,19 @@ namespace Assets.Effects.StatusEffects
 {
     public class BurningStatusEffect : StatusEffectBase
     {
-        private readonly int _damagePerTurn;
+        private int _damagePerTurn;
         private GameObject _visualEffect;
 
-        public BurningStatusEffect(byte turns, int damagePerTurn)
-            : base("Burning", turns, TurnExecutionState.OnEnemyTurnStart, EffectType.Burn)
+        public BurningStatusEffect(int turns, int damagePerTurn)
+            : base(new StatusEffectConfig(
+                effectName: "Burning",
+                turns: turns,
+                executionState: TurnExecutionState.OnEnemyTurnStart,
+                canStackValue: true,
+                effectType: EffectType.Burn))
         {
             _damagePerTurn = damagePerTurn;
-            EffectValueDisplay = _damagePerTurn.ToString();
+            UpdateEffectValueDisplay();
         }
 
         protected override void OnApply()
@@ -34,6 +39,20 @@ namespace Assets.Effects.StatusEffects
         {
             Debug.Log("Burning effect removed.");
             RemoveVisualEffect();
+        }
+
+        protected override void StackValue(IStatusEffect other)
+        {
+            if (other is BurningStatusEffect burningEffect)
+            {
+                _damagePerTurn += burningEffect._damagePerTurn;
+                Debug.Log($"Burning damage stacked! Now dealing {_damagePerTurn} damage per turn for {RemainingTurns} turns.");
+            }
+        }
+
+        protected override void UpdateEffectValueDisplay()
+        {
+            EffectValueDisplay = _damagePerTurn.ToString();
         }
 
         private void RemoveVisualEffect()

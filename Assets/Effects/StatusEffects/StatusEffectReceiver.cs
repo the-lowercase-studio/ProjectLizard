@@ -26,30 +26,29 @@ namespace Assets.Effects.StatusEffects
 
         public void ApplyStatusEffect(IStatusEffect effect)
         {
-            // Check if effect already exists and refresh duration instead of stacking
             IStatusEffect existingEffect = _activeEffects.Find(e => e.EffectName == effect.EffectName);
 
             if (existingEffect != null)
             {
-                existingEffect.Remove();
-                _activeEffects.Remove(existingEffect);
-            }
-
-            if (gameObject.TryGetComponent(out ITarget target))
-            {
-                effect.Apply(target);
-
-                _activeEffects.Add(effect);
-
-                Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
-
-                OnEffectsChanged?.Invoke(this, EventArgs.Empty);
+                existingEffect.StackWith(effect);
+                Debug.Log($"Status effect '{effect.EffectName}' stacked on {gameObject.name}");
             }
             else
             {
-                Debug.Log($"Status effect '{effect.EffectName}' failed to applied to " +
-                    $"{gameObject.name} becouse of missing ITarget");
+                if (gameObject.TryGetComponent(out ITarget target))
+                {
+                    effect.Apply(target);
+                    _activeEffects.Add(effect);
+                    Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+                }
+                else
+                {
+                    Debug.Log($"Status effect '{effect.EffectName}' failed to apply to " +
+                        $"{gameObject.name} because of missing ITarget");
+                }
             }
+
+            OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void RemoveStatusEffect(IStatusEffect effect)

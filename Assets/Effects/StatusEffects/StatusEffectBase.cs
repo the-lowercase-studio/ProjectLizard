@@ -10,12 +10,33 @@ namespace Assets.Effects.StatusEffects
         EffectType EffectType { get; }
         TurnExecutionState ExecutionState { get; }
         string EffectValueDisplay { get; }
+        bool CanStackValue { get; }
 
         void Apply(ITarget target);
 
         void PerformEffect();
 
         void Remove();
+
+        void StackWith(IStatusEffect other);
+    }
+
+    public struct StatusEffectConfig
+    {
+        public string EffectName;
+        public int Turns;
+        public TurnExecutionState ExecutionState;
+        public bool CanStackValue;
+        public EffectType EffectType;
+
+        public StatusEffectConfig(string effectName, int turns, TurnExecutionState executionState, bool canStackValue = false, EffectType effectType = EffectType.None)
+        {
+            EffectName = effectName;
+            Turns = turns;
+            ExecutionState = executionState;
+            CanStackValue = canStackValue;
+            EffectType = effectType;
+        }
     }
 
     public abstract class StatusEffectBase : IStatusEffect
@@ -26,15 +47,17 @@ namespace Assets.Effects.StatusEffects
         public EffectType EffectType { get; protected set; }
         public TurnExecutionState ExecutionState { get; protected set; }
         public virtual string EffectValueDisplay { get; protected set; }
+        public bool CanStackValue { get; protected set; }
 
         protected ITarget Target { get; private set; }
 
-        protected StatusEffectBase(string effectName, byte turns, TurnExecutionState executionState, EffectType effectType = EffectType.None)
+        protected StatusEffectBase(StatusEffectConfig config)
         {
-            EffectName = effectName;
-            RemainingTurns = turns;
-            ExecutionState = executionState;
-            EffectType = effectType;
+            EffectName = config.EffectName;
+            RemainingTurns = config.Turns;
+            ExecutionState = config.ExecutionState;
+            CanStackValue = config.CanStackValue;
+            EffectType = config.EffectType;
             EffectValueDisplay = string.Empty;
         }
 
@@ -65,6 +88,26 @@ namespace Assets.Effects.StatusEffects
             OnRemove();
 
             Target.StatusEffectReceiver?.RemoveStatusEffect(this);
+        }
+
+        public void StackWith(IStatusEffect other)
+        {
+            RemainingTurns += other.RemainingTurns;
+
+            if (CanStackValue)
+            {
+                StackValue(other);
+            }
+
+            UpdateEffectValueDisplay();
+        }
+
+        protected virtual void StackValue(IStatusEffect other)
+        {
+        }
+
+        protected virtual void UpdateEffectValueDisplay()
+        {
         }
 
         protected abstract void OnApply();

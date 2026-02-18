@@ -8,8 +8,13 @@ namespace Assets.Effects.StatusEffects
     {
         private GameObject _visualEffect;
 
-        public StunStatusEffect(byte turns)
-            : base("Stunned", turns, TurnExecutionState.OnPlayerTurnStart, EffectType.Stun)
+        public StunStatusEffect(int turns)
+            : base(new StatusEffectConfig(
+                effectName: "Stunned",
+                turns: turns,
+                executionState: TurnExecutionState.OnPlayerTurnStart,
+                canStackValue: false,
+                effectType: EffectType.Stun))
         {
         }
 
