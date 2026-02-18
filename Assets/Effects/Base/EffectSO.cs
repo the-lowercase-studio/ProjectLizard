@@ -1,7 +1,7 @@
 using Assets.Targeting;
 using UnityEngine;
 
-namespace Assets.Effects
+namespace Assets.Effects.Base
 {
     public abstract class EffectSO : ScriptableObject
     {

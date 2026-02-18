@@ -1,9 +1,8 @@
-using Assets.Effects;
+using Assets.Effects.Base;
 using Assets.Energy;
 using Assets.Targeting;
 using Reflex.Attributes;
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace Assets.Cards.Base.Usage

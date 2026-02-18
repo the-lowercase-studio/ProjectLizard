@@ -1,3 +1,4 @@
+using Assets.Enemies.Base;
 using Assets.Enemies.Intentions;
 using Assets.ShieldSystem;
 using Assets.Targeting;
@@ -17,7 +18,7 @@ namespace Assets.Enemies.Actions
             : base(minDamage, maxDamage)
         { }
 
-        public override void Execute(EnemyBase enemy, ITarget target)
+        public override void Execute(IEnemyBase enemy, ITarget target)
         {
             if (enemy is IShielded shielded && shielded.ShieldReceiver != null)
             {

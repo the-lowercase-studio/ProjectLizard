@@ -1,4 +1,4 @@
-﻿namespace Assets.Effects
+﻿namespace Assets.Effects.Base
 {
     public enum EffectType
     {

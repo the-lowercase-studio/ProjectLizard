@@ -1,6 +1,7 @@
 using Assets.Interfaces.Combat;
 using Assets.Turns;
 using UnityEngine;
+using Assets.Effects.Base;
 
 namespace Assets.Effects.StatusEffects
 {

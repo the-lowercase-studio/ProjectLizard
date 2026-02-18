@@ -1,4 +1,5 @@
 using Assets.CustomTypes;
+using Assets.Enemies.Base;
 using Assets.Targeting;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Assets.Enemies.Intentions
 
         int GetValue();
 
-        void Execute(EnemyBase enemy, ITarget target);
+        void Execute(IEnemyBase enemy, ITarget target);
     }
 
     public abstract class EnemyActionBase : IEnemyAction
@@ -29,7 +30,7 @@ namespace Assets.Enemies.Intentions
             RefreshValue();
         }
 
-        public abstract void Execute(EnemyBase enemy, ITarget target);
+        public abstract void Execute(IEnemyBase enemy, ITarget target);
 
         public int GetValue() => _currentValue;
 
