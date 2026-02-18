@@ -1,3 +1,4 @@
+using Assets.Targeting;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,12 +35,21 @@ namespace Assets.Effects.StatusEffects
                 _activeEffects.Remove(existingEffect);
             }
 
-            effect.Apply(this);
-            _activeEffects.Add(effect);
+            if (gameObject.TryGetComponent(out ITarget target))
+            {
+                effect.Apply(target);
 
-            Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+                _activeEffects.Add(effect);
 
-            OnEffectsChanged?.Invoke(this, EventArgs.Empty);
+                Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+
+                OnEffectsChanged?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                Debug.Log($"Status effect '{effect.EffectName}' failed to applied to " +
+                    $"{gameObject.name} becouse of missing ITarget");
+            }
         }
 
         public void RemoveStatusEffect(IStatusEffect effect)

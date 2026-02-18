@@ -19,8 +19,6 @@ namespace Assets.Effects.StatusEffects
         protected override void OnApply()
         {
             Debug.Log($"Burning applied! Will last {RemainingTurns} turns, dealing {_damagePerTurn} damage per turn.");
-
-            SpawnVisualEffect();
         }
 
         protected override void ProcessTurnEffect()
@@ -36,12 +34,6 @@ namespace Assets.Effects.StatusEffects
         {
             Debug.Log("Burning effect removed.");
             RemoveVisualEffect();
-        }
-
-        private void SpawnVisualEffect()
-        {
-            // TODO: Load and instantiate burning VFX prefab on target
-            // visualEffect = Object.Instantiate(burningVFXPrefab, target.transform);
         }
 
         private void RemoveVisualEffect()

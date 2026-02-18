@@ -21,8 +21,6 @@ namespace Assets.Effects.StatusEffects
             {
                 controllable.ApplyStun(false);
             }
-
-            SpawnVisualEffect();
         }
 
         protected override void ProcessTurnEffect()
@@ -40,11 +38,6 @@ namespace Assets.Effects.StatusEffects
             }
 
             RemoveVisualEffect();
-        }
-
-        private void SpawnVisualEffect()
-        {
-            // TODO: Load and instantiate stun VFX prefab on target
         }
 
         private void RemoveVisualEffect()

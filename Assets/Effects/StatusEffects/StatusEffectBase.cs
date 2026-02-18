@@ -1,3 +1,4 @@
+using Assets.Targeting;
 using Assets.Turns;
 
 namespace Assets.Effects.StatusEffects
@@ -10,7 +11,7 @@ namespace Assets.Effects.StatusEffects
         TurnExecutionState ExecutionState { get; }
         string EffectValueDisplay { get; }
 
-        void Apply(IStatusEffectReceiver target);
+        void Apply(ITarget target);
 
         void PerformEffect();
 
@@ -26,7 +27,7 @@ namespace Assets.Effects.StatusEffects
         public TurnExecutionState ExecutionState { get; protected set; }
         public virtual string EffectValueDisplay { get; protected set; }
 
-        protected IStatusEffectReceiver Target { get; private set; }
+        protected ITarget Target { get; private set; }
 
         protected StatusEffectBase(string effectName, byte turns, TurnExecutionState executionState, EffectType effectType = EffectType.None)
         {
@@ -37,7 +38,7 @@ namespace Assets.Effects.StatusEffects
             EffectValueDisplay = string.Empty;
         }
 
-        public void Apply(IStatusEffectReceiver target)
+        public void Apply(ITarget target)
         {
             Target = target;
 
@@ -63,7 +64,7 @@ namespace Assets.Effects.StatusEffects
         {
             OnRemove();
 
-            Target?.RemoveStatusEffect(this);
+            Target.StatusEffectReceiver?.RemoveStatusEffect(this);
         }
 
         protected abstract void OnApply();
