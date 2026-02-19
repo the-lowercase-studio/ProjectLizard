@@ -46,12 +46,15 @@ namespace Assets.Scripts.DeathHandlers
 
         private void Health_OnNoHealth(object sender, EventArgs e)
         {
-            HideVisuals();
+            HandleDeath();
             _deathVfxPlayer.Play(new VFXPlayConfig());
             //AudioClipPlayer.Play("Death");
         }
 
-        protected abstract void HideVisuals();
+        protected virtual void HandleDeath()
+        {
+            Destroy(this);
+        }
 
         private void OnDeathEffectFinishedPlaying(object sender, EventArgs e)
         {

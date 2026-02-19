@@ -1,12 +1,13 @@
 using Assets.Targeting;
 using UnityEngine;
 
-namespace Assets.Effects
+namespace Assets.Effects.Base
 {
     public abstract class EffectSO : ScriptableObject
     {
         [field: SerializeField] public string EffectName { get; private set; }
         [field: SerializeField, TextArea] public string Description { get; private set; }
+        [field: SerializeField] public EffectType EffectType { get; private set; }
 
         public abstract void Execute(CardEffectContext context);
     }

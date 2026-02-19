@@ -1,4 +1,5 @@
 ﻿using Assets.Audio;
+using Assets.Enemies.Base;
 using Assets.Scripts.DeathHandlers;
 using Assets.Scripts.HealthSystem;
 using UnityEngine;
@@ -8,19 +9,19 @@ namespace Assets.Scripts.Enemies
     [RequireComponent(typeof(EnemyBase))]
     public class EnemyDeathHandler : DeathHandlerBase
     {
-        private EnemyBase _enemy;
+        private IEnemyBase _enemy;
 
         protected override IHealth Health => _enemy.Health;
         protected override IAudioClipPlayer AudioClipPlayer => _enemy.AudioClipPlayer;
 
         private void Awake()
         {
-            _enemy = GetComponent<EnemyBase>();
+            _enemy = GetComponent<IEnemyBase>();
         }
 
-        protected override void HideVisuals()
+        protected override void HandleDeath()
         {
-            _enemy.Visual.SetActive(false);
+            _enemy.Destroy();
         }
     }
 }

@@ -1,13 +1,21 @@
 using Assets.Interfaces.Combat;
+using Assets.Turns;
 using UnityEngine;
+using Assets.Effects.Base;
 
-namespace Assets.Effects.StatusEffects
+namespace Assets.Effects.StatusEffects.Stun
 {
     public class StunStatusEffect : StatusEffectBase
     {
         private GameObject _visualEffect;
 
-        public StunStatusEffect(byte turns) : base("Stunned", turns)
+        public StunStatusEffect(int turns)
+            : base(new StatusEffectConfig(
+                effectName: "Stunned",
+                turns: turns,
+                executionState: TurnExecutionState.OnPlayerTurnStart,
+                canStackValue: false,
+                effectType: EffectType.Stunning))
         {
         }
 
@@ -19,8 +27,6 @@ namespace Assets.Effects.StatusEffects
             {
                 controllable.ApplyStun(false);
             }
-
-            SpawnVisualEffect();
         }
 
         protected override void ProcessTurnEffect()
@@ -38,11 +44,6 @@ namespace Assets.Effects.StatusEffects
             }
 
             RemoveVisualEffect();
-        }
-
-        private void SpawnVisualEffect()
-        {
-            // TODO: Load and instantiate stun VFX prefab on target
         }
 
         private void RemoveVisualEffect()

@@ -14,140 +14,159 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyBase : MonoBehaviour, ITarget, IDamageable, IShielded
+namespace Assets.Enemies.Base
 {
-    [field: SerializeField] public GameObject Visual { get; private set; }
-    [field: SerializeField] public EnemyConfigSO Config { get; private set; }
-
-    public IHealth Health { get; private set; }
-    public IShieldReceiver ShieldReceiver { get; private set; }
-    public IAudioClipPlayer AudioClipPlayer { get; private set; }
-    public IDamageable Damageable => this;
-    public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
-    public string Name => Config.name;
-
-    public event EventHandler OnCanBeDestroyed;
-
-    [Inject] private ITurnManager _turnManager;
-    [Inject] private IPlayerParty _playerParty;
-
-    [SerializeField] private VFXPlayer _damageVfxPlayer;
-    [SerializeField] private IntentionIndicator _intentionIndicator;
-
-    private Image _enemyImage;
-    private INeedToCompleteBeforeDisable _enemyDeathSequence;
-    private IntentionSelector _intentionSelector;
-    private IntentionConfig _currentIntention;
-
-    protected virtual void Awake()
+    public interface IEnemyBase : ITarget, IDamageable, IShielded
     {
-        Health = GetComponent<IHealth>();
-        AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
-        StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
-        ShieldReceiver = GetComponent<IShieldReceiver>();
-        _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
-        _enemyImage = Visual.GetComponent<Image>();
-        _intentionSelector = new IntentionSelector();
+        IAudioClipPlayer AudioClipPlayer { get; }
+        EnemyConfigSO Config { get; }
+        GameObject Visual { get; }
+
+        event EventHandler OnCanBeDestroyed;
+
+        void Destroy();
     }
 
-    protected virtual void OnEnable()
+    public class EnemyBase : MonoBehaviour, IEnemyBase
     {
-        _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
-        _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
-        _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
+        [field: SerializeField] public GameObject Visual { get; private set; }
+        [field: SerializeField] public EnemyConfigSO Config { get; private set; }
 
-        _enemyImage.sprite = Config.Sprite;
+        public IHealth Health { get; private set; }
+        public IShieldReceiver ShieldReceiver { get; private set; }
+        public IAudioClipPlayer AudioClipPlayer { get; private set; }
+        public IDamageable Damageable => this;
+        public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
+        public string Name => Config.name;
 
-        Health.Initialize(Config.MaxHealth);
-    }
+        public event EventHandler OnCanBeDestroyed;
 
-    protected virtual void OnDisable()
-    {
-        _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
+        [Inject] private ITurnManager _turnManager;
+        [Inject] private IPlayerParty _playerParty;
 
-        _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
-        _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
-    }
+        [SerializeField] private VFXPlayer _damageVfxPlayer;
+        [SerializeField] private IntentionIndicator _intentionIndicator;
 
-    private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
-    {
-        if (Health.IsAlive())
+        private Image _enemyImage;
+        private INeedToCompleteBeforeDisable _enemyDeathSequence;
+        private IntentionSelector _intentionSelector;
+        private IntentionConfig _currentIntention;
+
+        protected virtual void Awake()
         {
-            SelectIntention();
+            Health = GetComponent<IHealth>();
+            AudioClipPlayer = GetComponentInChildren<IAudioClipPlayer>();
+            StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
+            ShieldReceiver = GetComponent<IShieldReceiver>();
+            _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
+            _enemyImage = Visual.transform.GetChild(0).GetComponent<Image>();
+            _intentionSelector = new IntentionSelector();
         }
-    }
 
-    private void TurnManager_OnEnemyTurnEnd(object sender, EventArgs e)
-    {
-        if (Health.IsAlive())
+        protected virtual void OnEnable()
         {
-            ExecuteIntention();
+            _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
+            _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
+
+            _enemyImage.sprite = Config.Sprite;
+
+            Health.Initialize(Config.MaxHealth);
         }
-    }
 
-    private void SelectIntention()
-    {
-        if (Config.Intentions != null && Config.Intentions.Count > 0)
+        protected virtual void OnDisable()
         {
-            _currentIntention = _intentionSelector.SelectIntention(Config.Intentions);
-            _currentIntention.Action.RefreshValue();
+            _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
 
-            if (_currentIntention != null)
+            _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
+        }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
+
+        private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
+        {
+            if (Health.IsAlive())
             {
-                Debug.Log($"{Name} selected intention: {_currentIntention.IntentionType}");
+                SelectIntention();
+            }
+        }
 
-                if (_intentionIndicator != null)
+        private void TurnManager_OnEnemyTurnEnd(object sender, EventArgs e)
+        {
+            if (Health.IsAlive())
+            {
+                ExecuteIntention();
+            }
+        }
+
+        private void SelectIntention()
+        {
+            if (Config.Intentions != null && Config.Intentions.Count > 0)
+            {
+                _currentIntention = _intentionSelector.SelectIntention(Config.Intentions);
+                _currentIntention.Action.RefreshValue();
+
+                if (_currentIntention != null)
                 {
-                    _intentionIndicator.ShowIntention(_currentIntention);
+                    Debug.Log($"{Name} selected intention: {_currentIntention.IntentionType}");
+
+                    if (_intentionIndicator != null)
+                    {
+                        _intentionIndicator.ShowIntention(_currentIntention);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"{Name} failed to select an intention!");
                 }
             }
             else
             {
-                Debug.LogWarning($"{Name} failed to select an intention!");
+                Debug.LogWarning($"{Name} has no intentions configured!");
             }
         }
-        else
+
+        private void ExecuteIntention()
         {
-            Debug.LogWarning($"{Name} has no intentions configured!");
-        }
-    }
-
-    private void ExecuteIntention()
-    {
-        if (_currentIntention?.Action != null)
-        {
-            _currentIntention.Action.Execute(this, _playerParty);
-            _currentIntention = null;
-        }
-    }
-
-    public virtual void TakeFullHpDamage()
-    {
-        Health.DecreaseHealth(Health.MaxHealth);
-    }
-
-    public virtual void TakeDamage(int damage)
-    {
-        int remainingDamage = damage;
-
-        if (ShieldReceiver != null && ShieldReceiver.HasShield())
-        {
-            remainingDamage = ShieldReceiver.ReduceShield(damage);
+            if (_currentIntention?.Action != null)
+            {
+                _currentIntention.Action.Execute(this, _playerParty);
+                _currentIntention = null;
+            }
         }
 
-        if (remainingDamage > 0)
+        public virtual void TakeFullHpDamage()
         {
-            Health.DecreaseHealth(remainingDamage);
+            Health.DecreaseHealth(Health.MaxHealth);
         }
 
-        if (Health.IsAlive())
+        public virtual void TakeDamage(int damage)
         {
-            _damageVfxPlayer.Play(new VFXPlayConfig());
-        }
-    }
+            int remainingDamage = damage;
 
-    private void EnemyDeathSequence_OnCompleted(object sender, EventArgs e)
-    {
-        OnCanBeDestroyed?.Invoke(this, EventArgs.Empty);
+            if (ShieldReceiver != null && ShieldReceiver.HasShield())
+            {
+                remainingDamage = ShieldReceiver.ReduceShield(damage);
+            }
+
+            if (remainingDamage > 0)
+            {
+                Health.DecreaseHealth(remainingDamage);
+            }
+
+            if (Health.IsAlive())
+            {
+                _damageVfxPlayer.Play(new VFXPlayConfig());
+            }
+        }
+
+        private void EnemyDeathSequence_OnCompleted(object sender, EventArgs e)
+        {
+            OnCanBeDestroyed?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

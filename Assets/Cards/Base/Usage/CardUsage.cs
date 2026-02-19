@@ -1,9 +1,8 @@
-using Assets.Effects;
+using Assets.Effects.Base;
 using Assets.Energy;
 using Assets.Targeting;
 using Reflex.Attributes;
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace Assets.Cards.Base.Usage
@@ -21,7 +20,7 @@ namespace Assets.Cards.Base.Usage
         public event EventHandler OnCardUsage;
 
         [Inject] private IEnergyManager _energyManager;
-        [Inject] private ITargetsManager _targetsManager;
+        [Inject] private ITargetsProvider _targetsManager;
 
         private Card _card;
 
@@ -74,7 +73,7 @@ namespace Assets.Cards.Base.Usage
         private ITarget FindTarget()
         {
             //TODO: change for different modes based on card ability
-            return _targetsManager.GetTargets(TargetsMode.First).First();
+            return _targetsManager.GetFirst();
         }
     }
 }

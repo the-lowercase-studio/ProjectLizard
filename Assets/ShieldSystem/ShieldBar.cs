@@ -8,10 +8,10 @@ namespace Assets.ShieldSystem
 {
     public class ShieldBar : MonoBehaviour
     {
-        [SerializeField] private Slider _slider;
-        [SerializeField] private GameObject _barContainer;
         [SerializeField] private ShieldReceiver _shield;
         [SerializeField] private TextMeshProUGUI _shieldText;
+        [SerializeField] private GameObject _barContainer;
+        [SerializeField] private Slider _slider;
 
         private void Awake()
         {

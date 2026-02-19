@@ -16,7 +16,7 @@ public class PartyDeathHandler : DeathHandlerBase
         _party = GetComponent<PlayerParty>();
     }
 
-    protected override void HideVisuals()
+    protected override void HandleDeath()
     {
         foreach (var character in _party.GetAllCharacters())
         {

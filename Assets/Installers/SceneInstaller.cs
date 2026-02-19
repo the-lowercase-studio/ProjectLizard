@@ -16,7 +16,7 @@ namespace Assets.Installers
         [SerializeField] private EnergyManager _energyManager;
         [SerializeField] private CardsHandManager _cardsHandManager;
         [SerializeField] private CardsHandPresenter _cardsHandPresenter;
-        [SerializeField] private TargetsManager _targetsManager;
+        [SerializeField] private TargetsProvider _targetsManager;
         [SerializeField] private PlayerParty _playerParty;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private UITransformsProvider _uiTransformsProvider;
@@ -28,7 +28,7 @@ namespace Assets.Installers
             builder.RegisterValue(_energyManager, new[] { typeof(IEnergyManager) });
             builder.RegisterValue(_cardsHandManager, new[] { typeof(ICardsHandManager) });
             builder.RegisterValue(_cardsHandPresenter, new[] { typeof(ICardsHandPresenter) });
-            builder.RegisterValue(_targetsManager, new[] { typeof(ITargetsManager) });
+            builder.RegisterValue(_targetsManager, new[] { typeof(ITargetsProvider) });
             builder.RegisterValue(_playerParty, new[] { typeof(IPlayerParty) });
             builder.RegisterValue(_inputHandler, new[] { typeof(IInputHandler) });
             builder.RegisterValue(_uiTransformsProvider, new[] { typeof(IUITransformsProvider) });

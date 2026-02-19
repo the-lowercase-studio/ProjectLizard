@@ -1,3 +1,5 @@
+using Assets.Targeting;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,56 +11,52 @@ namespace Assets.Effects.StatusEffects
 
         void RemoveStatusEffect(IStatusEffect effect);
 
-        void ProcessStatusEffectsOnTurnStart();
-
-        void ProcessStatusEffectsOnTurnEnd();
-
         bool HasStatusEffect(string effectName);
 
         List<IStatusEffect> GetActiveEffects();
+
+        event EventHandler OnEffectsChanged;
     }
 
     public class StatusEffectReceiver : MonoBehaviour, IStatusEffectReceiver
     {
         private List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
 
+        public event EventHandler OnEffectsChanged;
+
         public void ApplyStatusEffect(IStatusEffect effect)
         {
-            // Check if effect already exists and refresh duration instead of stacking
             IStatusEffect existingEffect = _activeEffects.Find(e => e.EffectName == effect.EffectName);
 
             if (existingEffect != null)
             {
-                existingEffect.Remove();
-                _activeEffects.Remove(existingEffect);
+                existingEffect.StackWith(effect);
+                Debug.Log($"Status effect '{effect.EffectName}' stacked on {gameObject.name}");
+            }
+            else
+            {
+                if (gameObject.TryGetComponent(out ITarget target))
+                {
+                    effect.Apply(target);
+                    _activeEffects.Add(effect);
+                    Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+                }
+                else
+                {
+                    Debug.Log($"Status effect '{effect.EffectName}' failed to apply to " +
+                        $"{gameObject.name} because of missing ITarget");
+                }
             }
 
-            effect.Apply(this);
-            _activeEffects.Add(effect);
-
-            Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+            OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void RemoveStatusEffect(IStatusEffect effect)
         {
             _activeEffects.Remove(effect);
             Debug.Log($"Status effect '{effect.EffectName}' removed from {gameObject.name}");
-        }
 
-        public void ProcessStatusEffectsOnTurnStart()
-        {
-            for (int i = _activeEffects.Count - 1; i >= 0; i--)
-            {
-                _activeEffects[i].OnTurnStart();
-            }
-        }
-
-        public void ProcessStatusEffectsOnTurnEnd()
-        {
-            for (int i = _activeEffects.Count - 1; i >= 0; i--)
-            {
-                _activeEffects[i].OnTurnEnd();
-            }
+            OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool HasStatusEffect(string effectName)
