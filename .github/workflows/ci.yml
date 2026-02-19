@@ -17,8 +17,6 @@ jobs:
 
       - name: Cache Library
         uses: actions/cache@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           path: Library
           key: Library-6000.3.2f1-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
