@@ -3,8 +3,9 @@
     public enum EffectType
     {
         None,
-        Burn,
-        Stun,
-        Special
+        Burning,
+        Stunning,
+        Bleeding,
+        Poisoning
     }
 }

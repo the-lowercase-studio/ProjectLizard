@@ -1,7 +1,7 @@
 using Assets.Effects.Base;
 using UnityEngine;
 
-namespace Assets.Effects
+namespace Assets.Effects.StatusEffects
 {
     [CreateAssetMenu(fileName = "New Custom Effect", menuName = "Scriptable Objects/Cards/Effects/Custom Effect")]
     public class CustomEffectSO : EffectSO

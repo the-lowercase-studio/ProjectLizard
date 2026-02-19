@@ -3,7 +3,7 @@ using Assets.Turns;
 using UnityEngine;
 using Assets.Effects.Base;
 
-namespace Assets.Effects.StatusEffects
+namespace Assets.Effects.StatusEffects.Stun
 {
     public class StunStatusEffect : StatusEffectBase
     {
@@ -15,7 +15,7 @@ namespace Assets.Effects.StatusEffects
                 turns: turns,
                 executionState: TurnExecutionState.OnPlayerTurnStart,
                 canStackValue: false,
-                effectType: EffectType.Stun))
+                effectType: EffectType.Stunning))
         {
         }
 

@@ -1,8 +1,7 @@
 using Assets.Effects.Base;
-using Assets.Effects.StatusEffects;
 using UnityEngine;
 
-namespace Assets.Effects
+namespace Assets.Effects.StatusEffects.Burning
 {
     [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Cards/Effects/Fire/Burning Effect")]
     public class FireBurningEffectSO : EffectSO

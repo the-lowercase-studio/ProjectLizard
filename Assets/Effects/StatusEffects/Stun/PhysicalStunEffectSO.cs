@@ -1,8 +1,7 @@
 using Assets.Effects.Base;
-using Assets.Effects.StatusEffects;
 using UnityEngine;
 
-namespace Assets.Effects
+namespace Assets.Effects.StatusEffects.Stun
 {
     [CreateAssetMenu(fileName = "New Physical Stun Effect", menuName = "Scriptable Objects/Cards/Effects/Physical/Stun Effect")]
     public class PhysicalStunEffectSO : EffectSO

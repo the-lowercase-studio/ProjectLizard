@@ -3,7 +3,7 @@ using Assets.Turns;
 using UnityEngine;
 using Assets.Effects.Base;
 
-namespace Assets.Effects.StatusEffects
+namespace Assets.Effects.StatusEffects.Burning
 {
     public class BurningStatusEffect : StatusEffectBase
     {
@@ -16,7 +16,7 @@ namespace Assets.Effects.StatusEffects
                 turns: turns,
                 executionState: TurnExecutionState.OnEnemyTurnStart,
                 canStackValue: true,
-                effectType: EffectType.Burn))
+                effectType: EffectType.Burning))
         {
             _damagePerTurn = damagePerTurn;
             UpdateEffectValueDisplay();
