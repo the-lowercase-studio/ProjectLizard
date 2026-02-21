@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main, development ]
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  statuses: write
+
 jobs:
   test-editmode:
     name: EditMode Tests
