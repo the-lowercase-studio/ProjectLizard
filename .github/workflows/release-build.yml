@@ -1,20 +1,32 @@
-#building on 
 name: Unity Release Build
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  statuses: write
 
 jobs:
+  await-approval:
+    name: Waiting for build approval
+    runs-on: ubuntu-latest
+    environment: build-approval
+    steps:
+      - name: Approval received
+        run: echo "Build approved, proceeding..."
+
   build:
+    name: Development Build
+    needs: await-approval 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         targetPlatform:
           - StandaloneWindows64
-          - StandaloneLinux64
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +41,7 @@ jobs:
           restore-keys: |
             Library-6000.3.9f1-
 
-      - name: Build Project
+      - name: Build Project (Development)
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -40,8 +52,12 @@ jobs:
           unityVersion: 6000.3.9f1
           targetPlatform: ${{ matrix.targetPlatform }}
 
+      - name: Get Version
+        id: version
+        run: echo "version=$(date +'%Y.%m.%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
+        
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
-          name: Build-${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
+          name: Release-Build-${{ matrix.targetPlatform }}-${{ steps.version.outputs.version }}
+          path: build/${{ matrix.targetPlatform }}/

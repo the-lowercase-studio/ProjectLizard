@@ -82,6 +82,7 @@ crashlytics-build.properties
 # Keep only what’s necessary
 !/.gitignore
 !/Assets/
+!/Packages/
 !/ProjectSettings/
 
 # Only for local
