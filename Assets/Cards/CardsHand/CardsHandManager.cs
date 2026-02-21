@@ -3,7 +3,6 @@ using Reflex.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using UnityEngine;
 using Assets.Cards.Base;
 using Assets.Cards.Constants;
@@ -15,7 +14,7 @@ namespace Assets.Cards.CardsHand
     {
         event EventHandler<EnumerableCollectionChangeEventArgs<ICard>> OnHandChange;
 
-        ImmutableArray<ICard> GetCards();
+        IEnumerable<ICard> GetCards();
 
         int CountCards();
 
@@ -52,9 +51,9 @@ namespace Assets.Cards.CardsHand
             _turnManager.OnPlayerTurnEnd -= TurnManager_OnPlayerTurnEnd;
         }
 
-        public ImmutableArray<ICard> GetCards()
+        public IEnumerable<ICard> GetCards()
         {
-            return _cards.ToImmutableArray();
+            return _cards;
         }
 
         public int CountCards()

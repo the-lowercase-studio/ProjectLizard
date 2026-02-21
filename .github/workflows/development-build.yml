@@ -1,10 +1,15 @@
-#building on 
-name: Unity Release Build
+name: Unity Development Build
 
 on:
   push:
     tags:
-      - "v*"
+      - "db-v*"
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  statuses: write
 
 jobs:
   build:
@@ -14,7 +19,6 @@ jobs:
       matrix:
         targetPlatform:
           - StandaloneWindows64
-          - StandaloneLinux64
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +33,7 @@ jobs:
           restore-keys: |
             Library-6000.3.9f1-
 
-      - name: Build Project
+      - name: Build Project (Development)
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -39,6 +43,7 @@ jobs:
           projectPath: .
           unityVersion: 6000.3.9f1
           targetPlatform: ${{ matrix.targetPlatform }}
+          customParameters: -Development -AllowDebugging
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
