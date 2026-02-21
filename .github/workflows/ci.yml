@@ -2,9 +2,15 @@ name: Unity CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, development ]
   pull_request:
     branches: [ main, development ]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  statuses: write
 
 jobs:
   test-editmode:
