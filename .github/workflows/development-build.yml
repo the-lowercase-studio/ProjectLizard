@@ -58,9 +58,7 @@ jobs:
 
       - name: Zip Build
         run: |
-          cd Build-${{ matrix.targetPlatform }}
-          zip -r ../Build-${{ matrix.targetPlatform }}.zip .
-          cd ..
+          zip -r Build-${{ matrix.targetPlatform }}.zip build/${{ matrix.targetPlatform }}/
           
       - name: Upload Build
         uses: actions/upload-artifact@v4
