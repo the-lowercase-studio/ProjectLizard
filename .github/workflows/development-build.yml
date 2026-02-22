@@ -55,14 +55,9 @@ jobs:
           unityVersion: 6000.3.9f1
           targetPlatform: ${{ matrix.targetPlatform }}
           customParameters: -Development -AllowDebugging
-
-      - name: Zip Build
-        run: |
-          zip -r Build-${{ matrix.targetPlatform }}.zip build/${{ matrix.targetPlatform }}/
           
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
-          path: Build-${{ matrix.targetPlatform }}.zip
-          compression-level: 0
+          path: build/${{ matrix.targetPlatform }}/
