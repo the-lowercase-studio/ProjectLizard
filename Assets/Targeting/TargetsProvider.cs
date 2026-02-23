@@ -17,6 +17,8 @@ namespace Assets.Targeting
         IEnumerable<ITarget> GetFromEnd(int count);
 
         IEnumerable<ITarget> GetRandom(int count);
+
+        ITarget GetClosest(ITarget target);
     }
 
     public class TargetsProvider : MonoBehaviour, ITargetsProvider
@@ -57,6 +59,27 @@ namespace Assets.Targeting
         {
             var targets = _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
             return targets.OrderBy(x => Random.value).Take(count);
+        }
+
+        public ITarget GetClosest(ITarget target)
+        {
+            var targets = _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
+
+            if (targets.Length <= 1)
+                return null;
+
+            var index = System.Array.IndexOf(targets, target);
+
+            if (index == -1)
+                return null;
+
+            if (index == 0)
+                return targets[1];
+
+            if (index == targets.Length - 1)
+                return targets[index - 1];
+
+            return Random.value < 0.5f ? targets[index - 1] : targets[index + 1];
         }
     }
 }

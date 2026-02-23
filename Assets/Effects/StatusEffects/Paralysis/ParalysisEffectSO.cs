@@ -1,20 +1,19 @@
 using Assets.Effects.Base;
 using UnityEngine;
 
-namespace Assets.Effects.StatusEffects.Stun
+namespace Assets.Effects.StatusEffects.Paralysis
 {
-    [CreateAssetMenu(fileName = "New Physical Stun Effect", menuName = "Scriptable Objects/Cards/Effects/Physical/Stun Effect")]
-    public class PhysicalStunEffectSO : EffectSO
+    [CreateAssetMenu(fileName = "New Electric Paralysis Effect", menuName = "Scriptable Objects/Effects/Electric/Paralysis Effect")]
+    public class ParalysisEffectSO : EffectSO
     {
         [field: SerializeField] public int Damage { get; private set; }
-        [field: SerializeField, Range(0f, 1f)] public float StunChance { get; private set; }
-        [field: SerializeField] public byte StunDuration { get; private set; }
+        [field: SerializeField, Range(0f, 1f)] public float ParalysisChance { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
 
         public override void Execute(CardEffectContext context)
         {
             ApplyDamage(context);
-            ApplyStunEffect(context);
+            ApplyParalysisEffect(context);
             SpawnVisualEffect(context);
         }
 
@@ -23,16 +22,16 @@ namespace Assets.Effects.StatusEffects.Stun
             if (context.Target?.Damageable != null)
             {
                 context.Target.Damageable.TakeDamage(Damage);
-                Debug.Log($"Physical effect dealt {Damage} damage to {context.Target.Name}");
+                Debug.Log($"Paralysis effect dealt {Damage} damage to {context.Target.Name}");
             }
         }
 
-        private void ApplyStunEffect(CardEffectContext context)
+        private void ApplyParalysisEffect(CardEffectContext context)
         {
-            if (Random.value <= StunChance && context.Target?.StatusEffectReceiver != null)
+            if (Random.value <= ParalysisChance && context.Target?.StatusEffectReceiver != null)
             {
-                context.Target.StatusEffectReceiver.ApplyStatusEffect(new StunStatusEffect(StunDuration));
-                Debug.Log($"Applied burning effect to {context.Target.Name} for {StunDuration} turns");
+                context.Target.StatusEffectReceiver.ApplyStatusEffect(new ParalysisStatusEffect(this));
+                Debug.Log($"Applied paralysis effect to {context.Target.Name} for {TurnDuration} turns");
             }
         }
 

@@ -22,24 +22,6 @@ namespace Assets.Effects.StatusEffects
         void StackWith(IStatusEffect other);
     }
 
-    public struct StatusEffectConfig
-    {
-        public string EffectName;
-        public int Turns;
-        public TurnExecutionState ExecutionState;
-        public bool CanStackValue;
-        public EffectType EffectType;
-
-        public StatusEffectConfig(string effectName, int turns, TurnExecutionState executionState, bool canStackValue = false, EffectType effectType = EffectType.None)
-        {
-            EffectName = effectName;
-            Turns = turns;
-            ExecutionState = executionState;
-            CanStackValue = canStackValue;
-            EffectType = effectType;
-        }
-    }
-
     public abstract class StatusEffectBase : IStatusEffect
     {
         public string EffectName { get; protected set; }
@@ -51,14 +33,16 @@ namespace Assets.Effects.StatusEffects
         public bool CanStackValue { get; protected set; }
 
         protected ITarget Target { get; private set; }
+        protected EffectSO EffectData { get; private set; }
 
-        protected StatusEffectBase(StatusEffectConfig config)
+        protected StatusEffectBase(EffectSO effectSO)
         {
-            EffectName = config.EffectName;
-            RemainingTurns = config.Turns;
-            ExecutionState = config.ExecutionState;
-            CanStackValue = config.CanStackValue;
-            EffectType = config.EffectType;
+            EffectData = effectSO;
+            EffectName = effectSO.EffectName;
+            RemainingTurns = effectSO.TurnDuration;
+            ExecutionState = effectSO.ExecutionState;
+            CanStackValue = effectSO.CanStackValue;
+            EffectType = effectSO.EffectType;
             EffectValueDisplay = string.Empty;
         }
 

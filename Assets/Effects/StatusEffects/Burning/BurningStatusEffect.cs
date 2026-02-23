@@ -1,38 +1,45 @@
 using Assets.Interfaces.Combat;
-using Assets.Turns;
 using UnityEngine;
-using Assets.Effects.Base;
+using Reflex.Attributes;
+using Assets.Targeting;
 
 namespace Assets.Effects.StatusEffects.Burning
 {
     public class BurningStatusEffect : StatusEffectBase
     {
-        private int _damagePerTurn;
+        [Inject] private ITargetsProvider _targetsProvider;
+
+        public int DamagePerTurn { get; private set; }
+
+        private float _spreadChance;
         private GameObject _visualEffect;
 
-        public BurningStatusEffect(int turns, int damagePerTurn)
-            : base(new StatusEffectConfig(
-                effectName: "Burning",
-                turns: turns,
-                executionState: TurnExecutionState.OnEnemyTurnStart,
-                canStackValue: true,
-                effectType: EffectType.Burning))
+        public BurningStatusEffect(BurningEffectSO effectSO)
+            : base(effectSO)
         {
-            _damagePerTurn = damagePerTurn;
+            DamagePerTurn = effectSO.BurningDamagePerTurn;
+            _spreadChance = effectSO.BurningSpreadChance;
+
             UpdateEffectValueDisplay();
         }
 
         protected override void OnApply()
         {
-            Debug.Log($"Burning applied! Will last {RemainingTurns} turns, dealing {_damagePerTurn} damage per turn.");
+            Debug.Log($"Burning applied! Will last {RemainingTurns} turns, " +
+                $"dealing {DamagePerTurn} damage per turn.");
         }
 
         protected override void ProcessTurnEffect()
         {
             if (Target is IDamageable damageable)
             {
-                damageable.TakeDamage(_damagePerTurn);
-                Debug.Log($"Burning dealt {_damagePerTurn} damage. {RemainingTurns} turns remaining.");
+                damageable.TakeDamage(DamagePerTurn);
+                Debug.Log($"Burning dealt {DamagePerTurn} damage. {RemainingTurns} turns remaining.");
+
+                if (Random.value <= _spreadChance)
+                {
+                    SpreadEffect();
+                }
             }
         }
 
@@ -46,14 +53,34 @@ namespace Assets.Effects.StatusEffects.Burning
         {
             if (other is BurningStatusEffect burningEffect)
             {
-                _damagePerTurn += burningEffect._damagePerTurn;
-                Debug.Log($"Burning damage stacked! Now dealing {_damagePerTurn} damage per turn for {RemainingTurns} turns.");
+                DamagePerTurn += burningEffect.DamagePerTurn;
+                Debug.Log($"Burning damage stacked! Now dealing {DamagePerTurn} damage " +
+                    $"per turn for {RemainingTurns} turns.");
             }
         }
 
         protected override void UpdateEffectValueDisplay()
         {
-            EffectValueDisplay = _damagePerTurn.ToString();
+            EffectValueDisplay = DamagePerTurn.ToString();
+        }
+
+        private void SpreadEffect()
+        {
+            ITarget spreadTarget = _targetsProvider.GetClosest(Target);
+
+            if (spreadTarget == null || spreadTarget == Target)
+            {
+                return;
+            }
+
+            if (spreadTarget.StatusEffectReceiver == null)
+            {
+                Debug.LogWarning($"Spread target {spreadTarget} has no StatusEffectReceiver.");
+                return;
+            }
+
+            spreadTarget.StatusEffectReceiver.ApplyStatusEffect(
+                new BurningStatusEffect(EffectData as BurningEffectSO));
         }
 
         private void RemoveVisualEffect()
