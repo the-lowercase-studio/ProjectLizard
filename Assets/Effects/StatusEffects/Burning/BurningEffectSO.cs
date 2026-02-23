@@ -32,7 +32,7 @@ namespace Assets.Effects.StatusEffects.Burning
         {
             if (Random.value <= BurningChance && context.Target?.StatusEffectReceiver != null)
             {
-                context.Target.StatusEffectReceiver.ApplyStatusEffect(new BurningStatusEffect(this));
+                context.Target.StatusEffectReceiver.ApplyStatusEffect(new BurningStatusEffect(this, context.TargetsProvider));
                 Debug.Log($"Applied burning effect to {context.Target.Name} for {TurnDuration} turns");
             }
         }

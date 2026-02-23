@@ -66,7 +66,8 @@ namespace Assets.Cards.Base.Usage
             {
                 Source = gameObject,
                 Position = transform.position,
-                Target = FindTarget()
+                Target = FindTarget(),
+                TargetsProvider = _targetsManager
             };
         }
 

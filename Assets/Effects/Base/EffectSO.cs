@@ -21,5 +21,6 @@ namespace Assets.Effects.Base
         public ITarget Target { get; set; }
         public GameObject Source { get; set; }
         public Vector3 Position { get; set; }
+        public ITargetsProvider TargetsProvider { get; set; }
     }
 }

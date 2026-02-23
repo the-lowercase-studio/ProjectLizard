@@ -1,22 +1,21 @@
 using Assets.Interfaces.Combat;
 using UnityEngine;
-using Reflex.Attributes;
 using Assets.Targeting;
 
 namespace Assets.Effects.StatusEffects.Burning
 {
     public class BurningStatusEffect : StatusEffectBase
     {
-        [Inject] private ITargetsProvider _targetsProvider;
-
         public int DamagePerTurn { get; private set; }
 
-        private float _spreadChance;
-        private GameObject _visualEffect;
+        private readonly ITargetsProvider _targetsProvider;
+        private readonly float _spreadChance;
+        private readonly GameObject _visualEffect;
 
-        public BurningStatusEffect(BurningEffectSO effectSO)
+        public BurningStatusEffect(BurningEffectSO effectSO, ITargetsProvider targetsProvider)
             : base(effectSO)
         {
+            _targetsProvider = targetsProvider;
             DamagePerTurn = effectSO.BurningDamagePerTurn;
             _spreadChance = effectSO.BurningSpreadChance;
 
@@ -80,7 +79,7 @@ namespace Assets.Effects.StatusEffects.Burning
             }
 
             spreadTarget.StatusEffectReceiver.ApplyStatusEffect(
-                new BurningStatusEffect(EffectData as BurningEffectSO));
+                new BurningStatusEffect(EffectData as BurningEffectSO, _targetsProvider));
         }
 
         private void RemoveVisualEffect()
