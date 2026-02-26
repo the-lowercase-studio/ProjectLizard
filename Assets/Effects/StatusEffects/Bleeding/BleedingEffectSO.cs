@@ -6,7 +6,7 @@ namespace Assets.Effects.StatusEffects.Bleeding
     [CreateAssetMenu(fileName = "New Physic Bleeding Effect", menuName = "Scriptable Objects/Effects/Physic/Bleeding Effect")]
     public class BleedingEffectSO : EffectSO
     {
-        [field: SerializeField] public int Damage { get; private set; }
+        [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int BleedingDamagePerTurn { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float BleedingChance { get; private set; }
         [field: SerializeField] public float AcidDamageMultiplier { get; private set; }
@@ -24,8 +24,8 @@ namespace Assets.Effects.StatusEffects.Bleeding
         {
             if (context.Target?.Damageable != null)
             {
-                context.Target.Damageable.TakeDamage(Damage);
-                Debug.Log($"Fire effect dealt {Damage} damage to {context.Target.Name}");
+                context.Target.Damageable.TakeDamage(InitialDamage);
+                Debug.Log($"Fire effect dealt {InitialDamage} damage to {context.Target.Name}");
             }
         }
 

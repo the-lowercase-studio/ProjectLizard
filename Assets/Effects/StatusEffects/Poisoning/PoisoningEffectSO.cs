@@ -6,7 +6,7 @@ namespace Assets.Effects.StatusEffects.Poisoning
     [CreateAssetMenu(fileName = "New Acid Poisoning Effect", menuName = "Scriptable Objects/Effects/Acid/Poisoning Effect")]
     public class PoisoningEffectSO : EffectSO
     {
-        [field: SerializeField] public int Damage { get; private set; }
+        [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int PoisoningDamagePerTurn { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float PoisoningChance { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
@@ -22,8 +22,8 @@ namespace Assets.Effects.StatusEffects.Poisoning
         {
             if (context.Target?.Damageable != null)
             {
-                context.Target.Damageable.TakeDamage(Damage);
-                Debug.Log($"Poisoning effect dealt {Damage} damage to {context.Target.Name}");
+                context.Target.Damageable.TakeDamage(InitialDamage);
+                Debug.Log($"Poisoning effect dealt {InitialDamage} damage to {context.Target.Name}");
             }
         }
 

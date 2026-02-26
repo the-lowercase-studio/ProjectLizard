@@ -1,7 +1,5 @@
 using Assets.Interfaces.Combat;
-using Assets.Turns;
 using UnityEngine;
-using Assets.Effects.Base;
 
 namespace Assets.Effects.StatusEffects.Bleeding
 {
@@ -24,7 +22,7 @@ namespace Assets.Effects.StatusEffects.Bleeding
 
         protected override void ProcessTurnEffect()
         {
-            if (Target is IDamageable damageable)
+            if (target is IDamageable damageable)
             {
                 damageable.TakeDamage(_damagePerTurn);
                 Debug.Log($"Bleeding dealt {_damagePerTurn} damage. {RemainingTurns} turns remaining.");

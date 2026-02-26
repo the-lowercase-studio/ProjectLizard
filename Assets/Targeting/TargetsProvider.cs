@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Assets.CustomTypes;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -18,7 +19,9 @@ namespace Assets.Targeting
 
         IEnumerable<ITarget> GetRandom(int count);
 
-        ITarget GetClosest(ITarget target);
+        ITarget GetClosestByRandomDirection(ITarget target);
+
+        ITarget GetClosestByDirection(ITarget target, HorizontalDirection horizontalDirection);
     }
 
     public class TargetsProvider : MonoBehaviour, ITargetsProvider
@@ -61,7 +64,7 @@ namespace Assets.Targeting
             return targets.OrderBy(x => Random.value).Take(count);
         }
 
-        public ITarget GetClosest(ITarget target)
+        public ITarget GetClosestByRandomDirection(ITarget target)
         {
             var targets = _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
 
@@ -73,13 +76,50 @@ namespace Assets.Targeting
             if (index == -1)
                 return null;
 
+            HorizontalDirection direction;
+
             if (index == 0)
-                return targets[1];
+                direction = HorizontalDirection.Right;
+            else if (index == targets.Length - 1)
+                direction = HorizontalDirection.Left;
+            else
+                direction = Random.value < 0.5f ? HorizontalDirection.Left : HorizontalDirection.Right;
 
-            if (index == targets.Length - 1)
-                return targets[index - 1];
+            return GetClosestByDirection(target, direction);
+        }
 
-            return Random.value < 0.5f ? targets[index - 1] : targets[index + 1];
+        public ITarget GetClosestByDirection(ITarget target, HorizontalDirection horizontalDirection)
+        {
+            var targets = _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
+
+            if (targets.Length <= 1)
+            {
+                return null;
+            }
+
+            var targetIndex = System.Array.IndexOf(targets, target);
+
+            if (targetIndex == -1)
+            {
+                return null;
+            }
+
+            return horizontalDirection switch
+            {
+                HorizontalDirection.Left => GetClosestFromLeft(targets, targetIndex),
+                HorizontalDirection.Right => GetClosestFromRight(targets, targetIndex),
+                _ => null,
+            };
+        }
+
+        private ITarget GetClosestFromRight(ITarget[] targets, int targetIndex)
+        {
+            return (targetIndex >= 0 && targetIndex < targets.Length - 1) ? targets[targetIndex + 1] : null;
+        }
+
+        private ITarget GetClosestFromLeft(ITarget[] targets, int targetIndex)
+        {
+            return (targetIndex > 0 && targetIndex < targets.Length) ? targets[targetIndex - 1] : null;
         }
     }
 }

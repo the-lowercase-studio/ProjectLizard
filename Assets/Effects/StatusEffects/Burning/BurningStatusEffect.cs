@@ -30,7 +30,7 @@ namespace Assets.Effects.StatusEffects.Burning
 
         protected override void ProcessTurnEffect()
         {
-            if (Target is IDamageable damageable)
+            if (target is IDamageable damageable)
             {
                 damageable.TakeDamage(DamagePerTurn);
                 Debug.Log($"Burning dealt {DamagePerTurn} damage. {RemainingTurns} turns remaining.");
@@ -65,11 +65,18 @@ namespace Assets.Effects.StatusEffects.Burning
 
         private void SpreadEffect()
         {
-            ITarget spreadTarget = _targetsProvider.GetClosest(Target);
+            ITarget spreadTarget = _targetsProvider.GetClosestByDirection(
+                target, CustomTypes.HorizontalDirection.Right);
 
-            if (spreadTarget == null || spreadTarget == Target)
+            if (!CanSpreadOnTarget(spreadTarget))
             {
-                return;
+                spreadTarget = _targetsProvider.GetClosestByDirection(
+                    target, CustomTypes.HorizontalDirection.Left);
+
+                if (!CanSpreadOnTarget(spreadTarget))
+                {
+                    return;
+                }
             }
 
             if (spreadTarget.StatusEffectReceiver == null)
@@ -79,7 +86,12 @@ namespace Assets.Effects.StatusEffects.Burning
             }
 
             spreadTarget.StatusEffectReceiver.ApplyStatusEffect(
-                new BurningStatusEffect(EffectData as BurningEffectSO, _targetsProvider));
+                new BurningStatusEffect(effectData as BurningEffectSO, _targetsProvider));
+        }
+
+        private bool CanSpreadOnTarget(ITarget target)
+        {
+            return target?.StatusEffectReceiver.HasStatusEffect(EffectType) == false;
         }
 
         private void RemoveVisualEffect()

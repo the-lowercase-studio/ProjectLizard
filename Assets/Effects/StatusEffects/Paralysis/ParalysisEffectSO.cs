@@ -6,7 +6,7 @@ namespace Assets.Effects.StatusEffects.Paralysis
     [CreateAssetMenu(fileName = "New Electric Paralysis Effect", menuName = "Scriptable Objects/Effects/Electric/Paralysis Effect")]
     public class ParalysisEffectSO : EffectSO
     {
-        [field: SerializeField] public int Damage { get; private set; }
+        [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float ParalysisChance { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
 
@@ -21,8 +21,8 @@ namespace Assets.Effects.StatusEffects.Paralysis
         {
             if (context.Target?.Damageable != null)
             {
-                context.Target.Damageable.TakeDamage(Damage);
-                Debug.Log($"Paralysis effect dealt {Damage} damage to {context.Target.Name}");
+                context.Target.Damageable.TakeDamage(InitialDamage);
+                Debug.Log($"Paralysis effect dealt {InitialDamage} damage to {context.Target.Name}");
             }
         }
 

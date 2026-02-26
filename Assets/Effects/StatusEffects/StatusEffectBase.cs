@@ -6,7 +6,6 @@ namespace Assets.Effects.StatusEffects
 {
     public interface IStatusEffect
     {
-        string EffectName { get; }
         int RemainingTurns { get; }
         EffectType EffectType { get; }
         TurnExecutionState ExecutionState { get; }
@@ -24,21 +23,18 @@ namespace Assets.Effects.StatusEffects
 
     public abstract class StatusEffectBase : IStatusEffect
     {
-        public string EffectName { get; protected set; }
         public float Duration { get; protected set; }
         public int RemainingTurns { get; protected set; }
         public EffectType EffectType { get; protected set; }
         public TurnExecutionState ExecutionState { get; protected set; }
         public virtual string EffectValueDisplay { get; protected set; }
         public bool CanStackValue { get; protected set; }
-
-        protected ITarget Target { get; private set; }
-        protected EffectSO EffectData { get; private set; }
+        protected ITarget target;
+        protected EffectSO effectData;
 
         protected StatusEffectBase(EffectSO effectSO)
         {
-            EffectData = effectSO;
-            EffectName = effectSO.EffectName;
+            effectData = effectSO;
             RemainingTurns = effectSO.TurnDuration;
             ExecutionState = effectSO.ExecutionState;
             CanStackValue = effectSO.CanStackValue;
@@ -48,7 +44,7 @@ namespace Assets.Effects.StatusEffects
 
         public void Apply(ITarget target)
         {
-            Target = target;
+            this.target = target;
 
             OnApply();
         }
@@ -72,7 +68,7 @@ namespace Assets.Effects.StatusEffects
         {
             OnRemove();
 
-            Target.StatusEffectReceiver?.RemoveStatusEffect(this);
+            target.StatusEffectReceiver?.RemoveStatusEffect(this);
         }
 
         public void StackWith(IStatusEffect other)

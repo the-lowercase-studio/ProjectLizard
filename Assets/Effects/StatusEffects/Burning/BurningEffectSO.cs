@@ -6,7 +6,7 @@ namespace Assets.Effects.StatusEffects.Burning
     [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Effects/Fire/Burning Effect")]
     public class BurningEffectSO : EffectSO
     {
-        [field: SerializeField] public int Damage { get; private set; }
+        [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int BurningDamagePerTurn { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float BurningChance { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float BurningSpreadChance { get; private set; }
@@ -23,8 +23,8 @@ namespace Assets.Effects.StatusEffects.Burning
         {
             if (context.Target?.Damageable != null)
             {
-                context.Target.Damageable.TakeDamage(Damage);
-                Debug.Log($"Burning effect dealt {Damage} damage to {context.Target.Name}");
+                context.Target.Damageable.TakeDamage(InitialDamage);
+                Debug.Log($"Burning effect dealt {InitialDamage} damage to {context.Target.Name}");
             }
         }
 

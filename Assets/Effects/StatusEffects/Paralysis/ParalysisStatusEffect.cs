@@ -18,7 +18,7 @@ namespace Assets.Effects.StatusEffects.Paralysis
         {
             Debug.Log($"Paralysis applied! Target cannot act for {RemainingTurns} turns.");
 
-            if (Target is IParalyzable controllable)
+            if (target is IParalyzable controllable)
             {
                 controllable.ApplyParalysis(false);
             }
@@ -33,7 +33,7 @@ namespace Assets.Effects.StatusEffects.Paralysis
         {
             Debug.Log("Paralysis effect removed.");
 
-            if (Target is IParalyzable controllable)
+            if (target is IParalyzable controllable)
             {
                 controllable.ApplyParalysis(true);
             }

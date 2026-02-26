@@ -80,7 +80,7 @@ namespace Assets.Effects.UI
 
         public string GetEffectName()
         {
-            return _trackedEffect?.EffectName;
+            return _trackedEffect?.EffectType.ToString();
         }
     }
 }

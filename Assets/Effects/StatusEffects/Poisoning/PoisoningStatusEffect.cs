@@ -22,7 +22,7 @@ namespace Assets.Effects.StatusEffects.Poisoning
 
         protected override void ProcessTurnEffect()
         {
-            if (Target is IDamageable damageable)
+            if (target is IDamageable damageable)
             {
                 damageable.TakeDamage(_damagePerTurn);
                 Debug.Log($"Poisoning dealt {_damagePerTurn} damage. {RemainingTurns} turns remaining.");
