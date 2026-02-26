@@ -7,21 +7,18 @@ namespace Assets.Targeting
 {
     public interface ITargetsProvider
     {
-        IEnumerable<ITarget> GetAll(TargetsMode mode);
+        IEnumerable<ITarget> GetAll();
 
         ITarget GetFirst();
 
         ITarget GetLast();
 
-        IEnumerable<ITarget> GetFromStart(int count);
-
-        IEnumerable<ITarget> GetFromEnd(int count);
-
-        IEnumerable<ITarget> GetRandom(int count);
-
         ITarget GetClosestByRandomDirection(ITarget target);
 
         ITarget GetClosestByDirection(ITarget target, HorizontalDirection horizontalDirection);
+
+        IEnumerable<ITarget> GetFromStartPosition(
+            StartPosition startPosition = StartPosition.Start, int count = 1);
     }
 
     public class TargetsProvider : MonoBehaviour, ITargetsProvider
@@ -29,7 +26,7 @@ namespace Assets.Targeting
         //TODO: Add actual caching of targets based on enemies container / spawner events
         [SerializeField] private GameObject _enemiesContainer;
 
-        public IEnumerable<ITarget> GetAll(TargetsMode mode)
+        public IEnumerable<ITarget> GetAll()
         {
             return _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
         }
@@ -46,16 +43,39 @@ namespace Assets.Targeting
             return targets.LastOrDefault();
         }
 
-        public IEnumerable<ITarget> GetFromStart(int count)
+        public IEnumerable<ITarget> GetFromStartPosition(
+            StartPosition startPosition = StartPosition.Start, int count = 1)
         {
+            if (count <= 0)
+            {
+                return Enumerable.Empty<ITarget>();
+            }
+
             var targets = _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
+
+            return startPosition switch
+            {
+                StartPosition.Start => GetFromStart(targets, count),
+                StartPosition.End => GetFromEnd(targets, count),
+                StartPosition.Center => GetFromCenter(targets, count)
+            };
+        }
+
+        private IEnumerable<ITarget> GetFromStart(ITarget[] targets, int count = 1)
+        {
             return targets.Take(count);
         }
 
-        public IEnumerable<ITarget> GetFromEnd(int count)
+        private IEnumerable<ITarget> GetFromEnd(ITarget[] targets, int count = 1)
         {
-            var targets = _enemiesContainer.transform.GetComponentsInChildren<ITarget>();
             return targets.Skip(Mathf.Max(0, targets.Length - count));
+        }
+
+        private IEnumerable<ITarget> GetFromCenter(ITarget[] targets, int count = 1)
+        {
+            var centerIndex = targets.Length / 2;
+            var startIndex = Mathf.Max(0, centerIndex - count / 2);
+            return targets.Skip(startIndex).Take(count);
         }
 
         public IEnumerable<ITarget> GetRandom(int count)
