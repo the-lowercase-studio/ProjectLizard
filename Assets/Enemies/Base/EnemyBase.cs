@@ -146,6 +146,8 @@ namespace Assets.Enemies.Base
 
         public virtual void TakeDamage(int damage)
         {
+            Debug.Log($"{this.gameObject.name} taken damage for {damage}");
+
             int remainingDamage = damage;
 
             if (ShieldReceiver != null && ShieldReceiver.HasShield())
