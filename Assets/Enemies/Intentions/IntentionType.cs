@@ -4,6 +4,7 @@ namespace Assets.Enemies.Intentions
     {
         Attack,
         Defense,
-        Special
+        Special,
+        SelfParalysis
     }
 }

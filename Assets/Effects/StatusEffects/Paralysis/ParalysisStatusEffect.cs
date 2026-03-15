@@ -20,7 +20,7 @@ namespace Assets.Effects.StatusEffects.Paralysis
 
             if (target is IParalyzable controllable)
             {
-                controllable.ApplyParalysis(false);
+                controllable.ApplyParalysis();
             }
         }
 
@@ -35,7 +35,7 @@ namespace Assets.Effects.StatusEffects.Paralysis
 
             if (target is IParalyzable controllable)
             {
-                controllable.ApplyParalysis(true);
+                controllable.RemoveParalysis();
             }
 
             RemoveVisualEffect();

@@ -27,7 +27,7 @@ namespace Assets.Enemies.Base
         void Destroy();
     }
 
-    public class EnemyBase : MonoBehaviour, IEnemyBase
+    public class EnemyBase : MonoBehaviour, IEnemyBase, IParalyzable
     {
         [field: SerializeField] public GameObject Visual { get; private set; }
         [field: SerializeField] public EnemyConfigSO Config { get; private set; }
@@ -51,6 +51,7 @@ namespace Assets.Enemies.Base
         private INeedToCompleteBeforeDisable _enemyDeathSequence;
         private IntentionSelector _intentionSelector;
         private IntentionConfig _currentIntention;
+        private bool _isParalysed;
 
         protected virtual void Awake()
         {
@@ -89,10 +90,18 @@ namespace Assets.Enemies.Base
 
         private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
         {
-            if (Health.IsAlive())
+            if (!Health.IsAlive())
             {
-                SelectIntention();
+                return;
             }
+
+            if (_isParalysed)
+            {
+                _intentionIndicator?.ShowActionIntention(new IntentionConfig(IntentionType.SelfParalysis, 0, null));
+                return;
+            }
+
+            SelectIntention();
         }
 
         private void TurnManager_OnEnemyTurnEnd(object sender, EventArgs e)
@@ -116,7 +125,7 @@ namespace Assets.Enemies.Base
 
                     if (_intentionIndicator != null)
                     {
-                        _intentionIndicator.ShowIntention(_currentIntention);
+                        _intentionIndicator.ShowActionIntention(_currentIntention);
                     }
                 }
                 else
@@ -132,11 +141,30 @@ namespace Assets.Enemies.Base
 
         private void ExecuteIntention()
         {
+            if (_isParalysed)
+            {
+                Debug.Log($"{Name} is stunned and skips the turn.");
+                _currentIntention = null;
+                return;
+            }
+
             if (_currentIntention?.Action != null)
             {
                 _currentIntention.Action.Execute(this, _playerParty);
                 _currentIntention = null;
             }
+        }
+
+        public void ApplyParalysis()
+        {
+            _isParalysed = true;
+            _currentIntention = null;
+            _intentionIndicator?.ShowActionIntention(new IntentionConfig(IntentionType.SelfParalysis, 0, null));
+        }
+        
+        public void RemoveParalysis()
+        {
+            _isParalysed = false;
         }
 
         public virtual void TakeFullHpDamage()
