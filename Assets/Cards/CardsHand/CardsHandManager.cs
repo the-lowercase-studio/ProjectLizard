@@ -29,7 +29,7 @@ namespace Assets.Cards.CardsHand
 
         [Inject] private ITurnManager _turnManager;
 
-        [SerializeField] private CardConfigBaseSO _testConfig;
+        [SerializeField] private CardConfigBaseSO[] _testConfigs;
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private Transform _cardsHolder;
 
@@ -119,7 +119,7 @@ namespace Assets.Cards.CardsHand
         {
             for (int i = 0; i < CardConstants.Hand.START_CARDS_NUMBER; i++)
             {
-                AddCard(_testConfig);
+                AddCard(_testConfigs[UnityEngine.Random.Range(0, _testConfigs.Length)]);
             }
 
             OnHandChange?.Invoke(this, new EnumerableCollectionChangeEventArgs<ICard>(_cards));

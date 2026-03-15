@@ -2,7 +2,7 @@
 
 namespace Assets.Cards.Base
 {
-    [CreateAssetMenu(fileName = "CardElementalVisualBaseSO", menuName = "Scriptable Objects/CardElementalVisualBaseSO")]
+    [CreateAssetMenu(fileName = "CardElementalVisualBaseSO", menuName = "Cards/Scriptable Objects/CardElementalVisualBaseSO")]
     public class CardElementalVisualBaseSO : ScriptableObject
     {
         [field: SerializeField] public Sprite TitleBackground { get; private set; }

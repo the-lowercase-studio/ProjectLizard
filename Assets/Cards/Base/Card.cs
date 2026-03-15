@@ -2,6 +2,7 @@ using Assets.Cards.Base.Damage;
 using Assets.Cards.Base.Usage;
 using Assets.Interfaces;
 using Assets.TweenCustom;
+using DG.Tweening;
 using System;
 using UnityEngine;
 

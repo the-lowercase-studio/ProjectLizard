@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Assets.Cards.Base
 {
-    [CreateAssetMenu(fileName = "CardConfigBaseSO", menuName = "Scriptable Objects/CardConfigBaseSO")]
+    [CreateAssetMenu(fileName = "CardConfigBaseSO", menuName = "Cards/Scriptable Objects/CardConfigBaseSO")]
     public class CardConfigBaseSO : ScriptableObject
     {
         [field: SerializeField] public string Title { get; private set; }
