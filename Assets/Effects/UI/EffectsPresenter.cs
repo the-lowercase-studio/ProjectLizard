@@ -1,3 +1,4 @@
+using Assets.Effects.Base;
 using Assets.Effects.StatusEffects;
 using Assets.Interfaces;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Assets.Effects.UI
         [SerializeField] private EffectTypeSpriteMappingSO _effectTypeMapping;
 
         private IStatusEffectReceiver _targetReceiver;
-        private Dictionary<string, EffectPresenter> _activePresenters = new Dictionary<string, EffectPresenter>();
+        private Dictionary<EffectType, EffectPresenter> _activePresenters = new Dictionary<EffectType, EffectPresenter>();
 
         private void OnDestroy()
         {
@@ -40,28 +41,28 @@ namespace Assets.Effects.UI
         {
             List<IStatusEffect> activeEffects = _targetReceiver.GetActiveEffects();
 
-            List<string> effectsToRemove = new List<string>();
+            List<EffectType> effectsToRemove = new List<EffectType>();
             foreach (var presenter in _activePresenters)
             {
-                bool stillActive = activeEffects.Exists(e => e.EffectName == presenter.Key);
+                bool stillActive = activeEffects.Exists(e => e.EffectType == presenter.Key);
                 if (!stillActive || presenter.Value.IsEffectExpired())
                 {
                     effectsToRemove.Add(presenter.Key);
                 }
             }
 
-            foreach (string effectName in effectsToRemove)
+            foreach (EffectType effectType in effectsToRemove)
             {
-                RemoveEffectPresenter(effectName);
+                RemoveEffectPresenter(effectType);
             }
 
             foreach (IStatusEffect effect in activeEffects)
             {
                 if (effect.RemainingTurns <= 0) continue;
 
-                if (_activePresenters.ContainsKey(effect.EffectName))
+                if (_activePresenters.ContainsKey(effect.EffectType))
                 {
-                    _activePresenters[effect.EffectName].UpdateDisplay();
+                    _activePresenters[effect.EffectType].UpdateDisplay();
                 }
                 else
                 {
@@ -76,15 +77,15 @@ namespace Assets.Effects.UI
 
             EffectPresenter presenter = Instantiate(_effectPresenterPrefab, transform);
             presenter.Initialize(new EffectPresenterConfig(effect, effectSprite));
-            _activePresenters[effect.EffectName] = presenter;
+            _activePresenters[effect.EffectType] = presenter;
         }
 
-        private void RemoveEffectPresenter(string effectName)
+        private void RemoveEffectPresenter(EffectType effectType)
         {
-            if (_activePresenters.TryGetValue(effectName, out EffectPresenter presenter))
+            if (_activePresenters.TryGetValue(effectType, out EffectPresenter presenter))
             {
                 Destroy(presenter.gameObject);
-                _activePresenters.Remove(effectName);
+                _activePresenters.Remove(effectType);
             }
         }
     }

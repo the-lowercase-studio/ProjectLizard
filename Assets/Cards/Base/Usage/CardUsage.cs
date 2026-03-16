@@ -38,6 +38,7 @@ namespace Assets.Cards.Base.Usage
 
                 _energyManager.DecreaseCurrentEnergy(currentEnergyCost);
 
+                ExecuteDamage();
                 ExecuteEffects();
 
                 _card.Discard();
@@ -46,6 +47,12 @@ namespace Assets.Cards.Base.Usage
             {
                 Debug.Log($"No enrgy for card {_card.name} usage");
             }
+        }
+
+        private void ExecuteDamage()
+        {
+            Debug.Log("CARD DAMAGE: " + _card.CardDamage);
+            _card.CardDamage?.Execute(_targetsManager);
         }
 
         private void ExecuteEffects()
@@ -66,7 +73,8 @@ namespace Assets.Cards.Base.Usage
             {
                 Source = gameObject,
                 Position = transform.position,
-                Target = FindTarget()
+                Target = FindTarget(),
+                TargetsProvider = _targetsManager
             };
         }
 

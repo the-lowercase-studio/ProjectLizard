@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Effects.StatusEffects
 {
-    [CreateAssetMenu(fileName = "New Custom Effect", menuName = "Scriptable Objects/Cards/Effects/Custom Effect")]
+    [CreateAssetMenu(fileName = "New Custom Effect", menuName = "Scriptable Objects/Effects/Custom Effect")]
     public class CustomEffectSO : EffectSO
     {
         [field: SerializeField] public GameObject CustomBehaviorPrefab { get; private set; }

@@ -1,3 +1,4 @@
+using Assets.Effects.Base;
 using Assets.Targeting;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Assets.Effects.StatusEffects
 
         void RemoveStatusEffect(IStatusEffect effect);
 
-        bool HasStatusEffect(string effectName);
+        bool HasStatusEffect(EffectType effectType);
 
         List<IStatusEffect> GetActiveEffects();
 
@@ -26,12 +27,12 @@ namespace Assets.Effects.StatusEffects
 
         public void ApplyStatusEffect(IStatusEffect effect)
         {
-            IStatusEffect existingEffect = _activeEffects.Find(e => e.EffectName == effect.EffectName);
+            IStatusEffect existingEffect = _activeEffects.Find(e => e.EffectType == effect.EffectType);
 
             if (existingEffect != null)
             {
                 existingEffect.StackWith(effect);
-                Debug.Log($"Status effect '{effect.EffectName}' stacked on {gameObject.name}");
+                Debug.Log($"Status effect '{effect.EffectType}' stacked on {gameObject.name}");
             }
             else
             {
@@ -39,11 +40,11 @@ namespace Assets.Effects.StatusEffects
                 {
                     effect.Apply(target);
                     _activeEffects.Add(effect);
-                    Debug.Log($"Status effect '{effect.EffectName}' applied to {gameObject.name}");
+                    Debug.Log($"Status effect '{effect.EffectType}' applied to {gameObject.name}");
                 }
                 else
                 {
-                    Debug.Log($"Status effect '{effect.EffectName}' failed to apply to " +
+                    Debug.Log($"Status effect '{effect.EffectType}' failed to apply to " +
                         $"{gameObject.name} because of missing ITarget");
                 }
             }
@@ -54,14 +55,14 @@ namespace Assets.Effects.StatusEffects
         public void RemoveStatusEffect(IStatusEffect effect)
         {
             _activeEffects.Remove(effect);
-            Debug.Log($"Status effect '{effect.EffectName}' removed from {gameObject.name}");
+            Debug.Log($"Status effect '{effect.EffectType}' removed from {gameObject.name}");
 
             OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public bool HasStatusEffect(string effectName)
+        public bool HasStatusEffect(EffectType effectType)
         {
-            return _activeEffects.Exists(e => e.EffectName == effectName);
+            return _activeEffects.Exists(e => e.EffectType == effectType);
         }
 
         public List<IStatusEffect> GetActiveEffects()

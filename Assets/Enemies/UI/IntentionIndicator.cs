@@ -14,8 +14,9 @@ namespace Assets.Enemies.UI
         [SerializeField] private Sprite _attackIcon;
         [SerializeField] private Sprite _defenseIcon;
         [SerializeField] private Sprite _specialIcon;
+        [SerializeField] private Sprite _selfParalysisIcon;
 
-        public void ShowIntention(IntentionConfig intention)
+        public void ShowActionIntention(IntentionConfig intention)
         {
             gameObject.SetActive(true);
 
@@ -32,10 +33,31 @@ namespace Assets.Enemies.UI
                 case IntentionType.Special:
                     _intentionIcon.sprite = _specialIcon;
                     break;
+
+                case IntentionType.SelfParalysis:
+                    _intentionIcon.sprite = _selfParalysisIcon;
+                    SetValueTextFromIntention();
+                    return;
+
+                default:
+                    _intentionIcon.sprite = null;
+                    break;
             }
 
-            int value = intention.Action.GetValue();
-            _valueText.text = value > 0 ? value.ToString() : string.Empty;
+            SetValueTextFromIntention(intention);
+        }
+
+        private void SetValueTextFromIntention(IntentionConfig intention = null)
+        {
+            if (intention?.Action != null)
+            {
+                int value = intention.Action.GetValue();
+                _valueText.text = value > 0 ? value.ToString() : string.Empty;
+            }
+            else
+            {
+                _valueText.text = string.Empty;
+            }
         }
     }
 }

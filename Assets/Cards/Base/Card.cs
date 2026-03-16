@@ -1,6 +1,8 @@
+using Assets.Cards.Base.Damage;
 using Assets.Cards.Base.Usage;
 using Assets.Interfaces;
 using Assets.TweenCustom;
+using DG.Tweening;
 using System;
 using UnityEngine;
 
@@ -15,6 +17,7 @@ namespace Assets.Cards.Base
         ICardScaler Scaler { get; }
         ICardInteractions Interactions { get; }
         ICardUsage CardUsage { get; }
+        ICardDamage CardDamage { get; }
 
         int GetCurrentEnergyCost();
 
@@ -37,6 +40,7 @@ namespace Assets.Cards.Base
         public ICardScaler Scaler { get; private set; }
         public ICardInteractions Interactions { get; private set; }
         public ICardUsage CardUsage { get; private set; }
+        public ICardDamage CardDamage { get; private set; }
 
         public event EventHandler OnCardDiscard;
 
@@ -47,6 +51,7 @@ namespace Assets.Cards.Base
             Scaler = GetComponent<ICardScaler>();
             Interactions = GetComponent<ICardInteractions>();
             CardUsage = GetComponent<ICardUsage>();
+            CardDamage = GetComponent<ICardDamage>();
         }
 
         public void Initialize(CardConfigBaseSO config)

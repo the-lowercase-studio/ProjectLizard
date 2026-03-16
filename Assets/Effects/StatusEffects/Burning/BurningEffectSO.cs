@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Burning
 {
-    [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Cards/Effects/Fire/Burning Effect")]
-    public class FireBurningEffectSO : EffectSO
+    [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Effects/Fire/Burning Effect")]
+    public class BurningEffectSO : EffectSO
     {
-        [field: SerializeField] public int Damage { get; private set; }
+        [field: SerializeField] public int InitialDamage { get; private set; }
+        [field: SerializeField] public int BurningDamagePerTurn { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float BurningChance { get; private set; }
-        [field: SerializeField] public byte BurningDuration { get; private set; }
-        [field: SerializeField] public int BurnDamagePerTurn { get; private set; }
+        [field: SerializeField, Range(0f, 1f)] public float BurningSpreadChance { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
 
         public override void Execute(CardEffectContext context)
@@ -21,12 +21,10 @@ namespace Assets.Effects.StatusEffects.Burning
 
         private void ApplyDirectDamage(CardEffectContext context)
         {
-            Debug.Log($"START APPLY DAMAGE {context.Target}");
-
             if (context.Target?.Damageable != null)
             {
-                context.Target.Damageable.TakeDamage(Damage);
-                Debug.Log($"Fire effect dealt {Damage} damage to {context.Target.Name}");
+                context.Target.Damageable.TakeDamage(InitialDamage);
+                Debug.Log($"Burning effect dealt {InitialDamage} damage to {context.Target.Name}");
             }
         }
 
@@ -34,8 +32,8 @@ namespace Assets.Effects.StatusEffects.Burning
         {
             if (Random.value <= BurningChance && context.Target?.StatusEffectReceiver != null)
             {
-                context.Target.StatusEffectReceiver.ApplyStatusEffect(new BurningStatusEffect(BurningDuration, BurnDamagePerTurn));
-                Debug.Log($"Applied burning effect to {context.Target.Name} for {BurningDuration} turns");
+                context.Target.StatusEffectReceiver.ApplyStatusEffect(new BurningStatusEffect(this, context.TargetsProvider));
+                Debug.Log($"Applied burning effect to {context.Target.Name} for {TurnDuration} turns");
             }
         }
 
