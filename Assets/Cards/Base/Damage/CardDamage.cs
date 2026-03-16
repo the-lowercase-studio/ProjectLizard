@@ -1,3 +1,5 @@
+using Assets.Effects.StatusEffects;
+using Assets.ElementalSystem;
 using Assets.Targeting;
 using System.Linq;
 using UnityEngine;
@@ -49,7 +51,8 @@ namespace Assets.Cards.Base.Damage
 
             for (int i = 0; i < config.AttackCount; i++)
             {
-                target.Damageable.TakeDamage(config.DamageValue);
+                int modifiedDamage = GetModifiedDamageByStatusEffects(target, config.DamageValue, _card.Config.Element);
+                target.Damageable.TakeDamage(modifiedDamage);
             }
         }
 
@@ -59,8 +62,29 @@ namespace Assets.Cards.Base.Damage
 
             foreach (var target in targets)
             {
-                target.Damageable.TakeDamage(config.DamageValue);
+                int modifiedDamage = GetModifiedDamageByStatusEffects(target, config.DamageValue, _card.Config.Element);
+                target.Damageable.TakeDamage(modifiedDamage);
             }
+        }
+
+        private static int GetModifiedDamageByStatusEffects(ITarget target, int baseDamage, Elements damageElement)
+        {
+            if (target?.StatusEffectReceiver == null)
+            {
+                return baseDamage;
+            }
+
+            int modifiedDamage = baseDamage;
+
+            foreach (IStatusEffect effect in target.StatusEffectReceiver.GetActiveEffects())
+            {
+                if (effect is IIncomingDamageModifier incomingDamageModifier)
+                {
+                    modifiedDamage = incomingDamageModifier.ModifyIncomingDamage(modifiedDamage, damageElement);
+                }
+            }
+
+            return modifiedDamage;
         }
     }
 }

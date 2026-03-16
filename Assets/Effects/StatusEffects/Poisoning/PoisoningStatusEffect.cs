@@ -1,18 +1,29 @@
 using Assets.Interfaces.Combat;
+using Assets.ElementalSystem;
 using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Poisoning
 {
-    public class PoisoningStatusEffect : StatusEffectBase
+    public class PoisoningStatusEffect : StatusEffectBase, IIncomingDamageModifier
     {
         private int _damagePerTurn;
         private GameObject _visualEffect;
+        private readonly PoisoningEffectSO _effectSO;
 
         public PoisoningStatusEffect(PoisoningEffectSO effectSO)
             : base(effectSO)
         {
+            _effectSO = effectSO;
             _damagePerTurn = effectSO.PoisoningDamagePerTurn;
             UpdateEffectValueDisplay();
+        }
+
+        public int ModifyIncomingDamage(int incomingDamage, Elements damageElement)
+        {
+            float scalingFactor = _effectSO.GetDamageScalingFactor(damageElement);
+            int scaledDamage = Mathf.CeilToInt(incomingDamage * scalingFactor);
+
+            return Mathf.Max(scaledDamage, incomingDamage);
         }
 
         protected override void OnApply()

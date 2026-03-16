@@ -57,7 +57,7 @@ namespace Assets.Effects.UI
             _turnCounterText.text = remainingTurns.ToString();
             _counterContainer.SetActive(remainingTurns > 0);
 
-            if (!string.IsNullOrEmpty(_trackedEffect.EffectValueDisplay))
+            if (!string.IsNullOrEmpty(_trackedEffect.EffectValueDisplay) && _trackedEffect.EffectValueDisplay != "0")
             {
                 _effectValueText.text = _trackedEffect.EffectValueDisplay;
                 _effectValueText.gameObject.SetActive(true);
