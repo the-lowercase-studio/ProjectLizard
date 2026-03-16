@@ -4,7 +4,7 @@
     {
         None,
         Burning,
-        Stunning,
+        Paralysis,
         Bleeding,
         Poisoning
     }

@@ -1,38 +1,44 @@
 using Assets.Interfaces.Combat;
-using Assets.Turns;
 using UnityEngine;
-using Assets.Effects.Base;
+using Assets.Targeting;
 
 namespace Assets.Effects.StatusEffects.Burning
 {
     public class BurningStatusEffect : StatusEffectBase
     {
-        private int _damagePerTurn;
-        private GameObject _visualEffect;
+        public int DamagePerTurn { get; private set; }
 
-        public BurningStatusEffect(int turns, int damagePerTurn)
-            : base(new StatusEffectConfig(
-                effectName: "Burning",
-                turns: turns,
-                executionState: TurnExecutionState.OnEnemyTurnStart,
-                canStackValue: true,
-                effectType: EffectType.Burning))
+        private readonly ITargetsProvider _targetsProvider;
+        private readonly float _spreadChance;
+        private readonly GameObject _visualEffect;
+
+        public BurningStatusEffect(BurningEffectSO effectSO, ITargetsProvider targetsProvider)
+            : base(effectSO)
         {
-            _damagePerTurn = damagePerTurn;
+            _targetsProvider = targetsProvider;
+            DamagePerTurn = effectSO.BurningDamagePerTurn;
+            _spreadChance = effectSO.BurningSpreadChance;
+
             UpdateEffectValueDisplay();
         }
 
         protected override void OnApply()
         {
-            Debug.Log($"Burning applied! Will last {RemainingTurns} turns, dealing {_damagePerTurn} damage per turn.");
+            Debug.Log($"Burning applied! Will last {RemainingTurns} turns, " +
+                $"dealing {DamagePerTurn} damage per turn.");
         }
 
         protected override void ProcessTurnEffect()
         {
-            if (Target is IDamageable damageable)
+            if (target is IDamageable damageable)
             {
-                damageable.TakeDamage(_damagePerTurn);
-                Debug.Log($"Burning dealt {_damagePerTurn} damage. {RemainingTurns} turns remaining.");
+                damageable.TakeDamage(DamagePerTurn);
+                Debug.Log($"Burning dealt {DamagePerTurn} damage. {RemainingTurns} turns remaining.");
+
+                if (Random.value <= _spreadChance)
+                {
+                    SpreadEffect();
+                }
             }
         }
 
@@ -46,14 +52,46 @@ namespace Assets.Effects.StatusEffects.Burning
         {
             if (other is BurningStatusEffect burningEffect)
             {
-                _damagePerTurn += burningEffect._damagePerTurn;
-                Debug.Log($"Burning damage stacked! Now dealing {_damagePerTurn} damage per turn for {RemainingTurns} turns.");
+                DamagePerTurn += burningEffect.DamagePerTurn;
+                Debug.Log($"Burning damage stacked! Now dealing {DamagePerTurn} damage " +
+                    $"per turn for {RemainingTurns} turns.");
             }
         }
 
         protected override void UpdateEffectValueDisplay()
         {
-            EffectValueDisplay = _damagePerTurn.ToString();
+            EffectValueDisplay = DamagePerTurn.ToString();
+        }
+
+        private void SpreadEffect()
+        {
+            ITarget spreadTarget = _targetsProvider.GetClosestByDirection(
+                target, CustomTypes.HorizontalDirection.Right);
+
+            if (!CanSpreadOnTarget(spreadTarget))
+            {
+                spreadTarget = _targetsProvider.GetClosestByDirection(
+                    target, CustomTypes.HorizontalDirection.Left);
+
+                if (!CanSpreadOnTarget(spreadTarget))
+                {
+                    return;
+                }
+            }
+
+            if (spreadTarget.StatusEffectReceiver == null)
+            {
+                Debug.LogWarning($"Spread target {spreadTarget} has no StatusEffectReceiver.");
+                return;
+            }
+
+            spreadTarget.StatusEffectReceiver.ApplyStatusEffect(
+                new BurningStatusEffect(effectData as BurningEffectSO, _targetsProvider));
+        }
+
+        private bool CanSpreadOnTarget(ITarget target)
+        {
+            return target?.StatusEffectReceiver.HasStatusEffect(EffectType) == false;
         }
 
         private void RemoveVisualEffect()

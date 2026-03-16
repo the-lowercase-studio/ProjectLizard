@@ -3,6 +3,8 @@
     public enum Elements
     {
         Physical,
-        Fire
+        Fire,
+        Acid,
+        Electric
     }
 }
