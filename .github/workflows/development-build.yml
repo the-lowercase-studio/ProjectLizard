@@ -75,3 +75,4 @@ jobs:
           name: Release-Build-${{ matrix.targetPlatform }}-${{ steps.version.outputs.version }}
 >>>>>>>> main:.github/workflows/release-build.yml
           path: build/${{ matrix.targetPlatform }}/
+          
