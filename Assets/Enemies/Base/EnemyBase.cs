@@ -1,4 +1,5 @@
 using Assets.Audio;
+using Assets.DamageNumbers;
 using Assets.Effects.StatusEffects;
 using Assets.Enemies.Intentions;
 using Assets.Enemies.UI;
@@ -43,6 +44,7 @@ namespace Assets.Enemies.Base
 
         [Inject] private ITurnManager _turnManager;
         [Inject] private IPlayerParty _playerParty;
+        [Inject] private IDamageNumbers2DSpawner _damageNumbersSpawner;
 
         [SerializeField] private VFXPlayer _damageVfxPlayer;
         [SerializeField] private IntentionIndicator _intentionIndicator;
@@ -161,7 +163,7 @@ namespace Assets.Enemies.Base
             _currentIntention = null;
             _intentionIndicator?.ShowActionIntention(new IntentionConfig(IntentionType.SelfParalysis, 0, null));
         }
-        
+
         public void RemoveParalysis()
         {
             _isParalysed = false;
@@ -186,6 +188,11 @@ namespace Assets.Enemies.Base
             if (remainingDamage > 0)
             {
                 Health.DecreaseHealth(remainingDamage);
+
+                Transform popupTarget = Visual != null ? Visual.transform : transform;
+                _damageNumbersSpawner?.SpawnAtTarget(
+                    popupTarget,
+                    new DamageNumbers2DSpawnerConfig(remainingDamage, DamageNumberSpawnPattern.UpperHalf));
             }
 
             if (Health.IsAlive())
