@@ -163,7 +163,7 @@ namespace Assets.Enemies.Base
             _currentIntention = null;
             _intentionIndicator?.ShowActionIntention(new IntentionConfig(IntentionType.SelfParalysis, 0, null));
         }
-
+        
         public void RemoveParalysis()
         {
             _isParalysed = false;
