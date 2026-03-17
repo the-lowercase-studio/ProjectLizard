@@ -1,15 +1,15 @@
 using System;
 using UnityEngine;
 
-namespace Assets.CustomTypes
+namespace Assets.CustomTypes.ValueRanges
 {
     [Serializable]
-    public struct ValueRange
+    public struct IntValueRange
     {
-        [field: SerializeField] private int Min;
-        [field: SerializeField] private int Max;
+        [field: SerializeField] public int Min;
+        [field: SerializeField] public int Max;
 
-        public ValueRange(int min, int max)
+        public IntValueRange(int min, int max)
         {
             Min = min;
             Max = max;

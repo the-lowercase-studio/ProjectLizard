@@ -1,4 +1,5 @@
 using Assets.Audio;
+using Assets.DamageNumbers;
 using Assets.Effects.StatusEffects;
 using Assets.Interfaces;
 using Assets.Interfaces.Combat;
@@ -33,6 +34,7 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
     public event EventHandler OnPartyDestroyed;
 
     [Inject] private ITurnManager _turnManager;
+    [Inject] private IDamageNumbers2DSpawner _damageNumbersSpawner;
 
     [Header("Character Setup")]
     [SerializeField] private CharacterConfigSO _mainCharacterConfig;
@@ -189,6 +191,11 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
         if (remainingDamage > 0)
         {
             Health.DecreaseHealth(remainingDamage);
+
+            Transform popupTarget = _partyContainer != null ? _partyContainer : transform;
+            _damageNumbersSpawner?.SpawnAtTarget(
+                popupTarget,
+                new DamageNumbers2DSpawnerConfig(remainingDamage, DamageNumberSpawnPattern.UpperHalf));
         }
 
         if (Health.IsAlive())
