@@ -1,4 +1,4 @@
-using Assets.CustomTypes;
+using Assets.CustomTypes.ValueRanges;
 using Assets.Enemies.Base;
 using Assets.Targeting;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace Assets.Enemies.Intentions
 
     public abstract class EnemyActionBase : IEnemyAction
     {
-        [SerializeField] protected ValueRange _valueRange;
+        [SerializeField] protected IntValueRange _valueRange;
         protected int _currentValue;
 
         protected EnemyActionBase()
@@ -25,7 +25,7 @@ namespace Assets.Enemies.Intentions
 
         protected EnemyActionBase(int minDamage, int maxDamage)
         {
-            _valueRange = new ValueRange(minDamage, maxDamage);
+            _valueRange = new IntValueRange(minDamage, maxDamage);
 
             RefreshValue();
         }

@@ -1,4 +1,6 @@
+using System;
 using Assets.Cards.CardsHand;
+using Assets.DamageNumbers;
 using Assets.Energy;
 using Assets.Inputs;
 using Assets.Inputs.Pointer;
@@ -12,6 +14,7 @@ namespace Assets.Installers
 {
     public class SceneInstaller : MonoBehaviour, IInstaller
     {
+        [SerializeField] private Camera _mainCamera;
         [SerializeField] private TurnManager _turnManager;
         [SerializeField] private EnergyManager _energyManager;
         [SerializeField] private CardsHandManager _cardsHandManager;
@@ -21,9 +24,11 @@ namespace Assets.Installers
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private UITransformsProvider _uiTransformsProvider;
         [SerializeField] private PointerPositioner _pointerPositioner;
+        [SerializeField] private DamageNumbers2DSpawner _damageNumbers2DSpawner;
 
         public void InstallBindings(ContainerBuilder builder)
         {
+            builder.RegisterValue(_mainCamera, new[] { typeof(Camera) });
             builder.RegisterValue(_turnManager, new[] { typeof(ITurnManager) });
             builder.RegisterValue(_energyManager, new[] { typeof(IEnergyManager) });
             builder.RegisterValue(_cardsHandManager, new[] { typeof(ICardsHandManager) });
@@ -33,6 +38,7 @@ namespace Assets.Installers
             builder.RegisterValue(_inputHandler, new[] { typeof(IInputHandler) });
             builder.RegisterValue(_uiTransformsProvider, new[] { typeof(IUITransformsProvider) });
             builder.RegisterValue(_pointerPositioner, new[] { typeof(IPointerPositioner) });
+            builder.RegisterValue(_damageNumbers2DSpawner, new[] { typeof(IDamageNumbers2DSpawner) });
         }
     }
 }
