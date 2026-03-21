@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Assets.Effects.StatusEffects.Bleeding
 {
     [CreateAssetMenu(fileName = "New Physic Bleeding Effect", menuName = "Scriptable Objects/Effects/Physic/Bleeding Effect")]
-    public class BleedingEffectSO : EffectSO
+    public class BleedingEffectSO : EffectSO, IChanceBasedEffect
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int BleedingDamagePerTurn { get; private set; }
@@ -12,6 +12,8 @@ namespace Assets.Effects.StatusEffects.Bleeding
         [field: SerializeField] public float AcidDamageMultiplier { get; private set; }
         [field: SerializeField] public float PhysicDamageMultiplier { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
+
+        public float ApplyChance => BleedingChance;
 
         public override void Execute(CardEffectContext context)
         {

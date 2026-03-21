@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Assets.Effects.StatusEffects.Poisoning
 {
     [CreateAssetMenu(fileName = "New Acid Poisoning Effect", menuName = "Scriptable Objects/Effects/Acid/Poisoning Effect")]
-    public class PoisoningEffectSO : EffectSO
+    public class PoisoningEffectSO : EffectSO, IChanceBasedEffect
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int PoisoningDamagePerTurn { get; private set; }
@@ -15,6 +15,8 @@ namespace Assets.Effects.StatusEffects.Poisoning
         [field: SerializeField, Min(1f)] public float CompatibleElementsDamageScalingFactor { get; private set; } = 1.25f;
         [field: SerializeField, Min(1f)] public float IncompatibleElementsDamageScalingFactor { get; private set; } = 1.1f;
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
+
+        public float ApplyChance => PoisoningChance;
 
         public float GetDamageScalingFactor(Elements damageElement)
         {
