@@ -1,7 +1,9 @@
+using Assets.Cards.Base.Damage;
 using Assets.Effects.Base;
 using Assets.Effects.UI;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,16 +12,20 @@ namespace Assets.Cards.Base
     public readonly struct CardTargetCrosshairPresenterConfig
     {
         public IReadOnlyList<EffectSO> Effects { get; }
+        public CardDamagePreviewInfo DamageInfo { get; }
 
-        public CardTargetCrosshairPresenterConfig(IReadOnlyList<EffectSO> effects)
+        public CardTargetCrosshairPresenterConfig(IReadOnlyList<EffectSO> effects, CardDamagePreviewInfo damageInfo)
         {
             Effects = effects;
+            DamageInfo = damageInfo;
         }
     }
 
     public class CardTargetCrosshairPresenter : MonoBehaviour
     {
         [SerializeField] private Image _crosshairImage;
+        [SerializeField] private TextMeshProUGUI _damageValueText;
+        [SerializeField] private TextMeshProUGUI _damageHitCountText;
         [SerializeField] private RectTransform _effectsContainer;
         [SerializeField] private CardTargetEffectChancePresenter _effectChancePresenterPrefab;
 
@@ -32,6 +38,7 @@ namespace Assets.Cards.Base
                 _crosshairImage.enabled = true;
             }
 
+            UpdateDamageTexts(config.DamageInfo.DamageValue, config.DamageInfo.DamageHitCount);
             RebuildEffects(config.Effects);
         }
 
@@ -68,6 +75,29 @@ namespace Assets.Cards.Base
                 CardTargetEffectChancePresenter presenter = Instantiate(_effectChancePresenterPrefab, _effectsContainer);
                 presenter.Initialize(new CardTargetEffectChancePresenterConfig(effect));
                 _activePresenters.Add(presenter);
+            }
+        }
+
+        private void UpdateDamageTexts(int damageValue, int damageHitCount)
+        {
+            if (_damageValueText != null)
+            {
+                bool hasDamageValue = damageValue > 0;
+                _damageValueText.gameObject.SetActive(hasDamageValue);
+                if (hasDamageValue)
+                {
+                    _damageValueText.text = damageValue.ToString();
+                }
+            }
+
+            if (_damageHitCountText != null)
+            {
+                bool hasDamageHitCount = damageHitCount > 1;
+                _damageHitCountText.gameObject.SetActive(hasDamageHitCount);
+                if (hasDamageHitCount)
+                {
+                    _damageHitCountText.text = damageHitCount.ToString() + "x";
+                }
             }
         }
 
