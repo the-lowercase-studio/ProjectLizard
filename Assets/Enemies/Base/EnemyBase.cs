@@ -1,4 +1,5 @@
 using Assets.Audio;
+using Assets.Constants;
 using Assets.DamageNumbers;
 using Assets.Effects.StatusEffects;
 using Assets.Enemies.Intentions;
@@ -70,6 +71,7 @@ namespace Assets.Enemies.Base
         {
             _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnStart += TurnManager_OnEnemyTurnStart;
             _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
 
             _enemyImage.sprite = Config.Sprite;
@@ -82,6 +84,7 @@ namespace Assets.Enemies.Base
             _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
 
             _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnStart -= TurnManager_OnEnemyTurnStart;
             _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
         }
 
@@ -112,6 +115,16 @@ namespace Assets.Enemies.Base
             {
                 ExecuteIntention();
             }
+        }
+
+        private void TurnManager_OnEnemyTurnStart(object sender, EventArgs e)
+        {
+            if (!Health.IsAlive())
+            {
+                return;
+            }
+
+            ShieldReceiver?.ClearShield();
         }
 
         private void SelectIntention()
@@ -179,10 +192,32 @@ namespace Assets.Enemies.Base
             Debug.Log($"{this.gameObject.name} taken damage for {damage}");
 
             int remainingDamage = damage;
+            int shieldDamage = 0;
 
             if (ShieldReceiver != null && ShieldReceiver.HasShield())
             {
                 remainingDamage = ShieldReceiver.ReduceShield(damage);
+                shieldDamage = Mathf.Max(0, damage - remainingDamage);
+            }
+
+            bool shouldSplitPopups = shieldDamage > 0 && remainingDamage > 0;
+            float shieldPopupAngle = UnityEngine.Random.Range(
+                DamageNumberConstants.Movement.SPLIT_POPUP_LEFT_MIN_ANGLE,
+                DamageNumberConstants.Movement.SPLIT_POPUP_LEFT_MAX_ANGLE);
+            float healthPopupAngle = UnityEngine.Random.Range(
+                DamageNumberConstants.Movement.SPLIT_POPUP_RIGHT_MIN_ANGLE,
+                DamageNumberConstants.Movement.SPLIT_POPUP_RIGHT_MAX_ANGLE);
+
+            if (shieldDamage > 0)
+            {
+                Transform popupTarget = Visual != null ? Visual.transform : transform;
+                _damageNumbersSpawner?.SpawnAtTarget(
+                    popupTarget,
+                    new DamageNumbers2DSpawnerConfig(
+                        shieldDamage,
+                        DamageNumberSpawnPattern.UpperHalf,
+                        DamageNumberType.Shield,
+                        shouldSplitPopups ? shieldPopupAngle : null));
             }
 
             if (remainingDamage > 0)
@@ -192,7 +227,11 @@ namespace Assets.Enemies.Base
                 Transform popupTarget = Visual != null ? Visual.transform : transform;
                 _damageNumbersSpawner?.SpawnAtTarget(
                     popupTarget,
-                    new DamageNumbers2DSpawnerConfig(remainingDamage, DamageNumberSpawnPattern.UpperHalf));
+                    new DamageNumbers2DSpawnerConfig(
+                        remainingDamage,
+                        DamageNumberSpawnPattern.UpperHalf,
+                        DamageNumberType.Health,
+                        shouldSplitPopups ? healthPopupAngle : null));
             }
 
             if (Health.IsAlive())
