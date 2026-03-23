@@ -156,6 +156,7 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
         if (Health.IsAlive())
         {
             OnPlayerTurnStarted();
+            ShieldReceiver?.ClearShield();
         }
     }
 

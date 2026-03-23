@@ -71,6 +71,7 @@ namespace Assets.Enemies.Base
         {
             _enemyDeathSequence.OnCompleted += EnemyDeathSequence_OnCompleted;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnStart += TurnManager_OnEnemyTurnStart;
             _turnManager.OnEnemyTurnEnd += TurnManager_OnEnemyTurnEnd;
 
             _enemyImage.sprite = Config.Sprite;
@@ -83,6 +84,7 @@ namespace Assets.Enemies.Base
             _enemyDeathSequence.OnCompleted -= EnemyDeathSequence_OnCompleted;
 
             _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
+            _turnManager.OnEnemyTurnStart -= TurnManager_OnEnemyTurnStart;
             _turnManager.OnEnemyTurnEnd -= TurnManager_OnEnemyTurnEnd;
         }
 
@@ -113,6 +115,16 @@ namespace Assets.Enemies.Base
             {
                 ExecuteIntention();
             }
+        }
+
+        private void TurnManager_OnEnemyTurnStart(object sender, EventArgs e)
+        {
+            if (!Health.IsAlive())
+            {
+                return;
+            }
+
+            ShieldReceiver?.ClearShield();
         }
 
         private void SelectIntention()
