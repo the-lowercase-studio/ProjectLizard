@@ -8,6 +8,12 @@ using UnityEngine.Pool;
 
 namespace Assets.DamageNumbers
 {
+    public enum DamageNumberType
+    {
+        Health,
+        Shield
+    }
+
     public enum DamageNumberSpawnPattern
     {
         FullCircle,
@@ -17,12 +23,20 @@ namespace Assets.DamageNumbers
     public readonly struct DamageNumbers2DSpawnerConfig
     {
         public int Damage { get; }
+        public DamageNumberType DamageType { get; }
         public DamageNumberSpawnPattern SpawnPattern { get; }
+        public float? MovementAngleDegrees { get; }
 
-        public DamageNumbers2DSpawnerConfig(int damage, DamageNumberSpawnPattern spawnPattern)
+        public DamageNumbers2DSpawnerConfig(
+            int damage,
+            DamageNumberSpawnPattern spawnPattern,
+            DamageNumberType damageType = DamageNumberType.Health,
+            float? movementAngleDegrees = null)
         {
             Damage = damage;
+            DamageType = damageType;
             SpawnPattern = spawnPattern;
+            MovementAngleDegrees = movementAngleDegrees;
         }
     }
 
@@ -65,6 +79,9 @@ namespace Assets.DamageNumbers
         [Header("Appearance by Damage")]
         [SerializeField] private VisualAppearanceByDamageThreshold[] _visualAppearanceByDamageThresholds;
 
+        [Header("Appearance by Shield Damage")]
+        [SerializeField] private VisualAppearanceByDamageThreshold[] _shieldVisualAppearanceByDamageThresholds;
+
         public event EventHandler OnSpawnedEntityReleased;
 
         public uint CurrentlySpawnedObjectsCount { get; private set; }
@@ -106,9 +123,9 @@ namespace Assets.DamageNumbers
                 return;
             }
 
-            if (_visualAppearanceByDamageThresholds == null || _visualAppearanceByDamageThresholds.Length == 0)
+            if (!TryGetThresholdsByDamageType(config.DamageType, out VisualAppearanceByDamageThreshold[] thresholds) || thresholds == null || thresholds.Length == 0)
             {
-                Debug.LogError($"No damage-number appearance thresholds configured on {name}.");
+                Debug.LogError($"No {config.DamageType} damage-number appearance thresholds configured on {name}.");
                 return;
             }
 
@@ -118,11 +135,7 @@ namespace Assets.DamageNumbers
                 return;
             }
 
-            DamageNumberAppearance? appearance = FindCorrectAppearanceByThreshold(config.Damage);
-            if (appearance is null)
-            {
-                return;
-            }
+            DamageNumberAppearance appearance = FindCorrectAppearanceByThreshold(config.Damage, thresholds);
 
             for (int i = 0; i < count; i++)
             {
@@ -132,11 +145,11 @@ namespace Assets.DamageNumbers
                 popupTransform.localScale = Vector3.one;
                 popupTransform.localRotation = Quaternion.identity;
 
-                damageNumber.Initialize(new DamageNumber2DConfig(config.Damage, appearance.Value));
+                damageNumber.Initialize(new DamageNumber2DConfig(config.Damage, appearance));
 
                 damageNumber.OnLifeEnd += DamageNumber_OnLifeEnd;
 
-                Vector2 destination = anchoredStartPosition + GetMovementOffset(config.SpawnPattern);
+                Vector2 destination = anchoredStartPosition + GetMovementOffset(config);
                 popupTransform.DOAnchorPos(destination, _popupVisibilityDuration).SetEase(Ease.OutSine);
 
                 CurrentlySpawnedObjectsCount++;
@@ -220,9 +233,9 @@ namespace Assets.DamageNumbers
             return canvas.worldCamera != null ? canvas.worldCamera : _mainCamera;
         }
 
-        private Vector2 GetMovementOffset(DamageNumberSpawnPattern spawnPattern)
+        private Vector2 GetMovementOffset(DamageNumbers2DSpawnerConfig config)
         {
-            float angle = spawnPattern switch
+            float angle = config.MovementAngleDegrees ?? config.SpawnPattern switch
             {
                 DamageNumberSpawnPattern.FullCircle => UnityEngine.Random.Range(0f, 360f),
                 DamageNumberSpawnPattern.UpperHalf => UnityEngine.Random.Range(35f, 145f),
@@ -235,17 +248,62 @@ namespace Assets.DamageNumbers
             return new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians)) * distance;
         }
 
-        private DamageNumberAppearance? FindCorrectAppearanceByThreshold(int damage)
+        private DamageNumberAppearance FindCorrectAppearanceByThreshold(int damage, VisualAppearanceByDamageThreshold[] thresholds)
         {
-            for (int i = _visualAppearanceByDamageThresholds.Length - 1; i >= 0; i--)
+            int selectedIndex = -1;
+            int selectedThreshold = int.MinValue;
+            int smallestThresholdIndex = 0;
+
+            for (int i = 0; i < thresholds.Length; i++)
             {
-                if (_visualAppearanceByDamageThresholds[i].Threshold <= damage)
+                if (thresholds[i].Threshold < thresholds[smallestThresholdIndex].Threshold)
                 {
-                    return _visualAppearanceByDamageThresholds[i].Appearance;
+                    smallestThresholdIndex = i;
+                }
+
+                if (thresholds[i].Threshold <= damage && thresholds[i].Threshold > selectedThreshold)
+                {
+                    selectedThreshold = thresholds[i].Threshold;
+                    selectedIndex = i;
                 }
             }
 
-            return null;
+            return selectedIndex >= 0
+                ? thresholds[selectedIndex].Appearance
+                : thresholds[smallestThresholdIndex].Appearance;
+        }
+
+        private bool TryGetThresholdsByDamageType(DamageNumberType damageType, out VisualAppearanceByDamageThreshold[] thresholds)
+        {
+            bool hasHealthThresholds = _visualAppearanceByDamageThresholds != null && _visualAppearanceByDamageThresholds.Length > 0;
+            bool hasShieldThresholds = _shieldVisualAppearanceByDamageThresholds != null && _shieldVisualAppearanceByDamageThresholds.Length > 0;
+
+            if (damageType == DamageNumberType.Shield)
+            {
+                if (hasShieldThresholds)
+                {
+                    thresholds = _shieldVisualAppearanceByDamageThresholds;
+                    return true;
+                }
+
+                if (hasHealthThresholds)
+                {
+                    thresholds = _visualAppearanceByDamageThresholds;
+                    return true;
+                }
+
+                thresholds = null;
+                return false;
+            }
+
+            if (hasHealthThresholds)
+            {
+                thresholds = _visualAppearanceByDamageThresholds;
+                return true;
+            }
+
+            thresholds = null;
+            return false;
         }
     }
 }
