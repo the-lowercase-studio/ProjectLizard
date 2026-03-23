@@ -37,11 +37,13 @@ namespace Assets.Cards.Base
         {
             public ITarget Target { get; }
             public IReadOnlyList<EffectSO> Effects { get; }
+            public CardDamagePreviewInfo DamageInfo { get; }
 
-            public TargetPreviewData(ITarget target, IReadOnlyList<EffectSO> effects)
+            public TargetPreviewData(ITarget target, IReadOnlyList<EffectSO> effects, CardDamagePreviewInfo damageInfo)
             {
                 Target = target;
                 Effects = effects;
+                DamageInfo = damageInfo;
             }
         }
 
@@ -119,7 +121,7 @@ namespace Assets.Cards.Base
                 }
 
                 CardTargetCrosshairPresenter presenter = Instantiate(_crosshairPresenterPrefab, container);
-                presenter.Initialize(new CardTargetCrosshairPresenterConfig(data.Effects));
+                presenter.Initialize(new CardTargetCrosshairPresenterConfig(data.Effects, data.DamageInfo));
 
                 _activeEntries.Add(new PreviewEntry
                 {
@@ -150,8 +152,9 @@ namespace Assets.Cards.Base
         {
             var orderedTargets = new List<ITarget>();
             var targetEffects = new Dictionary<ITarget, List<EffectSO>>();
+            var targetDamageInfos = new Dictionary<ITarget, CardDamagePreviewInfo>();
 
-            AddDamageTargets(orderedTargets, targetEffects);
+            AddDamageTargets(orderedTargets, targetEffects, targetDamageInfos);
             AddEffectTargets(orderedTargets, targetEffects);
 
             var result = new List<TargetPreviewData>(orderedTargets.Count);
@@ -159,13 +162,14 @@ namespace Assets.Cards.Base
             {
                 ITarget target = orderedTargets[i];
                 targetEffects.TryGetValue(target, out List<EffectSO> effects);
-                result.Add(new TargetPreviewData(target, effects ?? new List<EffectSO>()));
+                targetDamageInfos.TryGetValue(target, out CardDamagePreviewInfo damageInfo);
+                result.Add(new TargetPreviewData(target, effects ?? new List<EffectSO>(), damageInfo));
             }
 
             return result;
         }
 
-        private void AddDamageTargets(List<ITarget> orderedTargets, Dictionary<ITarget, List<EffectSO>> targetEffects)
+        private void AddDamageTargets(List<ITarget> orderedTargets, Dictionary<ITarget, List<EffectSO>> targetEffects, Dictionary<ITarget, CardDamagePreviewInfo> targetDamageInfos)
         {
             CardDamageSO damageConfig = _card.Config?.Damage;
             if (damageConfig == null)
@@ -173,9 +177,22 @@ namespace Assets.Cards.Base
                 return;
             }
 
+            if (damageConfig.TargetMode == TargetingMode.Same)
+            {
+                ITarget sameTarget = _targetsProvider.GetFromStartPosition(damageConfig.StartPosition, 1).FirstOrDefault();
+                if (sameTarget == null)
+                {
+                    return;
+                }
+
+                AddTargetIfNeeded(sameTarget, orderedTargets, targetEffects);
+                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(sameTarget, damageConfig.DamageValue, _card.Config.Element);
+                targetDamageInfos[sameTarget] = new CardDamagePreviewInfo(modifiedDamage, damageConfig.AttackCount);
+                return;
+            }
+
             IEnumerable<ITarget> damageTargets = damageConfig.TargetMode switch
             {
-                TargetingMode.Same => _targetsProvider.GetFromStartPosition(damageConfig.StartPosition, 1),
                 TargetingMode.Other => _targetsProvider.GetFromStartPosition(damageConfig.StartPosition, damageConfig.AttackCount),
                 _ => Enumerable.Empty<ITarget>()
             };
@@ -183,6 +200,8 @@ namespace Assets.Cards.Base
             foreach (ITarget target in damageTargets)
             {
                 AddTargetIfNeeded(target, orderedTargets, targetEffects);
+                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(target, damageConfig.DamageValue, _card.Config.Element);
+                targetDamageInfos[target] = new CardDamagePreviewInfo(modifiedDamage, 1);
             }
         }
 

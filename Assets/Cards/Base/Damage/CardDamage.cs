@@ -67,7 +67,7 @@ namespace Assets.Cards.Base.Damage
             }
         }
 
-        private static int GetModifiedDamageByStatusEffects(ITarget target, int baseDamage, Elements damageElement)
+        public static int GetModifiedDamageByStatusEffects(ITarget target, int baseDamage, Elements damageElement)
         {
             if (target?.StatusEffectReceiver == null)
             {
