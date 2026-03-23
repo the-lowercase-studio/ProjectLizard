@@ -1,5 +1,6 @@
 using Assets.CustomTypes;
 using Assets.CustomTypes.ValueRanges;
+using Assets.Constants;
 using DG.Tweening;
 using Reflex.Attributes;
 using System;
@@ -87,6 +88,7 @@ namespace Assets.DamageNumbers
         public uint CurrentlySpawnedObjectsCount { get; private set; }
 
         private bool _isPopupsEnabled = true;
+        private readonly float?[] _recentMovementAngleDegrees = new float?[DamageNumberConstants.Randomization.RECENT_MOVEMENT_HISTORY_SIZE];
 
         public void EnableFunctionality()
         {
@@ -235,17 +237,107 @@ namespace Assets.DamageNumbers
 
         private Vector2 GetMovementOffset(DamageNumbers2DSpawnerConfig config)
         {
-            float angle = config.MovementAngleDegrees ?? config.SpawnPattern switch
-            {
-                DamageNumberSpawnPattern.FullCircle => UnityEngine.Random.Range(0f, 360f),
-                DamageNumberSpawnPattern.UpperHalf => UnityEngine.Random.Range(35f, 145f),
-                _ => 90f
-            };
+            float angle = ResolveMovementAngle(config);
 
             float angleInRadians = angle * Mathf.Deg2Rad;
             float distance = UnityEngine.Random.Range(_popupMovementRange.Min, _popupMovementRange.Max);
 
             return new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians)) * distance;
+        }
+
+        private float ResolveMovementAngle(DamageNumbers2DSpawnerConfig config)
+        {
+            if (config.MovementAngleDegrees.HasValue)
+            {
+                float forcedAngle = NormalizeAngle(config.MovementAngleDegrees.Value);
+                RememberMovementAngle(forcedAngle);
+                return forcedAngle;
+            }
+
+            float firstSample = SampleAngleByPattern(config.SpawnPattern);
+            float selectedAngle = firstSample;
+            float bestScore = ScoreAngleByRecentHistory(firstSample);
+
+            for (int i = 1; i < DamageNumberConstants.Randomization.ANGLE_SELECTION_ATTEMPTS; i++)
+            {
+                float candidate = SampleAngleByPattern(config.SpawnPattern);
+                float candidateScore = ScoreAngleByRecentHistory(candidate);
+
+                if (candidateScore >= DamageNumberConstants.Randomization.MIN_ANGLE_SEPARATION_DEGREES)
+                {
+                    selectedAngle = candidate;
+                    bestScore = candidateScore;
+                    break;
+                }
+
+                if (candidateScore > bestScore)
+                {
+                    selectedAngle = candidate;
+                    bestScore = candidateScore;
+                }
+            }
+
+            RememberMovementAngle(selectedAngle);
+            return selectedAngle;
+        }
+
+        private float SampleAngleByPattern(DamageNumberSpawnPattern spawnPattern)
+        {
+            return spawnPattern switch
+            {
+                DamageNumberSpawnPattern.FullCircle => UnityEngine.Random.Range(
+                    DamageNumberConstants.Movement.FULL_CIRCLE_MIN_ANGLE,
+                    DamageNumberConstants.Movement.FULL_CIRCLE_MAX_ANGLE),
+                DamageNumberSpawnPattern.UpperHalf => UnityEngine.Random.Range(
+                    DamageNumberConstants.Movement.UPPER_HALF_MIN_ANGLE,
+                    DamageNumberConstants.Movement.UPPER_HALF_MAX_ANGLE),
+                _ => DamageNumberConstants.Movement.DEFAULT_FALLBACK_ANGLE
+            };
+        }
+
+        private float ScoreAngleByRecentHistory(float angle)
+        {
+            float normalizedAngle = NormalizeAngle(angle);
+            float score = 360f;
+
+            for (int i = 0; i < _recentMovementAngleDegrees.Length; i++)
+            {
+                if (!_recentMovementAngleDegrees[i].HasValue)
+                {
+                    continue;
+                }
+
+                score = Mathf.Min(score, AngularDistanceDegrees(normalizedAngle, _recentMovementAngleDegrees[i].Value));
+            }
+
+            return score;
+        }
+
+        private void RememberMovementAngle(float angle)
+        {
+            if (_recentMovementAngleDegrees.Length == 0)
+            {
+                return;
+            }
+
+            for (int i = _recentMovementAngleDegrees.Length - 1; i > 0; i--)
+            {
+                _recentMovementAngleDegrees[i] = _recentMovementAngleDegrees[i - 1];
+            }
+
+            _recentMovementAngleDegrees[0] = NormalizeAngle(angle);
+        }
+
+        private float NormalizeAngle(float angle)
+        {
+            float normalized = angle % 360f;
+            return normalized < 0f ? normalized + 360f : normalized;
+        }
+
+        private float AngularDistanceDegrees(float firstAngle, float secondAngle)
+        {
+            float delta = Mathf.Abs(NormalizeAngle(firstAngle) - NormalizeAngle(secondAngle));
+            return delta > 180f ? 360f - delta : delta;
         }
 
         private DamageNumberAppearance FindCorrectAppearanceByThreshold(int damage, VisualAppearanceByDamageThreshold[] thresholds)
