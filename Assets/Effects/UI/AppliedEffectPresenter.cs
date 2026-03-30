@@ -6,19 +6,19 @@ using UnityEngine.UI;
 
 namespace Assets.Effects.UI
 {
-    public struct EffectPresenterConfig
+    public struct AppliedEffectPresenterConfig
     {
         public IStatusEffect Effect;
         public Sprite EffectSprite;
 
-        public EffectPresenterConfig(IStatusEffect effect, Sprite effectSprite)
+        public AppliedEffectPresenterConfig(IStatusEffect effect, Sprite effectSprite)
         {
             Effect = effect;
             EffectSprite = effectSprite;
         }
     }
 
-    public interface IEffectPresenter : IInitializableByConfig<EffectPresenterConfig>
+    public interface IAppliedEffectPresenter : IInitializableByConfig<AppliedEffectPresenterConfig>
     {
         string GetEffectName();
 
@@ -29,7 +29,7 @@ namespace Assets.Effects.UI
         void UpdateDisplay();
     }
 
-    public class EffectPresenter : MonoBehaviour, IEffectPresenter
+    public class AppliedEffectPresenter : MonoBehaviour, IAppliedEffectPresenter
     {
         [SerializeField] private Image _effectIcon;
         [SerializeField] private GameObject _counterContainer;
@@ -38,7 +38,7 @@ namespace Assets.Effects.UI
 
         private IStatusEffect _trackedEffect;
 
-        public void Initialize(EffectPresenterConfig config)
+        public void Initialize(AppliedEffectPresenterConfig config)
         {
             _trackedEffect = config.Effect;
             _effectIcon.sprite = config.EffectSprite;

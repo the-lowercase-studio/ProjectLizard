@@ -6,18 +6,18 @@ using UnityEngine;
 
 namespace Assets.Effects.UI
 {
-    public interface IEffectsPresenter : IInitializableByConfig<IStatusEffectReceiver>
+    public interface IAppliedEffectsPresenter : IInitializableByConfig<IStatusEffectReceiver>
     {
         void UpdateEffectsDisplay();
     }
 
-    public class EffectsPresenter : MonoBehaviour, IEffectsPresenter
+    public class AppliedEffectsPresenter : MonoBehaviour, IAppliedEffectsPresenter
     {
-        [SerializeField] private EffectPresenter _effectPresenterPrefab;
+        [SerializeField] private AppliedEffectPresenter _effectPresenterPrefab;
         [SerializeField] private EffectTypeSpriteMappingSO _effectTypeMapping;
 
         private IStatusEffectReceiver _targetReceiver;
-        private Dictionary<EffectType, EffectPresenter> _activePresenters = new Dictionary<EffectType, EffectPresenter>();
+        private Dictionary<EffectType, AppliedEffectPresenter> _activePresenters = new Dictionary<EffectType, AppliedEffectPresenter>();
 
         private void OnDestroy()
         {
@@ -75,14 +75,14 @@ namespace Assets.Effects.UI
         {
             Sprite effectSprite = _effectTypeMapping.GetSpriteForEffectType(effect.EffectType);
 
-            EffectPresenter presenter = Instantiate(_effectPresenterPrefab, transform);
-            presenter.Initialize(new EffectPresenterConfig(effect, effectSprite));
+            AppliedEffectPresenter presenter = Instantiate(_effectPresenterPrefab, transform);
+            presenter.Initialize(new AppliedEffectPresenterConfig(effect, effectSprite));
             _activePresenters[effect.EffectType] = presenter;
         }
 
         private void RemoveEffectPresenter(EffectType effectType)
         {
-            if (_activePresenters.TryGetValue(effectType, out EffectPresenter presenter))
+            if (_activePresenters.TryGetValue(effectType, out AppliedEffectPresenter presenter))
             {
                 Destroy(presenter.gameObject);
                 _activePresenters.Remove(effectType);

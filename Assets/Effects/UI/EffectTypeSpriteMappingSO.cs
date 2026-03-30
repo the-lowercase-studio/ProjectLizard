@@ -1,6 +1,7 @@
 using Assets.Effects.Base;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.Effects.UI
@@ -12,15 +13,16 @@ namespace Assets.Effects.UI
 
         public Sprite GetSpriteForEffectType(EffectType effectType)
         {
-            EffectTypeMapping mapping = _mappings.Find(m => m.effectType == effectType);
-            return mapping?.sprite;
+            EffectTypeMapping mapping = _mappings.Find(m => m.EffectType == effectType);
+            return mapping?.Sprite;
         }
     }
 
     [Serializable]
     public class EffectTypeMapping
     {
-        public EffectType effectType;
-        public Sprite sprite;
+        public EffectType EffectType;
+        public Sprite Sprite;
+        public AnimatorController InitialEffectAnimator;
     }
 }

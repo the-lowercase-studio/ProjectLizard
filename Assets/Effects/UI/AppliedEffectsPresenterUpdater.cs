@@ -6,17 +6,17 @@ using Reflex.Attributes;
 namespace Assets.Effects.UI
 {
     [RequireComponent(typeof(StatusEffectReceiver))]
-    public class EffectsPresenterUpdater : MonoBehaviour
+    public class AppliedEffectsPresenterUpdater : MonoBehaviour
     {
         [Inject] private ITurnManager _turnManager;
 
         private IStatusEffectReceiver _effectReceiver;
-        private IEffectsPresenter _effectsPresenter;
+        private IAppliedEffectsPresenter _effectsPresenter;
 
         private void Awake()
         {
             _effectReceiver = GetComponent<IStatusEffectReceiver>();
-            _effectsPresenter = GetComponentInChildren<IEffectsPresenter>();
+            _effectsPresenter = GetComponentInChildren<IAppliedEffectsPresenter>();
             _effectsPresenter.Initialize(_effectReceiver);
             _effectReceiver.OnEffectsChanged += OnEffectsChanged;
         }
