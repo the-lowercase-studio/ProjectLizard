@@ -11,12 +11,12 @@ namespace Assets.Effects.UI
         [Inject] private ITurnManager _turnManager;
 
         private IStatusEffectReceiver _effectReceiver;
-        private IAppliedEffectsPresenter _effectsPresenter;
+        private IEffectsPresenter _effectsPresenter;
 
         private void Awake()
         {
             _effectReceiver = GetComponent<IStatusEffectReceiver>();
-            _effectsPresenter = GetComponentInChildren<IAppliedEffectsPresenter>();
+            _effectsPresenter = GetComponentInChildren<IEffectsPresenter>();
             _effectsPresenter.Initialize(_effectReceiver);
             _effectReceiver.OnEffectsChanged += OnEffectsChanged;
         }

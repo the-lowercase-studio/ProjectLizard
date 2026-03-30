@@ -6,15 +6,17 @@ using UnityEngine;
 
 namespace Assets.Effects.UI
 {
-    public interface IAppliedEffectsPresenter : IInitializableByConfig<IStatusEffectReceiver>
+    public interface IEffectsPresenter : IInitializableByConfig<IStatusEffectReceiver>
     {
         void UpdateEffectsDisplay();
     }
 
-    public class AppliedEffectsPresenter : MonoBehaviour, IAppliedEffectsPresenter
+    public class EffectsPresenter : MonoBehaviour, IEffectsPresenter
     {
-        [SerializeField] private AppliedEffectPresenter _effectPresenterPrefab;
         [SerializeField] private EffectTypeSpriteMappingSO _effectTypeMapping;
+        [SerializeField] private AppliedEffectPresenter _effectPresenterPrefab;
+        [SerializeField] private InitialEffectPresenter _initialEffectPresenterPrefab;
+        [SerializeField] private Transform _initialEffectPresenterParent;
 
         private IStatusEffectReceiver _targetReceiver;
         private Dictionary<EffectType, AppliedEffectPresenter> _activePresenters = new Dictionary<EffectType, AppliedEffectPresenter>();
@@ -66,18 +68,31 @@ namespace Assets.Effects.UI
                 }
                 else
                 {
-                    CreateEffectPresenter(effect);
+                    Sprite effectSprite = _effectTypeMapping.GetSpriteForEffectType(effect.EffectType);
+                    CreateAppliedEffectPresenter(effect.EffectType, effect, effectSprite);
+                    CreateInitialEffectPresenter(effect.EffectType, effectSprite);
                 }
             }
         }
 
-        private void CreateEffectPresenter(IStatusEffect effect)
+        private void CreateAppliedEffectPresenter(EffectType effectType, IStatusEffect statusEffect, Sprite effectSprite)
         {
-            Sprite effectSprite = _effectTypeMapping.GetSpriteForEffectType(effect.EffectType);
-
             AppliedEffectPresenter presenter = Instantiate(_effectPresenterPrefab, transform);
-            presenter.Initialize(new AppliedEffectPresenterConfig(effect, effectSprite));
-            _activePresenters[effect.EffectType] = presenter;
+            presenter.Initialize(new AppliedEffectPresenterConfig(statusEffect, effectSprite));
+            _activePresenters[effectType] = presenter;
+        }
+
+        private void CreateInitialEffectPresenter(EffectType effectType, Sprite effectSprite)
+        {
+            var initialEffectAnimator = _effectTypeMapping.GetInitialEffectAnimatorForEffectType(effectType);
+            if (initialEffectAnimator == null)
+            {
+                return;
+            }
+
+            Transform parent = _initialEffectPresenterParent != null ? _initialEffectPresenterParent : transform;
+            InitialEffectPresenter presenter = Instantiate(_initialEffectPresenterPrefab, parent);
+            presenter.Initialize(new InitialEffectPresenterConfig(effectType, effectSprite, initialEffectAnimator));
         }
 
         private void RemoveEffectPresenter(EffectType effectType)

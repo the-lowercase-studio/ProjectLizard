@@ -16,6 +16,12 @@ namespace Assets.Effects.UI
             EffectTypeMapping mapping = _mappings.Find(m => m.EffectType == effectType);
             return mapping?.Sprite;
         }
+
+        public AnimatorController GetInitialEffectAnimatorForEffectType(EffectType effectType)
+        {
+            EffectTypeMapping mapping = _mappings.Find(m => m.EffectType == effectType);
+            return mapping?.InitialEffectAnimator;
+        }
     }
 
     [Serializable]
