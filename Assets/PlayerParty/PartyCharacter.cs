@@ -2,6 +2,7 @@ using Assets.Audio;
 using Assets.Effects.StatusEffects;
 using Assets.Interfaces;
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IPartyCharacter : IAudioClipSource
 {
@@ -20,12 +21,12 @@ public class PartyCharacter : MonoBehaviour, IPartyCharacter
     public IStatusEffectReceiver StatusEffectReceiver { get; private set; }
     public string Name => Config.Name;
 
-    [SerializeField] private Sprite _characterSprite;
+    [SerializeField] private Image _image;
 
     public void Initialize(CharacterConfigSO config)
     {
         Config = config;
-        _characterSprite = Config.Sprite;
+        _image.sprite = Config.Sprite;
     }
 
     private void Awake()

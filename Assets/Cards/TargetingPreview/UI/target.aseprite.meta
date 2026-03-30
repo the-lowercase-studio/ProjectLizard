@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b1dd899cbc8d2784e9a5cd77def06494
+guid: d722e5a4975ee2c4b8a4367d3154cdd5
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -127,30 +127,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Frame_4
+  - name: target
     originalName: 
-    pivot: {x: 0.5081967, y: -0.022222223}
-    alignment: 9
-    border: {x: 0, y: 0, z: 0, w: 0}
-    customData: 
-    rect:
-      serializedVersion: 2
-      x: 4
-      y: 58
-      width: 61
-      height: 45
-    spriteID: 7e58cb0261849644f8ec2b0921c7d6a6
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 4, y: 58}
-  - name: Frame_5
-    originalName: 
-    pivot: {x: 0.48333335, y: -0.02173913}
+    pivot: {x: 0.5, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -158,9 +137,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 60
-      height: 46
-    spriteID: cb0584fb0ae765a4183c2de484fd7641
+      width: 64
+      height: 64
+    spriteID: 2c6f50fdef261af4391585b92d780469
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -174,34 +153,25 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 2449173038
+      value0: 1081251833
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: lizard
+    name: target
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Frame_4
-      frameIndex: 4
+    - name: target
+      frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 1
-        y: 1
-        width: 61
-        height: 45
-      spriteId: 7e58cb0261849644f8ec2b0921c7d6a6
-    - name: Frame_5
-      frameIndex: 5
-      additiveSortOrder: 0
-      cellRect:
-        x: 3
-        y: 1
-        width: 60
-        height: 46
-      spriteId: cb0584fb0ae765a4183c2de484fd7641
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      spriteId: 2c6f50fdef261af4391585b92d780469
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
