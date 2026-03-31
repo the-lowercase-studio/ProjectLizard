@@ -70,7 +70,7 @@ namespace Assets.Effects.UI
                 {
                     Sprite effectSprite = _effectTypeMapping.GetSpriteForEffectType(effect.EffectType);
                     CreateAppliedEffectPresenter(effect.EffectType, effect, effectSprite);
-                    CreateInitialEffectPresenter(effect.EffectType, effectSprite);
+                    CreateInitialEffectPresenter(effect.EffectType);
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace Assets.Effects.UI
             _activePresenters[effectType] = presenter;
         }
 
-        private void CreateInitialEffectPresenter(EffectType effectType, Sprite effectSprite)
+        private void CreateInitialEffectPresenter(EffectType effectType)
         {
             var initialEffectAnimator = _effectTypeMapping.GetInitialEffectAnimatorForEffectType(effectType);
             if (initialEffectAnimator == null)
@@ -90,9 +90,8 @@ namespace Assets.Effects.UI
                 return;
             }
 
-            Transform parent = _initialEffectPresenterParent != null ? _initialEffectPresenterParent : transform;
-            InitialEffectPresenter presenter = Instantiate(_initialEffectPresenterPrefab, parent);
-            presenter.Initialize(new InitialEffectPresenterConfig(effectType, effectSprite, initialEffectAnimator));
+            InitialEffectPresenter presenter = Instantiate(_initialEffectPresenterPrefab, _initialEffectPresenterParent);
+            presenter.Initialize(new InitialEffectPresenterConfig(initialEffectAnimator));
         }
 
         private void RemoveEffectPresenter(EffectType effectType)

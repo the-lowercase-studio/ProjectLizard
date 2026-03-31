@@ -2,20 +2,15 @@ using Assets.Effects.Base;
 using Assets.Interfaces;
 using UnityEditor.Animations;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Effects.UI
 {
     public struct InitialEffectPresenterConfig
     {
-        public EffectType EffectType;
-        public Sprite EffectSprite;
         public AnimatorController InitialEffectAnimator;
 
-        public InitialEffectPresenterConfig(EffectType effectType, Sprite effectSprite, AnimatorController initialEffectAnimator)
+        public InitialEffectPresenterConfig(AnimatorController initialEffectAnimator)
         {
-            EffectType = effectType;
-            EffectSprite = effectSprite;
             InitialEffectAnimator = initialEffectAnimator;
         }
     }
@@ -26,17 +21,15 @@ namespace Assets.Effects.UI
 
     public class InitialEffectPresenter : MonoBehaviour, IInitialEffectPresenter
     {
-        [SerializeField] private Image _effectImage;
-
         [SerializeField] private Animator _animator;
         private bool _isWaitingForAnimationEnd;
         private float _destroyAtTime;
 
         public void Initialize(InitialEffectPresenterConfig config)
         {
-            if (_effectImage != null)
+            if (_animator == null)
             {
-                _effectImage.sprite = config.EffectSprite;
+                _animator = GetComponent<Animator>();
             }
 
             if (_animator == null || config.InitialEffectAnimator == null)
@@ -47,10 +40,21 @@ namespace Assets.Effects.UI
 
             _animator.runtimeAnimatorController = config.InitialEffectAnimator;
             _animator.Rebind();
-            _animator.Update(0f);
-            _animator.Play(0, 0, 0f);
 
-            float animationDuration = GetAnimationDuration(config.InitialEffectAnimator);
+            string defaultStatePath = GetDefaultStatePath(config.InitialEffectAnimator);
+            if (!string.IsNullOrEmpty(defaultStatePath))
+            {
+                _animator.Play(defaultStatePath, 0, 0f);
+            }
+
+            _animator.Update(0f);
+
+            float animationDuration = GetDefaultStateDuration(config.InitialEffectAnimator);
+            if (animationDuration <= 0f)
+            {
+                animationDuration = GetAnimationDuration(config.InitialEffectAnimator);
+            }
+
             if (animationDuration <= 0f)
             {
                 Destroy(gameObject);
@@ -75,6 +79,44 @@ namespace Assets.Effects.UI
 
             _isWaitingForAnimationEnd = false;
             Destroy(gameObject);
+        }
+
+        private static string GetDefaultStatePath(AnimatorController animatorController)
+        {
+            if (animatorController.layers == null || animatorController.layers.Length == 0)
+            {
+                return null;
+            }
+
+            var layer = animatorController.layers[0];
+            var defaultState = layer.stateMachine?.defaultState;
+            if (defaultState == null)
+            {
+                return null;
+            }
+
+            return layer.name + "." + defaultState.name;
+        }
+
+        private static float GetDefaultStateDuration(AnimatorController animatorController)
+        {
+            if (animatorController.layers == null || animatorController.layers.Length == 0)
+            {
+                return 0f;
+            }
+
+            var defaultState = animatorController.layers[0].stateMachine?.defaultState;
+            if (defaultState == null)
+            {
+                return 0f;
+            }
+
+            if (defaultState.motion is AnimationClip animationClip)
+            {
+                return animationClip.length;
+            }
+
+            return 0f;
         }
 
         private static float GetAnimationDuration(AnimatorController animatorController)
