@@ -52,6 +52,7 @@ namespace Assets.Enemies.Base
 
         private Image _enemyImage;
         private INeedToCompleteBeforeDisable _enemyDeathSequence;
+        private IEnemyAnimationPlayer _enemyIntentAnimationPlayer;
         private IntentionSelector _intentionSelector;
         private IntentionConfig _currentIntention;
         private bool _isParalysed;
@@ -63,6 +64,7 @@ namespace Assets.Enemies.Base
             StatusEffectReceiver = GetComponent<IStatusEffectReceiver>();
             ShieldReceiver = GetComponent<IShieldReceiver>();
             _enemyDeathSequence = GetComponent<INeedToCompleteBeforeDisable>();
+            _enemyIntentAnimationPlayer = GetComponentInChildren<IEnemyAnimationPlayer>();
             _enemyImage = Visual.transform.GetChild(0).GetComponent<Image>();
             _intentionSelector = new IntentionSelector();
         }
@@ -165,6 +167,7 @@ namespace Assets.Enemies.Base
 
             if (_currentIntention?.Action != null)
             {
+                _enemyIntentAnimationPlayer?.TryPlayForIntention(_currentIntention.IntentionType);
                 _currentIntention.Action.Execute(this, _playerParty);
                 _currentIntention = null;
             }

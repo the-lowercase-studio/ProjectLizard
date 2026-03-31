@@ -132,6 +132,7 @@ Then keep methods in lifecycle and behavior order that reads clearly:
 1. Prefer [SerializeField] private fields instead of public mutable fields.
 2. Keep inspector-facing names and tooltips clear when adding new designer-configurable values.
 3. Preserve existing inspector workflows and serialized data compatibility.
+4. For required `[SerializeField]` references, do not add defensive null checks in `Awake` just to throw custom errors. If a required reference is unassigned, rely on Unity's default missing-reference behavior; assigning required inspector references is user/setup responsibility.
 
 ## 6) Events and Turn-Flow Safety
 
