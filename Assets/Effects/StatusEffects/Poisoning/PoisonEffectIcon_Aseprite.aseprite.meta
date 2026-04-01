@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 30cd2f2794761ef408631d292d61fb3a
+guid: 258f7ccdbdf57f34ab719a4df7da97ee
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -127,9 +127,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: dungeonbc
+  - name: poisoned
     originalName: 
-    pivot: {x: 0.5, y: 0}
+    pivot: {x: 0.45454547, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -137,9 +137,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 640
-      height: 360
-    spriteID: 2d28493042b1a6748bb1f3a0fdddb042
+      width: 11
+      height: 12
+    spriteID: d69274d00b76e064e9e184f4368947ad
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -153,25 +153,25 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 610605193
+      value0: 1693809365
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: dungeonbc
+    name: poisoned
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: dungeonbc
+    - name: PoisonEffectIcon_Aseprite
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 0
+        x: 1
         y: 0
-        width: 640
-        height: 360
-      spriteId: 2d28493042b1a6748bb1f3a0fdddb042
+        width: 11
+        height: 12
+      spriteId: d69274d00b76e064e9e184f4368947ad
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
@@ -181,5 +181,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 640, y: 360}
-  previousTextureSize: {x: 1024, y: 512}
+  canvasSize: {x: 12, y: 12}
+  previousTextureSize: {x: 32, y: 32}
