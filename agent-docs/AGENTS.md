@@ -129,6 +129,7 @@ Representative folders:
 5. Keep inspector workflows intact for designers.
 6. Treat docs in root summaries as high-level guidance; verify behavior in code before major changes.
 7. If a mechanic is unclear, ask the user before implementing assumptions.
+8. Never edit `.prefab` files directly. Any prefab changes must be done by the user in the Unity Editor.
 
 ## AI-Assisted Development Guidance
 
@@ -163,6 +164,7 @@ Recommended reading order:
 2. TECHNOLOGY_DOCUMENTATION.md
 3. AI_GAME_DEV_BEST_PRACTICES.md
 4. SYSTEM_ARCHITECTURE_VISUAL.md
+5. PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md
 
 Project docs and when to use them:
 
@@ -171,6 +173,7 @@ Project docs and when to use them:
 - REFACTORING_SUMMARY.md: DI migration decisions and architectural constraints.
 - SYSTEM_ARCHITECTURE_VISUAL.md: High-level architecture and flow diagrams.
 - ENEMY_INTENTION_SYSTEM_SUMMARY.md: Enemy intention/action design and integration notes.
+- PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md: Player party model, character data flow, damage/death behavior, and extension constraints.
 - SHIELD_IMPLEMENTATION_COMPLETE.md: Shield-first combat behavior and related implementation details.
 - SHIELD_SYSTEM_UPDATE.md: Follow-up shield updates and setup notes.
 - AI_GAME_DEV_BEST_PRACTICES.md: AI-assisted implementation, testing, and review guardrails.
