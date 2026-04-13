@@ -8,11 +8,13 @@ using Assets.Scripts.HealthSystem;
 using Assets.ShieldSystem;
 using Assets.Targeting;
 using Assets.Turns;
+using Assets.UI;
 using Assets.VFX;
 using Reflex.Attributes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IPlayerParty : ITarget, IDamageable, IShielded, IAudioClipSource
 {
@@ -98,6 +100,8 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
 
         Health.Initialize(newMaxHealth);
 
+        AddImageFromCharacterToHitMaterialFlasher(newCharacter);
+
         int healthToRestore = currentHealth + additionalHealth;
         if (healthToRestore < newMaxHealth)
         {
@@ -115,6 +119,19 @@ public sealed class PlayerParty : MonoBehaviour, IPlayerParty
         character.Initialize(config);
 
         return character;
+    }
+
+    private void AddImageFromCharacterToHitMaterialFlasher(PartyCharacter newCharacter)
+    {
+        if (newCharacter.TryGetComponent(out IHitMaterialFlasher hitMaterialFlasher))
+        {
+            Image image = newCharacter.GetComponentInChildren<Image>();
+
+            if (image != null)
+            {
+                hitMaterialFlasher.AddImageTarget(image);
+            }
+        }
     }
 
     private void RepositionAllCharacters()
