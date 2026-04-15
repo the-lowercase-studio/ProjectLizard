@@ -4,6 +4,8 @@
 
 This file gives coding agents a concise map of ProjectLizard so they can make safe, architecture-aligned changes.
 
+Operational customization files are maintained in .agents/.
+
 ## Documentation-First Policy
 
 When official documentation is available for a technology used in this project, consult that documentation first.
@@ -165,6 +167,7 @@ Recommended reading order:
 3. AI_GAME_DEV_BEST_PRACTICES.md
 4. SYSTEM_ARCHITECTURE_VISUAL.md
 5. PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md
+6. ../.agents/README.md
 
 Project docs and when to use them:
 
@@ -183,6 +186,18 @@ Project docs and when to use them:
 Note for agents:
 
 - Ignore third-party or generated markdown under `Library/`, `Packages/`, `Temp/`, and similar cache/build directories unless the user explicitly asks for those sources.
+
+## Operational Agent Layer
+
+Use these folders for agent runtime guidance and workflow orchestration:
+
+- ../.agents/agents/: specialist agent definitions.
+- ../.agents/instructions/: file-scoped instructions with applyTo patterns.
+- ../.agents/skills/: reusable workflows such as architecture-review, balance-analysis, and document-system.
+
+Compatibility note:
+
+- .github/ agent files are compatibility mirrors or pointers only. Edit .agents/ first.
 
 ## Open Clarifications to Confirm With User
 
