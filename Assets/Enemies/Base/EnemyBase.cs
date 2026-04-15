@@ -1,6 +1,6 @@
 using Assets.Audio;
-using Assets.Constants;
 using Assets.DamageNumbers;
+using Assets.DamageNumbers.Constants;
 using Assets.Effects.StatusEffects;
 using Assets.Enemies.Intentions;
 using Assets.Enemies.UI;

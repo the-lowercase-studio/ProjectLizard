@@ -1,4 +1,4 @@
-namespace Assets.Constants
+namespace Assets.DamageNumbers.Constants
 {
     public static class DamageNumberConstants
     {

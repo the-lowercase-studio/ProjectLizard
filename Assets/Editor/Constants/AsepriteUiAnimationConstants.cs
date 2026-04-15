@@ -1,4 +1,4 @@
-namespace Assets.Constants
+namespace Assets.Editor.Constants
 {
     public static class AsepriteUiAnimationConstants
     {

@@ -1,5 +1,4 @@
 ﻿using Assets.Cards.Constants;
-using Assets.Constants;
 using Assets.Inputs.Pointer;
 using Assets.TweenCustom;
 using DG.Tweening;
