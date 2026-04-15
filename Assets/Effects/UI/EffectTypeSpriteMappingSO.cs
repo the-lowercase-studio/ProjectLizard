@@ -1,6 +1,7 @@
 using Assets.Effects.Base;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.Effects.UI
@@ -16,7 +17,7 @@ namespace Assets.Effects.UI
             return mapping?.Sprite;
         }
 
-        public RuntimeAnimatorController GetInitialEffectAnimatorForEffectType(EffectType effectType)
+        public AnimatorController GetInitialEffectAnimatorForEffectType(EffectType effectType)
         {
             EffectTypeMapping mapping = _mappings.Find(m => m.EffectType == effectType);
             return mapping?.InitialEffectAnimator;
@@ -28,6 +29,6 @@ namespace Assets.Effects.UI
     {
         public EffectType EffectType;
         public Sprite Sprite;
-        public RuntimeAnimatorController InitialEffectAnimator;
+        public AnimatorController InitialEffectAnimator;
     }
 }
