@@ -1,15 +1,14 @@
 using Assets.Effects.Base;
 using Assets.Interfaces;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.Effects.UI
 {
     public struct InitialEffectPresenterConfig
     {
-        public AnimatorController InitialEffectAnimator;
+        public RuntimeAnimatorController InitialEffectAnimator;
 
-        public InitialEffectPresenterConfig(AnimatorController initialEffectAnimator)
+        public InitialEffectPresenterConfig(RuntimeAnimatorController initialEffectAnimator)
         {
             InitialEffectAnimator = initialEffectAnimator;
         }
@@ -40,20 +39,9 @@ namespace Assets.Effects.UI
 
             _animator.runtimeAnimatorController = config.InitialEffectAnimator;
             _animator.Rebind();
-
-            string defaultStatePath = GetDefaultStatePath(config.InitialEffectAnimator);
-            if (!string.IsNullOrEmpty(defaultStatePath))
-            {
-                _animator.Play(defaultStatePath, 0, 0f);
-            }
-
             _animator.Update(0f);
 
-            float animationDuration = GetDefaultStateDuration(config.InitialEffectAnimator);
-            if (animationDuration <= 0f)
-            {
-                animationDuration = GetAnimationDuration(config.InitialEffectAnimator);
-            }
+            float animationDuration = GetAnimationDuration(config.InitialEffectAnimator);
 
             if (animationDuration <= 0f)
             {
@@ -81,45 +69,7 @@ namespace Assets.Effects.UI
             Destroy(gameObject);
         }
 
-        private static string GetDefaultStatePath(AnimatorController animatorController)
-        {
-            if (animatorController.layers == null || animatorController.layers.Length == 0)
-            {
-                return null;
-            }
-
-            var layer = animatorController.layers[0];
-            var defaultState = layer.stateMachine?.defaultState;
-            if (defaultState == null)
-            {
-                return null;
-            }
-
-            return layer.name + "." + defaultState.name;
-        }
-
-        private static float GetDefaultStateDuration(AnimatorController animatorController)
-        {
-            if (animatorController.layers == null || animatorController.layers.Length == 0)
-            {
-                return 0f;
-            }
-
-            var defaultState = animatorController.layers[0].stateMachine?.defaultState;
-            if (defaultState == null)
-            {
-                return 0f;
-            }
-
-            if (defaultState.motion is AnimationClip animationClip)
-            {
-                return animationClip.length;
-            }
-
-            return 0f;
-        }
-
-        private static float GetAnimationDuration(AnimatorController animatorController)
+        private static float GetAnimationDuration(RuntimeAnimatorController animatorController)
         {
             float duration = 0f;
             AnimationClip[] clips = animatorController.animationClips;
