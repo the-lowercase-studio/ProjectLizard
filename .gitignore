@@ -85,8 +85,4 @@ crashlytics-build.properties
 !/Packages/
 !/ProjectSettings/
 
-# Only for local
-/[Aa]ssets/**/*.md
-/[Aa]ssets/**/*.md.meta
-
 # ======
