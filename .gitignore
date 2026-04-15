@@ -84,5 +84,7 @@ crashlytics-build.properties
 !/Assets/
 !/Packages/
 !/ProjectSettings/
+!/.agents/
+!/.agents/**
 
 # ======

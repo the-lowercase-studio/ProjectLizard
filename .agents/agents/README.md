@@ -2,6 +2,8 @@
 
 This folder contains custom agents for project-scoped specialization.
 
+This is the canonical operational agent catalog for ProjectLizard.
+
 ## Agent list
 
 - projectlizard-orchestrator.agent.md
@@ -23,6 +25,12 @@ This folder contains custom agents for project-scoped specialization.
 2. Let the orchestrator assign one lead specialist.
 3. Add supporting specialists only when cross-domain changes are required.
 4. Return to the orchestrator for integration checks and completion criteria.
+
+Read this folder together with:
+
+- ../instructions/
+- ../skills/
+- ../README.md
 
 ## Ownership hotspots
 
