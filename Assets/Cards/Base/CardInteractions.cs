@@ -1,4 +1,5 @@
 ﻿using Assets.Cards.CardsHand;
+using Assets.Cards.Base.Interaction;
 using Assets.Cards.Constants;
 using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
@@ -30,8 +31,7 @@ namespace Assets.Cards.Base
 
         [Inject] private ICardsHandPresenter _cardsHandPresenter;
         [Inject] private IPointerPositioner _pointerPositioner;
-
-        private static bool _isAnyCardBeingDragged = false;
+        [Inject] private ICardDragLock _cardDragLock;
 
         private Card _card;
         private CardState _currentState = CardState.None;
@@ -49,19 +49,14 @@ namespace Assets.Cards.Base
         {
             _visualCanvas.overrideSorting = true;
             _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
-
-            OnDragStart += Interactions_OnDragStart;
-            OnDragEnd += Interactions_OnDragEnd;
         }
 
         private void OnDisable()
         {
-            OnDragStart -= Interactions_OnDragStart;
-            OnDragEnd -= Interactions_OnDragEnd;
-
             if (_currentState == CardState.Dragged)
             {
-                _isAnyCardBeingDragged = false;
+                _cardDragLock.Release();
+                _canvasGroup.blocksRaycasts = true;
             }
         }
 
@@ -118,42 +113,31 @@ namespace Assets.Cards.Base
         {
         }
 
-        private void Interactions_OnDragStart(object sender, PointerEventData e)
-        {
-            _isAnyCardBeingDragged = true;
-            _canvasGroup.blocksRaycasts = false;
-        }
-
-        private void Interactions_OnDragEnd(object sender, PointerEventData e)
-        {
-            _isAnyCardBeingDragged = false;
-            _canvasGroup.blocksRaycasts = true;
-        }
-
         public void OnBeginDrag(PointerEventData eventData)
         {
-            OnDragStart?.Invoke(this, eventData);
-            Debug.Log("Drag start");
-
-            if (CanTransitToDragState())
+            if (CanTransitToDragState() && _cardDragLock.TryAcquire())
             {
+                Debug.Log("Drag start");
                 _card.Movement.VisualStartFollowingPointer();
                 _card.Scaler.ResetVisualScaleFromBottom();
+                _canvasGroup.blocksRaycasts = false;
 
                 _currentState = CardState.Dragged;
+                OnDragStart?.Invoke(this, eventData);
             }
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            OnDragEnd?.Invoke(this, eventData);
-            Debug.Log("Drag end");
-
             if (CanTransitToReturningToHandState())
             {
+                Debug.Log("Drag end");
                 _currentState = CardState.ReturningToHand;
 
                 _card.Movement.VisualStopFollowingPointer();
+                _cardDragLock.Release();
+                _canvasGroup.blocksRaycasts = true;
+                OnDragEnd?.Invoke(this, eventData);
 
                 _cardsHandPresenter.UpdateCardPlacement(_card, () =>
                 {
@@ -188,7 +172,7 @@ namespace Assets.Cards.Base
 
         private bool CanTransitToHoveredState()
         {
-            return _currentState == CardState.None && !_isAnyCardBeingDragged;
+            return _currentState == CardState.None && !_cardDragLock.IsAnyCardBeingDragged;
         }
 
         private bool CanTransitToDragState()
