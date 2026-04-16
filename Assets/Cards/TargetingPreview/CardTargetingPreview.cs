@@ -52,7 +52,7 @@ namespace Assets.Cards.Base
         private void Awake()
         {
             _card = GetComponent<Card>();
-            _crosshairContainer = GameObject.FindGameObjectWithTag("DamageCrosshairsPreviewContainter")
+            _crosshairContainer = GameObject.FindGameObjectWithTag("DamageCrosshairsPreviewContainer")
                                             ?.GetComponent<RectTransform>();
         }
 
