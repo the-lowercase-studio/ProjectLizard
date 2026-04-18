@@ -60,8 +60,8 @@ namespace Assets.Cards.Base
         {
             if (_card.Interactions is CardInteractions interactions)
             {
-                interactions.OnDragStart += OnDragStart;
-                interactions.OnDragEnd += OnDragEnd;
+                interactions.OnHoverStart += OnHoverStart;
+                interactions.OnHoverEnd += OnHoverEnd;
             }
         }
 
@@ -69,8 +69,8 @@ namespace Assets.Cards.Base
         {
             if (_card != null && _card.Interactions is CardInteractions interactions)
             {
-                interactions.OnDragStart -= OnDragStart;
-                interactions.OnDragEnd -= OnDragEnd;
+                interactions.OnHoverStart -= OnHoverStart;
+                interactions.OnHoverEnd -= OnHoverEnd;
             }
 
             HidePreview();
@@ -86,12 +86,12 @@ namespace Assets.Cards.Base
             UpdatePresenterPositions();
         }
 
-        private void OnDragStart(object sender, PointerEventData eventData)
+        private void OnHoverStart(object sender, PointerEventData eventData)
         {
             ShowPreview();
         }
 
-        private void OnDragEnd(object sender, PointerEventData eventData)
+        private void OnHoverEnd(object sender, PointerEventData eventData)
         {
             HidePreview();
         }

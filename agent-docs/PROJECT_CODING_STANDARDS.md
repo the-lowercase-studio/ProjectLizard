@@ -162,7 +162,11 @@ Some files currently contain non-standard constant naming (for example PascalCas
 - New code must use UPPER_SNAKE_CASE.
 - During edits, migrate nearby touched constants when safe.
 
-## 10) AI Agent Execution Checklist
+## 10) Warning
+
+Treat warnings as error they must be handled during development
+
+## 11) AI Agent Execution Checklist
 
 Before finalizing a change:
 
