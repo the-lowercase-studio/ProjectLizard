@@ -1,4 +1,5 @@
 using Assets.Cards.Base.Damage;
+using Assets.Cards.Base.Targeting;
 using Assets.Effects.Base;
 using Assets.Effects.UI;
 using Assets.Targeting;
@@ -16,6 +17,7 @@ namespace Assets.Cards.Base
     public class CardTargetingPreview : MonoBehaviour
     {
         [Inject] private ITargetsProvider _targetsProvider;
+        [Inject] private ICardTargetResolver _cardTargetResolver;
         [Inject] private IUITransformsProvider _uiTransformsProvider;
         [Inject] private Camera _mainCamera;
 
@@ -50,7 +52,7 @@ namespace Assets.Cards.Base
         private void Awake()
         {
             _card = GetComponent<Card>();
-            _crosshairContainer = GameObject.FindGameObjectWithTag("DamageCrosshairsPreviewContainter")
+            _crosshairContainer = GameObject.FindGameObjectWithTag("DamageCrosshairsPreviewContainer")
                                             ?.GetComponent<RectTransform>();
         }
 
@@ -177,31 +179,18 @@ namespace Assets.Cards.Base
                 return;
             }
 
-            if (damageConfig.TargetMode == TargetingMode.Same)
+            IReadOnlyList<CardDamageTargetSelection> targetSelections = _cardTargetResolver.ResolveDamageTargets(_targetsProvider, _card.Config);
+
+            foreach (CardDamageTargetSelection targetSelection in targetSelections)
             {
-                ITarget sameTarget = _targetsProvider.GetFromStartPosition(damageConfig.StartPosition, 1).FirstOrDefault();
-                if (sameTarget == null)
+                if (targetSelection.Target == null)
                 {
-                    return;
+                    continue;
                 }
 
-                AddTargetIfNeeded(sameTarget, orderedTargets, targetEffects);
-                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(sameTarget, damageConfig.DamageValue, _card.Config.Element);
-                targetDamageInfos[sameTarget] = new CardDamagePreviewInfo(modifiedDamage, damageConfig.AttackCount);
-                return;
-            }
-
-            IEnumerable<ITarget> damageTargets = damageConfig.TargetMode switch
-            {
-                TargetingMode.Other => _targetsProvider.GetFromStartPosition(damageConfig.StartPosition, damageConfig.AttackCount),
-                _ => Enumerable.Empty<ITarget>()
-            };
-
-            foreach (ITarget target in damageTargets)
-            {
-                AddTargetIfNeeded(target, orderedTargets, targetEffects);
-                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(target, damageConfig.DamageValue, _card.Config.Element);
-                targetDamageInfos[target] = new CardDamagePreviewInfo(modifiedDamage, 1);
+                AddTargetIfNeeded(targetSelection.Target, orderedTargets, targetEffects);
+                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(targetSelection.Target, damageConfig.DamageValue, _card.Config.Element);
+                targetDamageInfos[targetSelection.Target] = new CardDamagePreviewInfo(modifiedDamage, targetSelection.HitCount);
             }
         }
 
@@ -212,8 +201,7 @@ namespace Assets.Cards.Base
                 return;
             }
 
-            // Keep preview behavior aligned with current usage pipeline where effects are applied to the first target.
-            ITarget effectTarget = _targetsProvider.GetFirst();
+            ITarget effectTarget = _cardTargetResolver.ResolveEffectTarget(_targetsProvider, _card.Config);
             if (effectTarget == null)
             {
                 return;

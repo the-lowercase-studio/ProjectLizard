@@ -91,59 +91,12 @@ namespace Assets.Cards.Base
 
         public void SetVisualPivotToBottom()
         {
-            if (_visualRectTransform == null)
-            {
-                return;
-            }
-
-            Vector2 currentPivot = _visualRectTransform.pivot;
-            Vector2 targetPivot = new Vector2(0.5f, 0f); // Bottom center
-
-            if (currentPivot == targetPivot)
-            {
-                return;
-            }
-
-            Vector2 currentPosition = _visualRectTransform.anchoredPosition;
-            Rect rect = _visualRectTransform.rect;
-            Vector3 currentScale = _visualRectTransform.localScale;
-
-            Vector2 pivotDelta = targetPivot - currentPivot;
-            Vector2 positionOffset = new Vector2(
-                pivotDelta.x * rect.width * currentScale.x,
-                pivotDelta.y * rect.height * currentScale.y
-            );
-
-            _visualRectTransform.pivot = targetPivot;
-            _visualRectTransform.anchoredPosition = currentPosition + positionOffset;
+            SetPivotWithOffsetCompensation(new Vector2(0.5f, 0f));
         }
 
         public void RestoreVisualPivotToCenter()
         {
-            if (_visualRectTransform == null)
-            {
-                return;
-            }
-
-            Vector2 currentPivot = _visualRectTransform.pivot;
-
-            if (currentPivot == _originalPivot)
-            {
-                return;
-            }
-
-            Vector2 currentPosition = _visualRectTransform.anchoredPosition;
-            Rect rect = _visualRectTransform.rect;
-            Vector3 currentScale = _visualRectTransform.localScale;
-
-            Vector2 pivotDelta = _originalPivot - currentPivot;
-            Vector2 positionOffset = new Vector2(
-                pivotDelta.x * rect.width * currentScale.x,
-                pivotDelta.y * rect.height * currentScale.y
-            );
-
-            _visualRectTransform.pivot = _originalPivot;
-            _visualRectTransform.anchoredPosition = currentPosition + positionOffset;
+            SetPivotWithOffsetCompensation(_originalPivot);
         }
 
         public void ScaleVisualUpFromBottom(float scaleFactor = CardConstants.Scaling.DEFAULT_SCALING_FACTOR, bool withTweening = true)
@@ -161,6 +114,33 @@ namespace Assets.Cards.Base
         public void StopTweens()
         {
             _visualScaleTween.KillIfPlaying();
+        }
+
+        private void SetPivotWithOffsetCompensation(Vector2 targetPivot)
+        {
+            if (_visualRectTransform == null)
+            {
+                return;
+            }
+
+            Vector2 currentPivot = _visualRectTransform.pivot;
+            if (currentPivot == targetPivot)
+            {
+                return;
+            }
+
+            Vector2 currentPosition = _visualRectTransform.anchoredPosition;
+            Rect rect = _visualRectTransform.rect;
+            Vector3 currentScale = _visualRectTransform.localScale;
+
+            Vector2 pivotDelta = targetPivot - currentPivot;
+            Vector2 positionOffset = new Vector2(
+                pivotDelta.x * rect.width * currentScale.x,
+                pivotDelta.y * rect.height * currentScale.y
+            );
+
+            _visualRectTransform.pivot = targetPivot;
+            _visualRectTransform.anchoredPosition = currentPosition + positionOffset;
         }
     }
 }

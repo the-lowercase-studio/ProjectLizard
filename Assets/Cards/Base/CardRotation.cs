@@ -43,12 +43,12 @@ namespace Assets.Cards.Base
 
         public Vector3 GetVisualEulerRotation()
         {
-            return _card.transform.rotation.eulerAngles;
+            return _card.Visual.transform.rotation.eulerAngles;
         }
 
         public Vector3 GetEulerRotation()
         {
-            return _card.Visual.transform.rotation.eulerAngles;
+            return _card.transform.rotation.eulerAngles;
         }
 
         private void SetRotation(Transform transform, float rotation, bool withTweening = false)

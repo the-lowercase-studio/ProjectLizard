@@ -1,4 +1,6 @@
 using System;
+using Assets.Cards.Base.Interaction;
+using Assets.Cards.Base.Targeting;
 using Assets.Cards.CardsHand;
 using Assets.DamageNumbers;
 using Assets.Energy;
@@ -39,6 +41,8 @@ namespace Assets.Installers
             builder.RegisterValue(_uiTransformsProvider, new[] { typeof(IUITransformsProvider) });
             builder.RegisterValue(_pointerPositioner, new[] { typeof(IPointerPositioner) });
             builder.RegisterValue(_damageNumbers2DSpawner, new[] { typeof(IDamageNumbers2DSpawner) });
+            builder.RegisterValue(new CardDragLock(), new[] { typeof(ICardDragLock) });
+            builder.RegisterValue(new CardTargetResolver(), new[] { typeof(ICardTargetResolver) });
         }
     }
 }

@@ -1,6 +1,6 @@
 using Assets.CustomTypes;
 using Assets.CustomTypes.ValueRanges;
-using Assets.Constants;
+using Assets.DamageNumbers.Constants;
 using DG.Tweening;
 using Reflex.Attributes;
 using System;

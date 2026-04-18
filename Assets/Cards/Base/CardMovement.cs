@@ -1,5 +1,4 @@
 ﻿using Assets.Cards.Constants;
-using Assets.Constants;
 using Assets.Inputs.Pointer;
 using Assets.TweenCustom;
 using DG.Tweening;
@@ -34,7 +33,7 @@ namespace Assets.Cards.Base
         private Card _card;
         private RectTransform _rectTransform;
         private RectTransform _visualRectTransform;
-        private bool _isFolowingPointer;
+        private bool _isFollowingPointer;
         private Tween _visualMovementTween;
         private Vector2 _lastTargetPos = Vector3.zero;
 
@@ -49,7 +48,7 @@ namespace Assets.Cards.Base
 
         private void FixedUpdate()
         {
-            if (_isFolowingPointer
+            if (_isFollowingPointer
                 && Vector2.Distance(_lastTargetPos, _pointerPositioner.RawInputPosition) >= PositionConstants.DISTANCE_ACCURACY)
             {
                 _card.Visual.transform.position = _pointerPositioner.RawInputPosition;
@@ -61,12 +60,12 @@ namespace Assets.Cards.Base
         {
             _visualMovementTween.KillIfPlaying();
 
-            _isFolowingPointer = true;
+            _isFollowingPointer = true;
         }
 
         public void VisualStopFollowingPointer()
         {
-            _isFolowingPointer = false;
+            _isFollowingPointer = false;
         }
 
         public Vector2 GetRectAnchoredPosition()

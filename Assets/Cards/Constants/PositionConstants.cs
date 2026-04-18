@@ -1,4 +1,4 @@
-﻿namespace Assets.Constants
+﻿namespace Assets.Cards.Constants
 {
     public static class PositionConstants
     {

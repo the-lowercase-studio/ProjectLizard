@@ -44,7 +44,8 @@ public class TurnManager : MonoBehaviour, ITurnManager
 ### Constants
 
 - Use UPPER_SNAKE_CASE for all const fields.
-- For shared/runtime-wide constants, place them in dedicated constants files under `Assets/Constants/` (or in a clearly scoped domain constants file when truly domain-local).
+- Place constants in a `Constants` folder under the owning system root (for example `Assets/Cards/Constants/`, `Assets/DamageNumbers/Constants/`, `Assets/Editor/Constants/`).
+- Avoid a single global constants root folder; keep constants close to the domain that owns them.
 - Do not keep reusable constants inside gameplay classes like `EnemyBase` or `PlayerParty`; reference constants classes instead.
 - Use `*Constants` naming for constants containers (for example `PositionConstants`, `DamageNumberConstants`).
 
@@ -58,7 +59,7 @@ public const int START_CARDS_NUMBER = 5;
 Placement example:
 
 ```csharp
-namespace Assets.Constants
+namespace Assets.Cards.Constants
 {
     public static class PositionConstants
     {

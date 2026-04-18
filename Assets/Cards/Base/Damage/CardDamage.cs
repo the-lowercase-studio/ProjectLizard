@@ -1,19 +1,23 @@
 using Assets.Effects.StatusEffects;
 using Assets.ElementalSystem;
+using Assets.Cards.Base.Targeting;
 using Assets.Targeting;
-using System.Linq;
+using Reflex.Attributes;
 using UnityEngine;
 
 namespace Assets.Cards.Base.Damage
 {
     public interface ICardDamage
     {
-        void Execute(ITargetsProvider targetsProvider);
+        void Execute();
     }
 
     [RequireComponent(typeof(Card))]
     public class CardDamage : MonoBehaviour, ICardDamage
     {
+        [Inject] private ITargetsProvider _targetsProvider;
+        [Inject] private ICardTargetResolver _cardTargetResolver;
+
         private Card _card;
 
         private void Awake()
@@ -21,49 +25,29 @@ namespace Assets.Cards.Base.Damage
             _card = GetComponent<Card>();
         }
 
-        public void Execute(ITargetsProvider targetsProvider)
+        public void Execute()
         {
             var config = _card.Config.Damage;
 
             if (config == null)
+            {
                 return;
-
-            switch (config.TargetMode)
-            {
-                case TargetingMode.Same:
-                    ExecuteSameTarget(config, targetsProvider);
-                    break;
-
-                case TargetingMode.Other:
-                    ExecuteOtherTargets(config, targetsProvider);
-                    break;
             }
-        }
 
-        private void ExecuteSameTarget(CardDamageSO config, ITargetsProvider targetsProvider)
-        {
-            Debug.Log("EXECUTED ON SAME TARGET " + _card.name + " " + _card.Config.Damage.DamageValue);
+            var targetSelections = _cardTargetResolver.ResolveDamageTargets(_targetsProvider, _card.Config);
 
-            var target = targetsProvider.GetFromStartPosition(config.StartPosition, 1).FirstOrDefault();
-
-            if (target == null)
-                return;
-
-            for (int i = 0; i < config.AttackCount; i++)
+            foreach (CardDamageTargetSelection targetSelection in targetSelections)
             {
-                int modifiedDamage = GetModifiedDamageByStatusEffects(target, config.DamageValue, _card.Config.Element);
-                target.Damageable.TakeDamage(modifiedDamage);
-            }
-        }
+                if (targetSelection.Target == null)
+                {
+                    continue;
+                }
 
-        private void ExecuteOtherTargets(CardDamageSO config, ITargetsProvider targetsProvider)
-        {
-            var targets = targetsProvider.GetFromStartPosition(config.StartPosition, config.AttackCount);
-
-            foreach (var target in targets)
-            {
-                int modifiedDamage = GetModifiedDamageByStatusEffects(target, config.DamageValue, _card.Config.Element);
-                target.Damageable.TakeDamage(modifiedDamage);
+                for (int hitIndex = 0; hitIndex < targetSelection.HitCount; hitIndex++)
+                {
+                    int modifiedDamage = GetModifiedDamageByStatusEffects(targetSelection.Target, config.DamageValue, _card.Config.Element);
+                    targetSelection.Target.Damageable.TakeDamage(modifiedDamage);
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Assets.Cards.CardsHand;
+using Assets.Cards.Base.Interaction;
 using Assets.Cards.Constants;
 using Assets.Inputs.Pointer;
 using Assets.Interfaces.Interactions;
@@ -30,11 +31,10 @@ namespace Assets.Cards.Base
 
         [Inject] private ICardsHandPresenter _cardsHandPresenter;
         [Inject] private IPointerPositioner _pointerPositioner;
-
-        private static bool _isAnyCardBeingDragged = false;
+        [Inject] private ICardDragLock _cardDragLock;
 
         private Card _card;
-        private CardState _currentState = CardState.None;
+        private ICardInteractionStateMachine _interactionStateMachine;
         private CanvasGroup _canvasGroup;
         private Canvas _visualCanvas;
 
@@ -43,25 +43,21 @@ namespace Assets.Cards.Base
             _card = GetComponent<Card>();
             _canvasGroup = _card.Visual.GetComponent<CanvasGroup>();
             _visualCanvas = _card.Visual.GetComponent<Canvas>();
+            _interactionStateMachine = new CardInteractionStateMachine(() => _cardDragLock.IsAnyCardBeingDragged);
         }
 
         private void OnEnable()
         {
             _visualCanvas.overrideSorting = true;
             _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
-
-            OnDragStart += Interactions_OnDragStart;
-            OnDragEnd += Interactions_OnDragEnd;
         }
 
         private void OnDisable()
         {
-            OnDragStart -= Interactions_OnDragStart;
-            OnDragEnd -= Interactions_OnDragEnd;
-
-            if (_currentState == CardState.Dragged)
+            if (_interactionStateMachine.CurrentState == CardState.Dragged)
             {
-                _isAnyCardBeingDragged = false;
+                _cardDragLock.Release();
+                _canvasGroup.blocksRaycasts = true;
             }
         }
 
@@ -70,13 +66,12 @@ namespace Assets.Cards.Base
             OnClick?.Invoke(this, eventData);
             Debug.Log($"{_card.name} on click");
 
-            if (CanTransitToClickState())
+            if (_interactionStateMachine.TryTransitionToClicked(() =>
             {
-                _currentState = CardState.Clicked;
-
                 //click logic
-
-                _currentState = CardState.Hovered;
+            }))
+            {
+                _interactionStateMachine.ForceTransition(CardState.Hovered);
             }
         }
 
@@ -85,17 +80,15 @@ namespace Assets.Cards.Base
             OnHoverStart?.Invoke(this, eventData);
             Debug.Log("Hover start");
 
-            if (CanTransitToHoveredState())
+            _interactionStateMachine.TryTransitionToHovered(() =>
             {
-                _currentState = CardState.Hovered;
-
                 _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
 
                 _card.Scaler.SetVisualPivotToBottom();
                 _card.Movement.AlignVisualWithRoot(withTweening: true);
                 _card.Rotation.SetZVisualRotation(0f, withTweening: true);
                 _card.Scaler.ScaleVisualUp();
-            }
+            });
         }
 
         public void OnPointerExit(PointerEventData eventData)
@@ -103,57 +96,45 @@ namespace Assets.Cards.Base
             OnHoverEnd?.Invoke(this, eventData);
             Debug.Log("Hover end");
 
-            if (CanTransitToNoneState())
+            _interactionStateMachine.TryTransitionToNone(() =>
             {
-                _currentState = CardState.None;
-
                 _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
 
                 _card.Scaler.ResetVisualScaleFromBottom();
                 _cardsHandPresenter.UpdateCardPlacement(_card);
-            }
+            });
         }
 
         public void OnDrag(PointerEventData eventData)
         {
         }
 
-        private void Interactions_OnDragStart(object sender, PointerEventData e)
-        {
-            _isAnyCardBeingDragged = true;
-            _canvasGroup.blocksRaycasts = false;
-        }
-
-        private void Interactions_OnDragEnd(object sender, PointerEventData e)
-        {
-            _isAnyCardBeingDragged = false;
-            _canvasGroup.blocksRaycasts = true;
-        }
-
         public void OnBeginDrag(PointerEventData eventData)
         {
-            OnDragStart?.Invoke(this, eventData);
-            Debug.Log("Drag start");
-
-            if (CanTransitToDragState())
+            if (_interactionStateMachine.CanTransitionToDragged() && _cardDragLock.TryAcquire())
             {
-                _card.Movement.VisualStartFollowingPointer();
-                _card.Scaler.ResetVisualScaleFromBottom();
+                _interactionStateMachine.TryTransitionToDragged(() =>
+                {
+                    Debug.Log("Drag start");
+                    _card.Movement.VisualStartFollowingPointer();
+                    _card.Scaler.ResetVisualScaleFromBottom();
+                    _canvasGroup.blocksRaycasts = false;
 
-                _currentState = CardState.Dragged;
+                    OnDragStart?.Invoke(this, eventData);
+                });
             }
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            OnDragEnd?.Invoke(this, eventData);
-            Debug.Log("Drag end");
-
-            if (CanTransitToReturningToHandState())
+            _interactionStateMachine.TryTransitionToReturningToHand(() =>
             {
-                _currentState = CardState.ReturningToHand;
+                Debug.Log("Drag end");
 
                 _card.Movement.VisualStopFollowingPointer();
+                _cardDragLock.Release();
+                _canvasGroup.blocksRaycasts = true;
+                OnDragEnd?.Invoke(this, eventData);
 
                 _cardsHandPresenter.UpdateCardPlacement(_card, () =>
                 {
@@ -163,53 +144,29 @@ namespace Assets.Cards.Base
 
                     if (hoveredObjects.Any(o => o.transform.parent == _card.Visual))
                     {
-                        _currentState = CardState.Hovered;
+                        _interactionStateMachine.ForceTransition(CardState.Hovered, () =>
+                        {
+                            _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
 
-                        _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
+                            _card.Scaler.SetVisualPivotToBottom();
+                            _card.Movement.AlignVisualWithRoot();
+                            _card.Rotation.SetZVisualRotation(0f, withTweening: true);
+                            _card.Scaler.ScaleVisualUp();
 
-                        _card.Scaler.SetVisualPivotToBottom();
-                        _card.Movement.AlignVisualWithRoot();
-                        _card.Rotation.SetZVisualRotation(0f, withTweening: true);
-                        _card.Scaler.ScaleVisualUp();
-
-                        OnHoverStart?.Invoke(this, eventData);
+                            OnHoverStart?.Invoke(this, eventData);
+                        });
                     }
                     else
                     {
-                        _currentState = CardState.None;
+                        _interactionStateMachine.ForceTransition(CardState.None, () =>
+                        {
+                            _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
 
-                        _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
-
-                        _card.Scaler.ResetVisualScale();
+                            _card.Scaler.ResetVisualScale();
+                        });
                     }
                 });
-            }
-        }
-
-        private bool CanTransitToHoveredState()
-        {
-            return _currentState == CardState.None && !_isAnyCardBeingDragged;
-        }
-
-        private bool CanTransitToDragState()
-        {
-            return _currentState == CardState.Hovered
-                || _currentState == CardState.ReturningToHand;
-        }
-
-        private bool CanTransitToClickState()
-        {
-            return _currentState == CardState.Hovered;
-        }
-
-        private bool CanTransitToReturningToHandState()
-        {
-            return _currentState == CardState.Dragged;
-        }
-
-        private bool CanTransitToNoneState()
-        {
-            return _currentState == CardState.Hovered;
+            });
         }
     }
 }

@@ -56,10 +56,7 @@ namespace Assets.Cards.Base
 
         public void Initialize(CardConfigBaseSO config)
         {
-            if (Config == null)
-            {
-                Config = config;
-            }
+            Config = config;
         }
 
         public int GetCurrentEnergyCost()
@@ -80,7 +77,7 @@ namespace Assets.Cards.Base
 
         public void Show()
         {
-            Visual.SetActive(false);
+            Visual.SetActive(true);
         }
 
         public void Hide()

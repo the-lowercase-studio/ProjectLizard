@@ -1,5 +1,6 @@
 using Assets.Effects.Base;
 using Assets.Energy;
+using Assets.Cards.Base.Targeting;
 using Assets.Targeting;
 using Reflex.Attributes;
 using System;
@@ -22,6 +23,7 @@ namespace Assets.Cards.Base.Usage
 
         [Inject] private IEnergyManager _energyManager;
         [Inject] private ITargetsProvider _targetsManager;
+        [Inject] private ICardTargetResolver _cardTargetResolver;
         [Inject] private IPlayerParty _playerParty;
 
         private Card _card;
@@ -56,7 +58,7 @@ namespace Assets.Cards.Base.Usage
         private void ExecuteDamage()
         {
             Debug.Log("CARD DAMAGE: " + _card.CardDamage);
-            _card.CardDamage?.Execute(_targetsManager);
+            _card.CardDamage?.Execute();
         }
 
         private void TryPlayAttackAnimation()
@@ -99,15 +101,9 @@ namespace Assets.Cards.Base.Usage
             {
                 Source = gameObject,
                 Position = transform.position,
-                Target = FindTarget(),
+                Target = _cardTargetResolver.ResolveEffectTarget(_targetsManager, _card.Config),
                 TargetsProvider = _targetsManager
             };
-        }
-
-        private ITarget FindTarget()
-        {
-            //TODO: change for different modes based on card ability
-            return _targetsManager.GetFirst();
         }
     }
 }

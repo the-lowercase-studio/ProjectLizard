@@ -1,4 +1,4 @@
-﻿using Assets.Constants;
+﻿using Assets.Cards.Constants;
 using System;
 
 namespace Assets.TweenCustom

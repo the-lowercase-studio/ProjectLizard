@@ -4,8 +4,8 @@
     {
         public static class Cards
         {
-            public static int DEFAULT_LAYER_ORDER = 10;
-            public static int INTERACTED_LAYER_ORDER = 100;
+            public const int DEFAULT_LAYER_ORDER = 10;
+            public const int INTERACTED_LAYER_ORDER = 100;
         }
     }
 }
