@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Assets.Cards.Base;
 using Assets.Cards.Base.Damage;
@@ -36,6 +37,7 @@ namespace Assets.Editor.Cards
         private const string STEP_DAMAGE_PROPERTY = "<Damage>k__BackingField";
         private const string STEP_EFFECT_PROPERTY = "<Effect>k__BackingField";
         private const string STEP_EFFECT_CHANCE_PROPERTY = "<EffectChance>k__BackingField";
+        private const BindingFlags INSTANCE_NON_PUBLIC_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic;
 
         [MenuItem(MENU_PATH)]
         private static void SyncCardsFromSheet()
@@ -92,7 +94,7 @@ namespace Assets.Editor.Cards
                 WarnOnUnsupportedDescription(parsedRow, report);
 
                 string sanitizedTitle = SanitizeName(parsedRow.Title, "Card");
-                string cardFolderPath = $"{CARDS_LIBRARY_PATH}/{parsedRow.Element}/{sanitizedTitle}";
+                string cardFolderPath = $"{CARDS_LIBRARY_PATH}/{parsedRow.Element}";
                 EnsureFolderExists(cardFolderPath);
 
                 CardConfigBaseSO cardAsset = LoadOrCreateCardAsset(cardFolderPath, sanitizedTitle, report);
@@ -220,8 +222,21 @@ namespace Assets.Editor.Cards
 
         private static void UpdateCardAsset(CardConfigBaseSO cardAsset, CardSheetRow row, IReadOnlyList<CardAttackStepDefinition> attackSteps)
         {
-            SerializedObject serializedObject = new SerializedObject(cardAsset);
+            ApplyCardAssetValues(cardAsset, row, attackSteps);
+            EditorUtility.SetDirty(cardAsset);
+        }
 
+        private static void ApplyCardAssetValues(CardConfigBaseSO cardAsset, CardSheetRow row, IReadOnlyList<CardAttackStepDefinition> attackSteps)
+        {
+            SetBackingField(cardAsset, TITLE_PROPERTY, row.Title);
+            SetBackingField(cardAsset, DESCRIPTION_PROPERTY, row.Description);
+            SetBackingField(cardAsset, START_ENERGY_COST_PROPERTY, row.StartEnergyCost);
+            SetBackingField(cardAsset, ELEMENT_PROPERTY, row.Element);
+            SetBackingField(cardAsset, ELEMENTAL_VISUAL_BASE_PROPERTY, row.VisualBase);
+            SetBackingField(cardAsset, FRONT_GRAPHIC_PROPERTY, row.FrontGraphic);
+            SetBackingField(cardAsset, ATTACK_STEPS_PROPERTY, BuildCardAttackSteps(attackSteps));
+
+            SerializedObject serializedObject = new SerializedObject(cardAsset);
             serializedObject.FindProperty(TITLE_PROPERTY).stringValue = row.Title;
             serializedObject.FindProperty(DESCRIPTION_PROPERTY).stringValue = row.Description;
             serializedObject.FindProperty(START_ENERGY_COST_PROPERTY).intValue = row.StartEnergyCost;
@@ -242,7 +257,19 @@ namespace Assets.Editor.Cards
             }
 
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(cardAsset);
+        }
+
+        private static List<CardAttackStep> BuildCardAttackSteps(IReadOnlyList<CardAttackStepDefinition> attackSteps)
+        {
+            List<CardAttackStep> cardAttackSteps = new List<CardAttackStep>(attackSteps.Count);
+
+            for (int index = 0; index < attackSteps.Count; index++)
+            {
+                CardAttackStepDefinition step = attackSteps[index];
+                cardAttackSteps.Add(new CardAttackStep(step.DamageAsset, step.EffectAsset, step.EffectChance));
+            }
+
+            return cardAttackSteps;
         }
 
         private static CardDamageSO GetOrCreateDamageAsset(
@@ -253,38 +280,102 @@ namespace Assets.Editor.Cards
             DamageAssetKey key = new DamageAssetKey(step.DamageValue, step.AttackCount, step.StartPosition, step.TargetMode);
             if (damageCache.TryGetValue(key, out CardDamageSO cachedDamage))
             {
+                EnsureDamageAssetState(cachedDamage, step);
                 report.ReusedDamageAssets++;
                 return cachedDamage;
             }
 
             EnsureFolderExists(DAMAGE_ASSETS_PATH);
-            string fileName = $"{step.DamageValue}x{step.AttackCount}{ToStartPositionCode(step.StartPosition)}{ToTargetModeCode(step.TargetMode)}.asset";
-            string assetPath = $"{DAMAGE_ASSETS_PATH}/{fileName}";
+            string explicitAssetName = BuildDamageAssetName(step);
+            string explicitAssetPath = $"{DAMAGE_ASSETS_PATH}/{explicitAssetName}.asset";
+            string legacyAssetPath = $"{DAMAGE_ASSETS_PATH}/{BuildLegacyDamageAssetName(step)}.asset";
 
-            if (AssetDatabase.LoadAssetAtPath<CardDamageSO>(assetPath) != null)
+            CardDamageSO damageAsset = AssetDatabase.LoadAssetAtPath<CardDamageSO>(explicitAssetPath);
+            if (damageAsset == null)
             {
-                assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
-                report.Warnings.Add($"Damage asset name collision detected for '{fileName}'. Created '{Path.GetFileName(assetPath)}' instead.");
+                damageAsset = AssetDatabase.LoadAssetAtPath<CardDamageSO>(legacyAssetPath);
             }
 
-            CardDamageSO damageAsset = ScriptableObject.CreateInstance<CardDamageSO>();
-            AssetDatabase.CreateAsset(damageAsset, assetPath);
-            UpdateDamageAsset(damageAsset, step);
+            if (damageAsset != null)
+            {
+                EnsureDamageAssetState(damageAsset, step);
+                string currentAssetPath = AssetDatabase.GetAssetPath(damageAsset);
+                if (!string.Equals(currentAssetPath, explicitAssetPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    string targetPath = explicitAssetPath;
+                    if (AssetDatabase.LoadAssetAtPath<CardDamageSO>(targetPath) != null)
+                    {
+                        targetPath = AssetDatabase.GenerateUniqueAssetPath(targetPath);
+                        report.Warnings.Add(
+                            $"Damage asset name collision detected for '{explicitAssetName}.asset'. Moved repaired asset to '{Path.GetFileName(targetPath)}' instead.");
+                    }
+
+                    string moveError = AssetDatabase.MoveAsset(currentAssetPath, targetPath);
+                    if (!string.IsNullOrEmpty(moveError))
+                    {
+                        report.Warnings.Add($"Could not move damage asset '{currentAssetPath}' to '{targetPath}': {moveError}");
+                    }
+                }
+
+                damageCache[key] = damageAsset;
+                report.ReusedDamageAssets++;
+                return damageAsset;
+            }
+
+            string createPath = explicitAssetPath;
+            if (AssetDatabase.LoadAssetAtPath<CardDamageSO>(createPath) != null)
+            {
+                createPath = AssetDatabase.GenerateUniqueAssetPath(createPath);
+                report.Warnings.Add($"Damage asset name collision detected for '{explicitAssetName}.asset'. Created '{Path.GetFileName(createPath)}' instead.");
+            }
+
+            damageAsset = ScriptableObject.CreateInstance<CardDamageSO>();
+            damageAsset.name = Path.GetFileNameWithoutExtension(createPath);
+            ApplyDamageAssetValues(damageAsset, step);
+            AssetDatabase.CreateAsset(damageAsset, createPath);
+            EnsureDamageAssetState(damageAsset, step);
 
             damageCache[key] = damageAsset;
             report.CreatedDamageAssets++;
             return damageAsset;
         }
 
-        private static void UpdateDamageAsset(CardDamageSO damageAsset, CardAttackStepDefinition step)
+        private static void EnsureDamageAssetState(CardDamageSO damageAsset, CardAttackStepDefinition step)
         {
+            string desiredName = BuildDamageAssetName(step);
+            if (!string.Equals(damageAsset.name, desiredName, StringComparison.Ordinal))
+            {
+                damageAsset.name = desiredName;
+            }
+
+            ApplyDamageAssetValues(damageAsset, step);
+            EditorUtility.SetDirty(damageAsset);
+        }
+
+        private static void ApplyDamageAssetValues(CardDamageSO damageAsset, CardAttackStepDefinition step)
+        {
+            SetBackingField(damageAsset, DAMAGE_VALUE_PROPERTY, step.DamageValue);
+            SetBackingField(damageAsset, ATTACK_COUNT_PROPERTY, step.AttackCount);
+            SetBackingField(damageAsset, START_POSITION_PROPERTY, step.StartPosition);
+            SetBackingField(damageAsset, TARGET_MODE_PROPERTY, step.TargetMode);
+
             SerializedObject serializedObject = new SerializedObject(damageAsset);
             serializedObject.FindProperty(DAMAGE_VALUE_PROPERTY).intValue = step.DamageValue;
             serializedObject.FindProperty(ATTACK_COUNT_PROPERTY).intValue = step.AttackCount;
             serializedObject.FindProperty(START_POSITION_PROPERTY).enumValueIndex = (int)step.StartPosition;
             serializedObject.FindProperty(TARGET_MODE_PROPERTY).enumValueIndex = (int)step.TargetMode;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(damageAsset);
+        }
+
+        private static void SetBackingField<TTarget, TValue>(TTarget target, string fieldName, TValue value) where TTarget : class
+        {
+            FieldInfo fieldInfo = typeof(TTarget).GetField(fieldName, INSTANCE_NON_PUBLIC_FLAGS);
+            if (fieldInfo == null)
+            {
+                throw new CardSheetImportException($"Could not resolve backing field '{fieldName}' on {typeof(TTarget).Name}.");
+            }
+
+            fieldInfo.SetValue(target, value);
         }
 
         private static Dictionary<DamageAssetKey, CardDamageSO> BuildDamageCache(CardSheetImportReport report)
@@ -656,7 +747,17 @@ namespace Assets.Editor.Cards
             return builder.Length == 0 ? fallback : builder.ToString();
         }
 
-        private static char ToStartPositionCode(StartPosition startPosition)
+        private static string BuildDamageAssetName(CardAttackStepDefinition step)
+        {
+            return $"{step.DamageValue}x{step.AttackCount}_{step.StartPosition}_{step.TargetMode}";
+        }
+
+        private static string BuildLegacyDamageAssetName(CardAttackStepDefinition step)
+        {
+            return $"{step.DamageValue}x{step.AttackCount}{ToLegacyStartPositionCode(step.StartPosition)}{ToLegacyTargetModeCode(step.TargetMode)}";
+        }
+
+        private static char ToLegacyStartPositionCode(StartPosition startPosition)
         {
             return startPosition switch
             {
@@ -667,7 +768,7 @@ namespace Assets.Editor.Cards
             };
         }
 
-        private static char ToTargetModeCode(TargetingMode targetMode)
+        private static char ToLegacyTargetModeCode(TargetingMode targetMode)
         {
             return targetMode switch
             {
