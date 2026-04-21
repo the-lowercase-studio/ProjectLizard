@@ -6,13 +6,25 @@ using UnityEngine.UI;
 
 namespace Assets.Cards.Base
 {
-    public readonly struct CardTargetEffectChancePresenterConfig
+    public readonly struct CardTargetEffectPreview
     {
         public EffectSO Effect { get; }
+        public float Chance { get; }
 
-        public CardTargetEffectChancePresenterConfig(EffectSO effect)
+        public CardTargetEffectPreview(EffectSO effect, float chance)
         {
             Effect = effect;
+            Chance = Mathf.Clamp01(chance);
+        }
+    }
+
+    public readonly struct CardTargetEffectChancePresenterConfig
+    {
+        public CardTargetEffectPreview EffectPreview { get; }
+
+        public CardTargetEffectChancePresenterConfig(CardTargetEffectPreview effectPreview)
+        {
+            EffectPreview = effectPreview;
         }
     }
 
@@ -24,7 +36,7 @@ namespace Assets.Cards.Base
 
         public void Initialize(CardTargetEffectChancePresenterConfig config)
         {
-            if (config.Effect == null)
+            if (config.EffectPreview.Effect == null)
             {
                 gameObject.SetActive(false);
                 return;
@@ -32,21 +44,14 @@ namespace Assets.Cards.Base
 
             if (_effectIcon != null && _effectTypeMapping != null)
             {
-                _effectIcon.sprite = _effectTypeMapping.GetSpriteForEffectType(config.Effect.EffectType);
+                _effectIcon.sprite = _effectTypeMapping.GetSpriteForEffectType(config.EffectPreview.Effect.EffectType);
             }
 
             if (_chanceText != null)
             {
-                if (config.Effect is IChanceBasedEffect chanceBasedEffect)
-                {
-                    int chancePercent = Mathf.RoundToInt(chanceBasedEffect.ApplyChance * 100f);
-                    _chanceText.text = chancePercent + "%";
-                    _chanceText.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _chanceText.gameObject.SetActive(false);
-                }
+                int chancePercent = Mathf.RoundToInt(config.EffectPreview.Chance * 100f);
+                _chanceText.text = chancePercent + "%";
+                _chanceText.gameObject.SetActive(true);
             }
         }
     }

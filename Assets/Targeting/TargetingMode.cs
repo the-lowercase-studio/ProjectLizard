@@ -2,7 +2,8 @@ namespace Assets.Targeting
 {
     public enum TargetingMode
     {
-        Same,
-        Other
+        Same = 0,
+        All = 1,
+        Random = 2
     }
 }

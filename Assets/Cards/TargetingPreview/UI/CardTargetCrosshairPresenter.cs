@@ -1,5 +1,4 @@
 using Assets.Cards.Base.Damage;
-using Assets.Effects.Base;
 using Assets.Effects.UI;
 using System;
 using System.Collections.Generic;
@@ -11,10 +10,10 @@ namespace Assets.Cards.Base
 {
     public readonly struct CardTargetCrosshairPresenterConfig
     {
-        public IReadOnlyList<EffectSO> Effects { get; }
+        public IReadOnlyList<CardTargetEffectPreview> Effects { get; }
         public CardDamagePreviewInfo DamageInfo { get; }
 
-        public CardTargetCrosshairPresenterConfig(IReadOnlyList<EffectSO> effects, CardDamagePreviewInfo damageInfo)
+        public CardTargetCrosshairPresenterConfig(IReadOnlyList<CardTargetEffectPreview> effects, CardDamagePreviewInfo damageInfo)
         {
             Effects = effects;
             DamageInfo = damageInfo;
@@ -55,7 +54,7 @@ namespace Assets.Cards.Base
             ClearEffects();
         }
 
-        private void RebuildEffects(IReadOnlyList<EffectSO> effects)
+        private void RebuildEffects(IReadOnlyList<CardTargetEffectPreview> effects)
         {
             ClearEffects();
 
@@ -66,14 +65,14 @@ namespace Assets.Cards.Base
 
             for (int i = 0; i < effects.Count; i++)
             {
-                EffectSO effect = effects[i];
-                if (effect == null)
+                CardTargetEffectPreview effectPreview = effects[i];
+                if (effectPreview.Effect == null)
                 {
                     continue;
                 }
 
                 CardTargetEffectChancePresenter presenter = Instantiate(_effectChancePresenterPrefab, _effectsContainer);
-                presenter.Initialize(new CardTargetEffectChancePresenterConfig(effect));
+                presenter.Initialize(new CardTargetEffectChancePresenterConfig(effectPreview));
                 _activePresenters.Add(presenter);
             }
         }

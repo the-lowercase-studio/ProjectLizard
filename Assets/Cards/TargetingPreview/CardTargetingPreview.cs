@@ -1,13 +1,10 @@
 using Assets.Cards.Base.Damage;
 using Assets.Cards.Base.Targeting;
-using Assets.Effects.Base;
-using Assets.Effects.UI;
 using Assets.Targeting;
 using Assets.UI;
 using Reflex.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -38,10 +35,10 @@ namespace Assets.Cards.Base
         private readonly struct TargetPreviewData
         {
             public ITarget Target { get; }
-            public IReadOnlyList<EffectSO> Effects { get; }
+            public IReadOnlyList<CardTargetEffectPreview> Effects { get; }
             public CardDamagePreviewInfo DamageInfo { get; }
 
-            public TargetPreviewData(ITarget target, IReadOnlyList<EffectSO> effects, CardDamagePreviewInfo damageInfo)
+            public TargetPreviewData(ITarget target, IReadOnlyList<CardTargetEffectPreview> effects, CardDamagePreviewInfo damageInfo)
             {
                 Target = target;
                 Effects = effects;
@@ -74,6 +71,7 @@ namespace Assets.Cards.Base
             }
 
             HidePreview();
+            _card?.ClearCachedAttackPlan();
         }
 
         private void LateUpdate()
@@ -113,7 +111,10 @@ namespace Assets.Cards.Base
                 return;
             }
 
-            IReadOnlyList<TargetPreviewData> previewTargets = ResolvePreviewTargets();
+            IReadOnlyList<CardResolvedHit> attackPlan = _cardTargetResolver.ResolveAttackHits(_targetsProvider, _card.Config);
+            _card.SetCachedAttackPlan(attackPlan);
+
+            IReadOnlyList<TargetPreviewData> previewTargets = ResolvePreviewTargets(attackPlan);
 
             foreach (TargetPreviewData data in previewTargets)
             {
@@ -150,75 +151,61 @@ namespace Assets.Cards.Base
             _isPreviewVisible = false;
         }
 
-        private IReadOnlyList<TargetPreviewData> ResolvePreviewTargets()
+        private IReadOnlyList<TargetPreviewData> ResolvePreviewTargets(IReadOnlyList<CardResolvedHit> attackPlan)
         {
             var orderedTargets = new List<ITarget>();
-            var targetEffects = new Dictionary<ITarget, List<EffectSO>>();
-            var targetDamageInfos = new Dictionary<ITarget, CardDamagePreviewInfo>();
+            var targetEffects = new Dictionary<ITarget, List<CardTargetEffectPreview>>();
+            var targetDamageTotals = new Dictionary<ITarget, int>();
+            var targetHitCounts = new Dictionary<ITarget, int>();
 
-            AddDamageTargets(orderedTargets, targetEffects, targetDamageInfos);
-            AddEffectTargets(orderedTargets, targetEffects);
+            AddPreviewHits(attackPlan, orderedTargets, targetEffects, targetDamageTotals, targetHitCounts);
 
             var result = new List<TargetPreviewData>(orderedTargets.Count);
             for (int i = 0; i < orderedTargets.Count; i++)
             {
                 ITarget target = orderedTargets[i];
-                targetEffects.TryGetValue(target, out List<EffectSO> effects);
-                targetDamageInfos.TryGetValue(target, out CardDamagePreviewInfo damageInfo);
-                result.Add(new TargetPreviewData(target, effects ?? new List<EffectSO>(), damageInfo));
+                targetEffects.TryGetValue(target, out List<CardTargetEffectPreview> effects);
+                targetDamageTotals.TryGetValue(target, out int totalDamage);
+                targetHitCounts.TryGetValue(target, out int hitCount);
+                CardDamagePreviewInfo damageInfo = new CardDamagePreviewInfo(totalDamage, hitCount);
+                result.Add(new TargetPreviewData(target, effects ?? new List<CardTargetEffectPreview>(), damageInfo));
             }
 
             return result;
         }
 
-        private void AddDamageTargets(List<ITarget> orderedTargets, Dictionary<ITarget, List<EffectSO>> targetEffects, Dictionary<ITarget, CardDamagePreviewInfo> targetDamageInfos)
+        private void AddPreviewHits(IReadOnlyList<CardResolvedHit> attackPlan, List<ITarget> orderedTargets, Dictionary<ITarget, List<CardTargetEffectPreview>> targetEffects, Dictionary<ITarget, int> targetDamageTotals, Dictionary<ITarget, int> targetHitCounts)
         {
-            CardDamageSO damageConfig = _card.Config?.Damage;
-            if (damageConfig == null)
+            if (attackPlan == null)
             {
                 return;
             }
 
-            IReadOnlyList<CardDamageTargetSelection> targetSelections = _cardTargetResolver.ResolveDamageTargets(_targetsProvider, _card.Config);
-
-            foreach (CardDamageTargetSelection targetSelection in targetSelections)
+            for (int hitIndex = 0; hitIndex < attackPlan.Count; hitIndex++)
             {
-                if (targetSelection.Target == null)
+                CardResolvedHit hit = attackPlan[hitIndex];
+                if (hit.Target == null || hit.Step?.Damage == null || !CardDamage.IsTargetAlive(hit.Target))
                 {
                     continue;
                 }
 
-                AddTargetIfNeeded(targetSelection.Target, orderedTargets, targetEffects);
-                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(targetSelection.Target, damageConfig.DamageValue, _card.Config.Element);
-                targetDamageInfos[targetSelection.Target] = new CardDamagePreviewInfo(modifiedDamage, targetSelection.HitCount);
+                AddTargetIfNeeded(hit.Target, orderedTargets, targetEffects);
+
+                int modifiedDamage = CardDamage.GetModifiedDamageByStatusEffects(hit.Target, hit.Step.Damage.DamageValue, _card.Config.Element);
+                targetDamageTotals.TryGetValue(hit.Target, out int totalDamage);
+                targetDamageTotals[hit.Target] = totalDamage + modifiedDamage;
+
+                targetHitCounts.TryGetValue(hit.Target, out int hitCount);
+                targetHitCounts[hit.Target] = hitCount + 1;
+
+                if (hit.Step.Effect != null)
+                {
+                    AddEffectIfNeeded(targetEffects[hit.Target], new CardTargetEffectPreview(hit.Step.Effect, hit.Step.GetClampedEffectChance()));
+                }
             }
         }
 
-        private void AddEffectTargets(List<ITarget> orderedTargets, Dictionary<ITarget, List<EffectSO>> targetEffects)
-        {
-            if (_card.Config?.Effects == null || _card.Config.Effects.Count == 0)
-            {
-                return;
-            }
-
-            ITarget effectTarget = _cardTargetResolver.ResolveEffectTarget(_targetsProvider, _card.Config);
-            if (effectTarget == null)
-            {
-                return;
-            }
-
-            AddTargetIfNeeded(effectTarget, orderedTargets, targetEffects);
-
-            if (!targetEffects.TryGetValue(effectTarget, out List<EffectSO> effectsForTarget))
-            {
-                effectsForTarget = new List<EffectSO>();
-                targetEffects[effectTarget] = effectsForTarget;
-            }
-
-            effectsForTarget.AddRange(_card.Config.Effects.Where(effect => effect != null));
-        }
-
-        private static void AddTargetIfNeeded(ITarget target, List<ITarget> orderedTargets, Dictionary<ITarget, List<EffectSO>> targetEffects)
+        private static void AddTargetIfNeeded(ITarget target, List<ITarget> orderedTargets, Dictionary<ITarget, List<CardTargetEffectPreview>> targetEffects)
         {
             if (target == null)
             {
@@ -232,8 +219,21 @@ namespace Assets.Cards.Base
 
             if (!targetEffects.ContainsKey(target))
             {
-                targetEffects[target] = new List<EffectSO>();
+                targetEffects[target] = new List<CardTargetEffectPreview>();
             }
+        }
+
+        private static void AddEffectIfNeeded(List<CardTargetEffectPreview> effects, CardTargetEffectPreview preview)
+        {
+            for (int i = 0; i < effects.Count; i++)
+            {
+                if (effects[i].Effect == preview.Effect && Mathf.Approximately(effects[i].Chance, preview.Chance))
+                {
+                    return;
+                }
+            }
+
+            effects.Add(preview);
         }
 
         private void UpdatePresenterPositions()
