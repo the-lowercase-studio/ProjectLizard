@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace Assets.Editor.Cards
 {
-    public static class CardSheetScriptableObjectGenerator
+    public static class CardSheetToScriptableObjectSync
     {
         private const string MENU_PATH = "Tools/Cards/Sync Cards From Sheet";
         private const string CARDS_SHEET_PATH = "Assets/Cards/CardsLibrary/CardsSheet.csv";
