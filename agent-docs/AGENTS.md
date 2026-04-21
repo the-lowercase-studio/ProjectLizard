@@ -67,7 +67,8 @@ Representative components:
 ### Card and Effect Pipeline
 
 - Card usage checks energy cost before executing.
-- Cards can apply direct damage and execute effect scripts.
+- Cards execute a step-based attack flow where each step has damage, optional effect, and per-step chance.
+- Usage applies damage per resolved hit, then executes effect logic only when step chance passes.
 - Target resolution is routed through target-provider abstractions.
 
 Representative component:
