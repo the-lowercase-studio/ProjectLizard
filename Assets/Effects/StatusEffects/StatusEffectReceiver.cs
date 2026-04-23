@@ -1,5 +1,6 @@
 using Assets.Effects.Base;
 using Assets.Targeting;
+using Assets.Turns;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,6 +34,11 @@ namespace Assets.Effects.StatusEffects
             {
                 existingEffect.StackWith(effect);
                 Debug.Log($"Status effect '{effect.EffectType}' stacked on {gameObject.name}");
+
+                if (existingEffect.ExecutionState == TurnExecutionState.Instant)
+                {
+                    existingEffect.PerformEffect();
+                }
             }
             else
             {
@@ -41,6 +47,11 @@ namespace Assets.Effects.StatusEffects
                     effect.Apply(target);
                     _activeEffects.Add(effect);
                     Debug.Log($"Status effect '{effect.EffectType}' applied to {gameObject.name}");
+
+                    if (effect.ExecutionState == TurnExecutionState.Instant)
+                    {
+                        effect.PerformEffect();
+                    }
                 }
                 else
                 {

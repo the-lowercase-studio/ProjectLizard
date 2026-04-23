@@ -1,4 +1,4 @@
-﻿namespace Assets.Effects.Base
+namespace Assets.Effects.Base
 {
     public enum EffectType
     {
@@ -6,6 +6,7 @@
         Burning,
         Paralysis,
         Bleeding,
-        Poisoning
+        Poisoning,
+        ExtendParalysis
     }
 }
