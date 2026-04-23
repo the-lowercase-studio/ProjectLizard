@@ -48,6 +48,7 @@ The system is not responsible for:
   - agent-docs/CARDS_SYSTEM_SUMMARY.md
   - agent-docs/ENEMY_INTENTION_SYSTEM_SUMMARY.md
 - Related agents or instructions:
+  - .agents/skills/create-effect/SKILL.md
   - .agents/skills/document-system/SKILL.md
   - .agents/skills/architecture-review/SKILL.md
 
