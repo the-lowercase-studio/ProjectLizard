@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Cards.Constants;
 
 namespace Assets.Cards.CardsHand
 {
@@ -20,9 +21,10 @@ namespace Assets.Cards.CardsHand
         void ShowHand();
     }
 
+    [RequireComponent(typeof(HorizontalLayoutGroup))]
     public class CardsHandPresenter : MonoBehaviour, ICardsHandPresenter
     {
-        [Inject] private ICardsHandManager _handManager;
+        [Inject] private readonly ICardsHandManager _handManager;
 
         [Header("Cards defaults")]
         [SerializeField] private byte _startCardsCount = 5;
@@ -99,6 +101,7 @@ namespace Assets.Cards.CardsHand
             Vector3 cardPos = card.Movement.GetRectAnchoredPosition();
             SetCardYOffset(card, cardPos, onPlacementMovementEnd);
             SetCardZRotation(card, cardPos);
+            UpdateCardSortingOrder(card);
         }
 
         public void HideHand()
@@ -114,6 +117,22 @@ namespace Assets.Cards.CardsHand
             foreach (ICard card in _handManager.GetCards())
             {
                 card.Show();
+            }
+        }
+
+        private void UpdateCardSortingOrder(ICard targetCard)
+        {
+            foreach (var card in _handManager.GetCards())
+            {
+                if (card == targetCard)
+                {
+                    if (card.Visual != null && card.Visual.TryGetComponent<Canvas>(out var canvas))
+                    {
+                        canvas.overrideSorting = false;
+                    }
+
+                    break;
+                }
             }
         }
 
