@@ -3,25 +3,27 @@ using Assets.Cards.Base.Targeting;
 using Assets.Targeting;
 using Assets.UI;
 using Reflex.Attributes;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Assets.Cards.Base.Interaction;
+using Assets.Cards.Base;
 
-namespace Assets.Cards.Base
+namespace Assets.Cards.TargetingPreview
 {
     [RequireComponent(typeof(Card))]
     public class CardTargetingPreview : MonoBehaviour
     {
-        [Inject] private ITargetsProvider _targetsProvider;
-        [Inject] private ICardTargetResolver _cardTargetResolver;
-        [Inject] private IUITransformsProvider _uiTransformsProvider;
-        [Inject] private Camera _mainCamera;
+        [Inject] private readonly ITargetsProvider _targetsProvider;
+        [Inject] private readonly ICardTargetResolver _cardTargetResolver;
+        [Inject] private readonly IUITransformsProvider _uiTransformsProvider;
+        [Inject] private readonly Camera _mainCamera;
+        [Inject] private readonly ICardDragLock _cardDragLock;
 
         [SerializeField] private CardTargetCrosshairPresenter _crosshairPresenterPrefab;
         private RectTransform _crosshairContainer;
 
-        private readonly List<PreviewEntry> _activeEntries = new List<PreviewEntry>();
+        private readonly List<PreviewEntry> _activeEntries = new();
 
         private Card _card;
         private bool _isPreviewVisible;
@@ -46,6 +48,10 @@ namespace Assets.Cards.Base
             }
         }
 
+        private bool _isHovered;
+        private bool _isDragged;
+        private bool _isShowingPreview;
+
         private void Awake()
         {
             _card = GetComponent<Card>();
@@ -59,6 +65,8 @@ namespace Assets.Cards.Base
             {
                 interactions.OnHoverStart += OnHoverStart;
                 interactions.OnHoverEnd += OnHoverEnd;
+                interactions.OnDragStart += OnDragStart;
+                interactions.OnDragEnd += OnDragEnd;
             }
         }
 
@@ -68,10 +76,17 @@ namespace Assets.Cards.Base
             {
                 interactions.OnHoverStart -= OnHoverStart;
                 interactions.OnHoverEnd -= OnHoverEnd;
+                interactions.OnDragStart -= OnDragStart;
+                interactions.OnDragEnd -= OnDragEnd;
             }
 
+            _isHovered = false;
+            _isDragged = false;
+            _isShowingPreview = false;
+
             HidePreview();
-            _card?.ClearCachedAttackPlan();
+
+            _card.ClearCachedAttackPlan();
         }
 
         private void LateUpdate()
@@ -86,12 +101,42 @@ namespace Assets.Cards.Base
 
         private void OnHoverStart(object sender, PointerEventData eventData)
         {
-            ShowPreview();
+            _isHovered = true;
+            EvaluateVisibility();
         }
 
         private void OnHoverEnd(object sender, PointerEventData eventData)
         {
-            HidePreview();
+            _isHovered = false;
+            EvaluateVisibility();
+        }
+
+        private void OnDragStart(object sender, PointerEventData eventData)
+        {
+            _isDragged = true;
+            EvaluateVisibility();
+        }
+
+        private void OnDragEnd(object sender, PointerEventData eventData)
+        {
+            _isDragged = false;
+            EvaluateVisibility();
+        }
+
+        private void EvaluateVisibility()
+        {
+            bool shouldShow = _isDragged || _isHovered && (_cardDragLock == null || !_cardDragLock.IsAnyCardBeingDragged);
+
+            if (shouldShow && !_isShowingPreview)
+            {
+                _isShowingPreview = true;
+                ShowPreview();
+            }
+            else if (!shouldShow && _isShowingPreview)
+            {
+                _isShowingPreview = false;
+                HidePreview();
+            }
         }
 
         private void ShowPreview()
@@ -111,8 +156,12 @@ namespace Assets.Cards.Base
                 return;
             }
 
-            IReadOnlyList<CardResolvedHit> attackPlan = _cardTargetResolver.ResolveAttackHits(_targetsProvider, _card.Config);
-            _card.SetCachedAttackPlan(attackPlan);
+            IReadOnlyList<CardResolvedHit> attackPlan = _card.CachedAttackPlan;
+            if (attackPlan == null || attackPlan.Count == 0)
+            {
+                attackPlan = _cardTargetResolver.ResolveAttackHits(_targetsProvider, _card.Config);
+                _card.SetCachedAttackPlan(attackPlan);
+            }
 
             IReadOnlyList<TargetPreviewData> previewTargets = ResolvePreviewTargets(attackPlan);
 
@@ -167,7 +216,7 @@ namespace Assets.Cards.Base
                 targetEffects.TryGetValue(target, out List<CardTargetEffectPreview> effects);
                 targetDamageTotals.TryGetValue(target, out int totalDamage);
                 targetHitCounts.TryGetValue(target, out int hitCount);
-                CardDamagePreviewInfo damageInfo = new CardDamagePreviewInfo(totalDamage, hitCount);
+                CardDamagePreviewInfo damageInfo = new(totalDamage, hitCount);
                 result.Add(new TargetPreviewData(target, effects ?? new List<CardTargetEffectPreview>(), damageInfo));
             }
 
