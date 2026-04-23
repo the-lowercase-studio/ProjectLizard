@@ -1,5 +1,4 @@
 using Assets.Cards.Base.Damage;
-using Assets.Effects.Base;
 using Assets.ElementalSystem;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +14,6 @@ namespace Assets.Cards.Base
         [field: SerializeField] public Elements Element { get; private set; }
         [field: SerializeField] public CardElementalVisualBaseSO ElementalVisualBase { get; private set; }
         [field: SerializeField] public Sprite FrontGraphic { get; private set; }
-        [field: SerializeField] public CardDamageSO Damage { get; private set; }
-        [field: SerializeField] public List<EffectSO> Effects { get; private set; } = new();
+        [field: SerializeField] public List<CardAttackStep> AttackSteps { get; private set; } = new();
     }
 }

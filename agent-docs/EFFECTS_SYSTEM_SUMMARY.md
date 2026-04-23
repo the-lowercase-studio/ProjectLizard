@@ -8,6 +8,7 @@ Primary responsibilities:
 
 - Execute configured card effects through EffectSO assets.
 - Apply, stack, tick, and remove status effects on targets implementing ITarget.
+- Run effect logic only after card attack-step chance gates pass.
 - Trigger per-turn status processing based on TurnExecutionState.
 - Render active effect icons/counters and initial effect animations in combat UI.
 
@@ -23,7 +24,6 @@ The system is not responsible for:
 - Primary code locations:
   - Assets/Effects/Base/EffectSO.cs
   - Assets/Effects/Base/EffectType.cs
-  - Assets/Effects/Base/IChanceBasedEffect.cs
   - Assets/Effects/StatusEffects/StatusEffectBase.cs
   - Assets/Effects/StatusEffects/StatusEffectReceiver.cs
   - Assets/Effects/StatusEffects/IncomingDamageModifier.cs
@@ -60,15 +60,16 @@ The system is not responsible for:
   - AppliedEffectsPresenterUpdater bridges gameplay and UI by processing effects on turn events and refreshing presenter state.
   - EffectsPresenter owns runtime presenter instances per active EffectType.
 - Key interfaces:
-  - IStatusEffect, IStatusEffectReceiver, IIncomingDamageModifier, IChanceBasedEffect, ICustomCardEffect, IEffectsPresenter.
+  - IStatusEffect, IStatusEffectReceiver, IIncomingDamageModifier, ICustomCardEffect, IEffectsPresenter.
   - Cross-system interfaces: ITarget, ITargetsProvider, ITurnManager, IParalyzable, IDamageable.
 - Runtime flow:
-  1. Card usage builds CardEffectContext (source, position, resolved effect target, targets provider) and calls EffectSO.Execute for each configured effect.
-  2. Concrete EffectSO performs immediate behavior (usually direct damage), then conditionally applies a runtime status effect through target.StatusEffectReceiver.ApplyStatusEffect(...).
-  3. StatusEffectReceiver either stacks an existing effect with same EffectType or applies a new instance to the target.
-  4. AppliedEffectsPresenterUpdater listens to ITurnManager events and executes effect.PerformEffect for effects matching the current TurnExecutionState.
-  5. StatusEffectBase.PerformEffect runs ProcessTurnEffect, decrements RemainingTurns, and removes itself when turns reach zero.
-  6. On any add/remove/stack change, OnEffectsChanged triggers UI refresh through EffectsPresenter.
+  1. CardUsage resolves attack hits and applies damage per hit.
+  2. For each hit, CardUsage rolls CardAttackStep.EffectChance; on success it builds CardEffectContext and calls EffectSO.Execute.
+  3. Concrete EffectSO performs immediate behavior (for example direct damage), then applies runtime status effect through target.StatusEffectReceiver.ApplyStatusEffect(...).
+  4. StatusEffectReceiver either stacks an existing effect with same EffectType or applies a new instance to the target.
+  5. AppliedEffectsPresenterUpdater listens to ITurnManager events and executes effect.PerformEffect for effects matching the current TurnExecutionState.
+  6. StatusEffectBase.PerformEffect runs ProcessTurnEffect, decrements RemainingTurns, and removes itself when turns reach zero.
+  7. On any add/remove/stack change, OnEffectsChanged triggers UI refresh through EffectsPresenter.
 
 ### Built-in Effects Behavior
 
@@ -91,15 +92,17 @@ The system is not responsible for:
 
 - Critical behavior rules:
   - Effects are uniquely keyed for stacking by EffectType in StatusEffectReceiver.
+  - Chance for applying card effects is owned by CardAttackStep, not by EffectSO implementations.
   - Stacking always adds RemainingTurns; value stacking is conditional on CanStackValue and StackValue override.
   - Expiration happens only through RemainingTurns countdown in PerformEffect.
   - Removal always routes through target.StatusEffectReceiver.RemoveStatusEffect(this).
 - Ordering or sequencing guarantees:
-  - CardUsage executes card damage before card effects.
+  - CardUsage executes damage before effect execution on each hit.
   - Effect ticks occur only on turn events currently wired in AppliedEffectsPresenterUpdater: OnPlayerTurnStart, OnEnemyTurnStart, OnEnemyTurnEnd.
   - UI refresh happens after turn-state processing and on any OnEffectsChanged event.
 - Constraints contributors must preserve:
   - Preserve EffectType-based uniqueness/stacking behavior unless intentionally redesigning persistence model.
+  - Keep chance/random gating outside EffectSO classes for card attack flow.
   - Preserve TurnExecutionState filtering to avoid effects ticking in unintended phases.
   - Preserve ITarget contract dependency for effect application (Damageable + StatusEffectReceiver).
   - Keep effect metadata inspector-driven through EffectSO fields.
@@ -125,9 +128,9 @@ The system is not responsible for:
 ## Integration Notes
 
 - Upstream dependencies:
-  - Cards usage pipeline provides CardEffectContext and invokes EffectSO.Execute.
+  - Cards usage pipeline provides per-hit CardEffectContext and invokes EffectSO.Execute only when step chance passes.
   - TurnManager event stream drives status ticking through AppliedEffectsPresenterUpdater.
-  - TargetsProvider enables burning spread and effect target resolution.
+  - TargetsProvider enables burning spread behavior and runtime retargeting helpers.
 - Downstream consumers:
   - CardDamage reads active effects and applies IIncomingDamageModifier implementations.
   - EnemyBase, PlayerParty, and PartyCharacter expose IStatusEffectReceiver through ITarget implementations.
@@ -141,7 +144,7 @@ The system is not responsible for:
 
 - Known limitations:
   - TurnExecutionState includes OnPlayerTurnEnd, but AppliedEffectsPresenterUpdater currently does not process that event.
-  - Several status effect classes keep a _visualEffect reference but never assign instantiated visual objects, making RemoveVisualEffect effectively a no-op.
+  - Several status effect classes keep a \_visualEffect reference but never assign instantiated visual objects, making RemoveVisualEffect effectively a no-op.
   - StatusEffectReceiver stacks by EffectType only; multiple independent instances of same effect type are not represented separately.
   - No hard cap/guard exists for stacked duration or stacked value growth.
 - Open design questions:
@@ -153,4 +156,4 @@ The system is not responsible for:
   - Add explicit OnPlayerTurnEnd handling or remove enum value if intentionally unsupported.
   - Define and implement visual effect lifecycle ownership policy for status effects.
   - Add regression tests/checklist for stacking and turn-phase execution rules.
-  - Document expected ApplyChance semantics for all IChanceBasedEffect implementations.
+  - Add regression coverage for per-hit CardAttackStep chance behavior and effect execution order.

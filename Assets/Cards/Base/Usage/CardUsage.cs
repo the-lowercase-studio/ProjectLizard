@@ -1,10 +1,12 @@
 using Assets.Effects.Base;
 using Assets.Energy;
+using Assets.Cards.Base.Damage;
 using Assets.Cards.Base.Targeting;
 using Assets.Targeting;
 using Reflex.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Cards.Base.Usage
@@ -44,8 +46,7 @@ namespace Assets.Cards.Base.Usage
 
                 TryPlayAttackAnimation();
 
-                ExecuteDamage();
-                ExecuteEffects();
+                ExecuteAttackFlow();
 
                 _card.Discard();
             }
@@ -53,12 +54,6 @@ namespace Assets.Cards.Base.Usage
             {
                 Debug.Log($"No enrgy for card {_card.name} usage");
             }
-        }
-
-        private void ExecuteDamage()
-        {
-            Debug.Log("CARD DAMAGE: " + _card.CardDamage);
-            _card.CardDamage?.Execute();
         }
 
         private void TryPlayAttackAnimation()
@@ -83,27 +78,93 @@ namespace Assets.Cards.Base.Usage
             }
         }
 
-        private void ExecuteEffects()
+        private void ExecuteAttackFlow()
         {
-            CardEffectContext context = CreateContext();
+            IReadOnlyList<CardResolvedHit> attackPlan = ResolveAttackPlan();
 
-            foreach (EffectSO effect in _card.Config.Effects)
+            for (int i = 0; i < attackPlan.Count; i++)
             {
-                effect.Execute(context);
+                CardResolvedHit hit = ResolveExecutionHitTarget(attackPlan[i]);
+                if (hit.Target == null)
+                {
+                    continue;
+                }
+
+                if (_card.CardDamage != null && !_card.CardDamage.TryApplyDamage(hit))
+                {
+                    continue;
+                }
+
+                TryExecuteHitEffect(hit);
             }
 
-            Debug.Log($"Card '{_card.Config.Title}' executed {_card.Config.Effects.Count} effect(s).");
+            _card.ClearCachedAttackPlan();
+            Debug.Log($"Card '{_card.Config.Title}' executed {attackPlan.Count} hit(s).");
         }
 
-        private CardEffectContext CreateContext()
+        private IReadOnlyList<CardResolvedHit> ResolveAttackPlan()
         {
-            return new CardEffectContext
+            if (_card.CachedAttackPlan != null && _card.CachedAttackPlan.Count > 0)
+            {
+                return _card.CachedAttackPlan;
+            }
+
+            return _cardTargetResolver.ResolveAttackHits(_targetsManager, _card.Config);
+        }
+
+        private CardResolvedHit ResolveExecutionHitTarget(CardResolvedHit hit)
+        {
+            if (hit.TargetMode != TargetingMode.Random || CardDamage.IsTargetAlive(hit.Target))
+            {
+                return hit;
+            }
+
+            List<ITarget> aliveTargets = _targetsManager.GetAll().Where(CardDamage.IsTargetAlive).ToList();
+            if (aliveTargets.Count == 0)
+            {
+                return hit.WithTarget(null);
+            }
+
+            if (aliveTargets.Count == 1)
+            {
+                return hit.WithTarget(aliveTargets[0]);
+            }
+
+            return hit.WithTarget(aliveTargets[UnityEngine.Random.Range(0, aliveTargets.Count)]);
+        }
+
+        private void TryExecuteHitEffect(CardResolvedHit hit)
+        {
+            EffectSO effect = hit.Step?.Effect;
+            if (effect == null)
+            {
+                return;
+            }
+
+            if (UnityEngine.Random.value > hit.Step.GetClampedEffectChance())
+            {
+                return;
+            }
+
+            CardEffectContext context = new CardEffectContext
             {
                 Source = gameObject,
-                Position = transform.position,
-                Target = _cardTargetResolver.ResolveEffectTarget(_targetsManager, _card.Config),
+                Position = ResolveTargetPosition(hit.Target),
+                Target = hit.Target,
                 TargetsProvider = _targetsManager
             };
+
+            effect.Execute(context);
+        }
+
+        private static Vector3 ResolveTargetPosition(ITarget target)
+        {
+            if (target is Component targetComponent)
+            {
+                return targetComponent.transform.position;
+            }
+
+            return Vector3.zero;
         }
     }
 }

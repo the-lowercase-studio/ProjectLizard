@@ -1,9 +1,11 @@
 using Assets.Cards.Base.Damage;
+using Assets.Cards.Base.Targeting;
 using Assets.Cards.Base.Usage;
 using Assets.Interfaces;
 using Assets.TweenCustom;
 using DG.Tweening;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Cards.Base
@@ -18,6 +20,7 @@ namespace Assets.Cards.Base
         ICardInteractions Interactions { get; }
         ICardUsage CardUsage { get; }
         ICardDamage CardDamage { get; }
+        IReadOnlyList<CardResolvedHit> CachedAttackPlan { get; }
 
         int GetCurrentEnergyCost();
 
@@ -28,6 +31,10 @@ namespace Assets.Cards.Base
         void Hide();
 
         void Show();
+
+        void SetCachedAttackPlan(IReadOnlyList<CardResolvedHit> attackPlan);
+
+        void ClearCachedAttackPlan();
     }
 
     public class Card : MonoBehaviour, ICard
@@ -41,6 +48,7 @@ namespace Assets.Cards.Base
         public ICardInteractions Interactions { get; private set; }
         public ICardUsage CardUsage { get; private set; }
         public ICardDamage CardDamage { get; private set; }
+        public IReadOnlyList<CardResolvedHit> CachedAttackPlan { get; private set; } = new List<CardResolvedHit>();
 
         public event EventHandler OnCardDiscard;
 
@@ -68,6 +76,7 @@ namespace Assets.Cards.Base
         public void Discard()
         {
             StopTweensInChildren();
+            ClearCachedAttackPlan();
 
             OnCardDiscard?.Invoke(this, EventArgs.Empty);
 
@@ -85,6 +94,16 @@ namespace Assets.Cards.Base
             StopTweensInChildren();
 
             Visual.SetActive(false);
+        }
+
+        public void SetCachedAttackPlan(IReadOnlyList<CardResolvedHit> attackPlan)
+        {
+            CachedAttackPlan = attackPlan ?? new List<CardResolvedHit>();
+        }
+
+        public void ClearCachedAttackPlan()
+        {
+            CachedAttackPlan = new List<CardResolvedHit>();
         }
 
         private void StopTweensInChildren()

@@ -57,7 +57,8 @@ namespace Assets.Targeting
             {
                 StartPosition.Start => GetFromStart(targets, count),
                 StartPosition.End => GetFromEnd(targets, count),
-                StartPosition.Center => GetFromCenter(targets, count)
+                StartPosition.Center => GetFromCenter(targets, count),
+                _ => GetFromStart(targets, count)
             };
         }
 

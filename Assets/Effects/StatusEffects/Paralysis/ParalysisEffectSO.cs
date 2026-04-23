@@ -4,13 +4,10 @@ using UnityEngine;
 namespace Assets.Effects.StatusEffects.Paralysis
 {
     [CreateAssetMenu(fileName = "New Electric Paralysis Effect", menuName = "Scriptable Objects/Effects/Electric/Paralysis Effect")]
-    public class ParalysisEffectSO : EffectSO, IChanceBasedEffect
+    public class ParalysisEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
-        [field: SerializeField, Range(0f, 1f)] public float ParalysisChance { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
-
-        public float ApplyChance => ParalysisChance;
 
         public override void Execute(CardEffectContext context)
         {
@@ -30,7 +27,7 @@ namespace Assets.Effects.StatusEffects.Paralysis
 
         private void ApplyParalysisEffect(CardEffectContext context)
         {
-            if (Random.value <= ParalysisChance && context.Target?.StatusEffectReceiver != null)
+            if (context.Target?.StatusEffectReceiver != null)
             {
                 context.Target.StatusEffectReceiver.ApplyStatusEffect(new ParalysisStatusEffect(this));
                 Debug.Log($"Applied paralysis effect to {context.Target.Name} for {TurnDuration} turns");

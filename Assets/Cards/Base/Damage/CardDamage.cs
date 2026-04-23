@@ -2,22 +2,18 @@ using Assets.Effects.StatusEffects;
 using Assets.ElementalSystem;
 using Assets.Cards.Base.Targeting;
 using Assets.Targeting;
-using Reflex.Attributes;
 using UnityEngine;
 
 namespace Assets.Cards.Base.Damage
 {
     public interface ICardDamage
     {
-        void Execute();
+        bool TryApplyDamage(CardResolvedHit resolvedHit);
     }
 
     [RequireComponent(typeof(Card))]
     public class CardDamage : MonoBehaviour, ICardDamage
     {
-        [Inject] private ITargetsProvider _targetsProvider;
-        [Inject] private ICardTargetResolver _cardTargetResolver;
-
         private Card _card;
 
         private void Awake()
@@ -25,30 +21,16 @@ namespace Assets.Cards.Base.Damage
             _card = GetComponent<Card>();
         }
 
-        public void Execute()
+        public bool TryApplyDamage(CardResolvedHit resolvedHit)
         {
-            var config = _card.Config.Damage;
-
-            if (config == null)
+            if (resolvedHit.Step?.Damage == null || !IsTargetAlive(resolvedHit.Target))
             {
-                return;
+                return false;
             }
 
-            var targetSelections = _cardTargetResolver.ResolveDamageTargets(_targetsProvider, _card.Config);
-
-            foreach (CardDamageTargetSelection targetSelection in targetSelections)
-            {
-                if (targetSelection.Target == null)
-                {
-                    continue;
-                }
-
-                for (int hitIndex = 0; hitIndex < targetSelection.HitCount; hitIndex++)
-                {
-                    int modifiedDamage = GetModifiedDamageByStatusEffects(targetSelection.Target, config.DamageValue, _card.Config.Element);
-                    targetSelection.Target.Damageable.TakeDamage(modifiedDamage);
-                }
-            }
+            int modifiedDamage = GetModifiedDamageByStatusEffects(resolvedHit.Target, resolvedHit.Step.Damage.DamageValue, _card.Config.Element);
+            resolvedHit.Target.Damageable.TakeDamage(modifiedDamage);
+            return true;
         }
 
         public static int GetModifiedDamageByStatusEffects(ITarget target, int baseDamage, Elements damageElement)
@@ -69,6 +51,11 @@ namespace Assets.Cards.Base.Damage
             }
 
             return modifiedDamage;
+        }
+
+        public static bool IsTargetAlive(ITarget target)
+        {
+            return target?.Damageable?.Health != null && target.Damageable.Health.IsAlive();
         }
     }
 }

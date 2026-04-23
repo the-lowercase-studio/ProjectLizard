@@ -4,15 +4,12 @@ using UnityEngine;
 namespace Assets.Effects.StatusEffects.Burning
 {
     [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Effects/Fire/Burning Effect")]
-    public class BurningEffectSO : EffectSO, IChanceBasedEffect
+    public class BurningEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int BurningDamagePerTurn { get; private set; }
-        [field: SerializeField, Range(0f, 1f)] public float BurningChance { get; private set; }
         [field: SerializeField, Range(0f, 1f)] public float BurningSpreadChance { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
-
-        public float ApplyChance => BurningChance;
 
         public override void Execute(CardEffectContext context)
         {
@@ -32,7 +29,7 @@ namespace Assets.Effects.StatusEffects.Burning
 
         private void ApplyBurningEffect(CardEffectContext context)
         {
-            if (Random.value <= BurningChance && context.Target?.StatusEffectReceiver != null)
+            if (context.Target?.StatusEffectReceiver != null)
             {
                 context.Target.StatusEffectReceiver.ApplyStatusEffect(new BurningStatusEffect(this, context.TargetsProvider));
                 Debug.Log($"Applied burning effect to {context.Target.Name} for {TurnDuration} turns");

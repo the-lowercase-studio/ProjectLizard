@@ -4,16 +4,13 @@ using UnityEngine;
 namespace Assets.Effects.StatusEffects.Bleeding
 {
     [CreateAssetMenu(fileName = "New Physic Bleeding Effect", menuName = "Scriptable Objects/Effects/Physic/Bleeding Effect")]
-    public class BleedingEffectSO : EffectSO, IChanceBasedEffect
+    public class BleedingEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int BleedingDamagePerTurn { get; private set; }
-        [field: SerializeField, Range(0f, 1f)] public float BleedingChance { get; private set; }
         [field: SerializeField] public float AcidDamageMultiplier { get; private set; }
         [field: SerializeField] public float PhysicDamageMultiplier { get; private set; }
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
-
-        public float ApplyChance => BleedingChance;
 
         public override void Execute(CardEffectContext context)
         {
@@ -33,7 +30,7 @@ namespace Assets.Effects.StatusEffects.Bleeding
 
         private void ApplyBleedingEffect(CardEffectContext context)
         {
-            if (Random.value <= BleedingChance && context.Target?.StatusEffectReceiver != null)
+            if (context.Target?.StatusEffectReceiver != null)
             {
                 context.Target.StatusEffectReceiver.ApplyStatusEffect(new BleedingStatusEffect(this));
                 Debug.Log($"Applied burning effect to {context.Target.Name} for {TurnDuration} turns");

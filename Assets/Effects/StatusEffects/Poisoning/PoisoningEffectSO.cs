@@ -6,17 +6,14 @@ using UnityEngine;
 namespace Assets.Effects.StatusEffects.Poisoning
 {
     [CreateAssetMenu(fileName = "New Acid Poisoning Effect", menuName = "Scriptable Objects/Effects/Acid/Poisoning Effect")]
-    public class PoisoningEffectSO : EffectSO, IChanceBasedEffect
+    public class PoisoningEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
         [field: SerializeField] public int PoisoningDamagePerTurn { get; private set; }
-        [field: SerializeField, Range(0f, 1f)] public float PoisoningChance { get; private set; }
         [field: SerializeField] public List<Elements> CompatibleElements { get; private set; } = new();
         [field: SerializeField, Min(1f)] public float CompatibleElementsDamageScalingFactor { get; private set; } = 1.25f;
         [field: SerializeField, Min(1f)] public float IncompatibleElementsDamageScalingFactor { get; private set; } = 1.1f;
         [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
-
-        public float ApplyChance => PoisoningChance;
 
         public float GetDamageScalingFactor(Elements damageElement)
         {
@@ -48,7 +45,7 @@ namespace Assets.Effects.StatusEffects.Poisoning
 
         private void ApplyPoisoningEffect(CardEffectContext context)
         {
-            if (Random.value <= PoisoningChance && context.Target?.StatusEffectReceiver != null)
+            if (context.Target?.StatusEffectReceiver != null)
             {
                 context.Target.StatusEffectReceiver.ApplyStatusEffect(new PoisoningStatusEffect(this));
                 Debug.Log($"Applied poisoning effect to {context.Target.Name} for {TurnDuration} turns");
