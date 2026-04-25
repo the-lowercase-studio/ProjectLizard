@@ -13,6 +13,9 @@ namespace Assets.Energy
         [SerializeField] private GameObject _visual;
         [SerializeField] private TextMeshProUGUI _energyText;
 
+        private int _currentEnergy;
+        private int _energyPerTurn;
+
         private void Start()
         {
             _energyManager.OnCurrentEnergyChange += EnergyManager_OnCurrentEnergyChange;
@@ -21,14 +24,18 @@ namespace Assets.Energy
             _turnManager.OnPlayerTurnEnd += TurnManager_OnPlayerTurnEnd;
             _turnManager.OnPlayerTurnStart += TurnManager_OnPlayerTurnStart;
 
-            UpdateCurrentEnergyText(_energyManager.CurrentEnergy);
-            UpdateEnergyPerTurnText(_energyManager.EnergyPerTurn);
+            _currentEnergy = _energyManager.CurrentEnergy;
+            _energyPerTurn = _energyManager.EnergyPerTurn;
+            UpdateEnergyText();
         }
 
         private void OnDisable()
         {
             _energyManager.OnCurrentEnergyChange -= EnergyManager_OnCurrentEnergyChange;
             _energyManager.OnEnergyPerTurnChange -= EnergyManager_OnEnergyPerTurnChange;
+
+            _turnManager.OnPlayerTurnEnd -= TurnManager_OnPlayerTurnEnd;
+            _turnManager.OnPlayerTurnStart -= TurnManager_OnPlayerTurnStart;
         }
 
         private void EnergyManager_OnCurrentEnergyChange(object sender, int value)
@@ -53,12 +60,19 @@ namespace Assets.Energy
 
         private void UpdateCurrentEnergyText(int value)
         {
-            _energyText.text = $"{value}/{_energyText.text.Split('/')[1]}";
+            _currentEnergy = value;
+            UpdateEnergyText();
         }
 
         private void UpdateEnergyPerTurnText(int value)
         {
-            _energyText.text = $"{_energyText.text.Split('/')[0]}/{value}";
+            _energyPerTurn = value;
+            UpdateEnergyText();
+        }
+
+        private void UpdateEnergyText()
+        {
+            _energyText.text = $"{_currentEnergy}/{_energyPerTurn}";
         }
     }
 }

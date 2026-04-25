@@ -1,5 +1,4 @@
 using Assets.Effects.Base;
-using Assets.Energy;
 using UnityEngine;
 
 namespace Assets.Effects.InstantEffects.AddEnergyToNextTurn
@@ -13,17 +12,14 @@ namespace Assets.Effects.InstantEffects.AddEnergyToNextTurn
 
         public override void Execute(CardEffectContext context)
         {
-            // Try to find the EnergyManager in the scene
-            EnergyManager energyManager = FindAnyObjectByType<EnergyManager>();
-            if (energyManager != null)
+            if (context.EnergyManager == null)
             {
-                energyManager.AddBonusEnergyForNextTurn(EnergyToAdd);
-                Debug.Log($"AddEnergyToNextTurnEffect: Registered {EnergyToAdd} bonus energy for the next turn. Next turn's energy will be capped at {EnergyManager.MAX_ENERGY_PER_TURN}.");
+                Debug.LogWarning("AddEnergyToNextTurnEffect: Missing energy manager in effect context.");
+                return;
             }
-            else
-            {
-                Debug.LogWarning("AddEnergyToNextTurnEffect: Could not find EnergyManager in the scene.");
-            }
+
+            context.EnergyManager.AddBonusEnergyForNextTurn(EnergyToAdd);
+            Debug.Log($"AddEnergyToNextTurnEffect: Registered {EnergyToAdd} bonus energy for the next turn.");
         }
     }
 }

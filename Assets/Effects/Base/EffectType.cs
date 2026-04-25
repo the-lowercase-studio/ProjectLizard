@@ -2,7 +2,7 @@ namespace Assets.Effects.Base
 {
     public enum EffectType
     {
-        Custom,
+        None,
         Burning,
         Paralysis,
         Bleeding,

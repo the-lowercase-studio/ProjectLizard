@@ -1,4 +1,5 @@
 using Assets.ElementalSystem;
+using Assets.Energy;
 using Assets.Targeting;
 using Assets.Turns;
 using UnityEngine;
@@ -34,6 +35,7 @@ namespace Assets.Effects.Base
         public GameObject Source { get; set; }
         public Vector3 Position { get; set; }
         public ITargetsProvider TargetsProvider { get; set; }
+        public IEnergyManager EnergyManager { get; set; }
         public int StepDamage { get; set; }
     }
 }

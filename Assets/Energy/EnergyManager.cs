@@ -29,7 +29,7 @@ namespace Assets.Energy
 
     public sealed class EnergyManager : MonoBehaviour, IEnergyManager
     {
-        public int EnergyPerTurn => _energyPerTurn;
+        public int EnergyPerTurn => _activeEnergyPerTurn;
         public int CurrentEnergy => _currentEnergy;
 
         public event EventHandler<int> OnCurrentEnergyChange;
@@ -41,6 +41,7 @@ namespace Assets.Energy
         public const byte MAX_ENERGY_PER_TURN = 9;
 
         private int _energyPerTurn = START_ENERGY_PER_TURN;
+        private int _activeEnergyPerTurn = START_ENERGY_PER_TURN;
         private int _currentEnergy = START_ENERGY_PER_TURN;
         private int _bonusEnergyForNextTurn = 0;
 
@@ -56,7 +57,7 @@ namespace Assets.Energy
 
         public void RefilCurrentEnergy()
         {
-            _currentEnergy = _energyPerTurn;
+            _currentEnergy = _activeEnergyPerTurn;
 
             OnCurrentEnergyChange?.Invoke(this, _currentEnergy);
         }
@@ -85,7 +86,7 @@ namespace Assets.Energy
             }
 
             int sum = CurrentEnergy + amount;
-            if (sum <= _energyPerTurn)
+            if (sum <= _activeEnergyPerTurn)
             {
                 _currentEnergy = sum;
 
@@ -100,12 +101,12 @@ namespace Assets.Energy
                 return;
             }
 
-            int diff = EnergyPerTurn - amount;
+            int diff = _energyPerTurn - amount;
             if (diff >= START_ENERGY_PER_TURN)
             {
                 _energyPerTurn = diff;
 
-                OnEnergyPerTurnChange?.Invoke(this, _energyPerTurn);
+                SetActiveEnergyPerTurn(_energyPerTurn);
             }
         }
 
@@ -116,26 +117,22 @@ namespace Assets.Energy
                 return;
             }
 
-            int sum = EnergyPerTurn + amount;
+            int sum = _energyPerTurn + amount;
             if (sum <= MAX_ENERGY_PER_TURN)
             {
                 _energyPerTurn = sum;
 
-                OnEnergyPerTurnChange?.Invoke(this, _energyPerTurn);
+                SetActiveEnergyPerTurn(_energyPerTurn);
             }
         }
 
         private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
         {
-            RefilCurrentEnergy();
+            int bonusEnergyForThisTurn = _bonusEnergyForNextTurn;
+            _bonusEnergyForNextTurn = 0;
 
-            if (_bonusEnergyForNextTurn > 0)
-            {
-                int sum = _currentEnergy + _bonusEnergyForNextTurn;
-                _currentEnergy = Mathf.Min(sum, MAX_ENERGY_PER_TURN);
-                _bonusEnergyForNextTurn = 0;
-                OnCurrentEnergyChange?.Invoke(this, _currentEnergy);
-            }
+            SetActiveEnergyPerTurn(Mathf.Min(_energyPerTurn + bonusEnergyForThisTurn, MAX_ENERGY_PER_TURN));
+            RefilCurrentEnergy();
         }
 
         public void AddBonusEnergyForNextTurn(int amount)
@@ -144,6 +141,23 @@ namespace Assets.Energy
             {
                 _bonusEnergyForNextTurn += amount;
             }
+        }
+
+        private void SetActiveEnergyPerTurn(int value)
+        {
+            if (_activeEnergyPerTurn == value)
+            {
+                return;
+            }
+
+            _activeEnergyPerTurn = value;
+            if (_currentEnergy > _activeEnergyPerTurn)
+            {
+                _currentEnergy = _activeEnergyPerTurn;
+                OnCurrentEnergyChange?.Invoke(this, _currentEnergy);
+            }
+
+            OnEnergyPerTurnChange?.Invoke(this, _activeEnergyPerTurn);
         }
     }
 }

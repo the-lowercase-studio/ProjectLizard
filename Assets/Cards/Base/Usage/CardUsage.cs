@@ -49,6 +49,7 @@ namespace Assets.Cards.Base.Usage
                 ExecuteAttackFlow();
 
                 _card.Discard();
+                OnCardUsage?.Invoke(this, EventArgs.Empty);
             }
             else
             {
@@ -152,6 +153,7 @@ namespace Assets.Cards.Base.Usage
                 Position = ResolveTargetPosition(hit.Target),
                 Target = hit.Target,
                 TargetsProvider = _targetsManager,
+                EnergyManager = _energyManager,
                 StepDamage = hit.Step?.Damage?.DamageValue ?? 0
             };
 
