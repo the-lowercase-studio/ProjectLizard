@@ -1,3 +1,4 @@
+using Assets.ElementalSystem;
 using Assets.Targeting;
 using Assets.Turns;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace Assets.Effects.Base
         [field: SerializeField] public int TurnDuration { get; private set; }
         [field: SerializeField] public bool CanStackValue { get; private set; }
         [field: SerializeField] public EffectType EffectType { get; private set; }
+        [field: SerializeField] public Elements Element { get; private set; }
         [field: SerializeField] public TurnExecutionState ExecutionState { get; private set; }
 
 
