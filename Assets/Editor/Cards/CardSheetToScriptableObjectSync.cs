@@ -449,7 +449,7 @@ namespace Assets.Editor.Cards
         private static List<CardAttackStepDefinition> ParseAttackDefinitions(string attackText, int csvRowNumber)
         {
             List<CardAttackStepDefinition> attackDefinitions = new List<CardAttackStepDefinition>();
-            string[] lines = attackText.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+            string[] lines = attackText.Replace("\r\n", "|").Replace('\r', '|').Replace('\n', '|').Split('|');
 
             foreach (string rawLine in lines)
             {
@@ -874,7 +874,7 @@ namespace Assets.Editor.Cards
             public int? RawChancePercent { get; }
             public CardDamageSO DamageAsset { get; }
             public EffectSO EffectAsset { get; }
-            public bool HasEffect => !string.Equals(EffectName, EffectType.Custom.ToString(), StringComparison.OrdinalIgnoreCase);
+            public bool HasEffect => !string.Equals(EffectName, EffectType.None.ToString(), StringComparison.OrdinalIgnoreCase);
 
             public CardAttackStepDefinition(
                 int damageValue,
