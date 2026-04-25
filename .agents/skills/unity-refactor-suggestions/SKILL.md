@@ -22,9 +22,9 @@ If the request spans multiple systems, split into separate passes.
 
 Always ground suggestions in:
 
-- ../../../agent-docs/PROJECT_CODING_STANDARDS.md
-- ../../../agent-docs/AI_GAME_DEV_BEST_PRACTICES.md
-- ../../../agent-docs/TECHNOLOGY_DOCUMENTATION.md
+- ../../../agent-docs/project-coding-standards.md
+- ../../../agent-docs/ai-game-dev-best-practices.md
+- ../../../agent-docs/technology-documentation.md
 
 Use official Unity and Reflex documentation first when API behavior is uncertain.
 

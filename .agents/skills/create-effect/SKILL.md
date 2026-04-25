@@ -5,7 +5,7 @@ description: "Use when: creating or implementing a new card effect or status eff
 
 # Create Effect Skill
 
-Use this skill to implement a new effect in the game, guided by the Effects System documentation (`agent-docs/EFFECTS_SYSTEM_SUMMARY.md`) and the `Assets/Effects/Base/EffectSO.cs` base class.
+Use this skill to implement a new effect in the game, guided by the Effects System documentation (`agent-docs/effects-system-summary.md`) and the `Assets/Effects/Base/EffectSO.cs` base class.
 
 ## Trigger
 
@@ -43,7 +43,7 @@ The user prompt must specify or allow inference for all needed properties define
    - If the effect is persistent, create the corresponding `StatusEffectBase` implementation.
    - Update `Assets/Effects/Base/EffectType.cs` to include the new enum value.
    - Remind the user to update Unity assets like `EffectTypeSpriteMappingSO` and create the actual `ScriptableObject` instances in the Unity Editor.
-   - Ensure the implementation follows the guidelines in `agent-docs/EFFECTS_SYSTEM_SUMMARY.md` (e.g., chance gating should be in `CardAttackStep`, correct expiration handling, etc.).
+   - Ensure the implementation follows the guidelines in `agent-docs/effects-system-summary.md` (e.g., chance gating should be in `CardAttackStep`, correct expiration handling, etc.).
 
 5. **Document the Implementation:**
    - When you end implementation, you must create a summary of the effect implementation in `agent-docs/implementation-summaries/effects/`.
