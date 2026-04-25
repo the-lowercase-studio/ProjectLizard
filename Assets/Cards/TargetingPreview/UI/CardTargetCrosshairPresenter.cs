@@ -64,7 +64,7 @@ namespace Assets.Cards.TargetingPreview.UI
             for (int i = 0; i < effects.Count; i++)
             {
                 CardTargetEffectPreview effectPreview = effects[i];
-                if (effectPreview.Effect == null)
+                if (effectPreview.Effect == null || !effectPreview.Effect.HasVisuals)
                 {
                     continue;
                 }

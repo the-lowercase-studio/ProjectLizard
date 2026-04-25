@@ -13,6 +13,8 @@ namespace Assets.Effects.Base
 
         [field: SerializeField, TextArea] public string Description { get; private set; }
 
+        [SerializeField] private bool _hasVisuals = true;
+
         [field: Header("Visuals")]
         [field: SerializeField] public Sprite Sprite { get; private set; }
 
@@ -25,6 +27,8 @@ namespace Assets.Effects.Base
         [field: SerializeField] public EffectType EffectType { get; private set; }
         [field: SerializeField] public Elements Element { get; private set; }
         [field: SerializeField] public TurnExecutionState ExecutionState { get; private set; }
+
+        public bool HasVisuals => _hasVisuals;
 
         public abstract void Execute(CardEffectContext context);
     }

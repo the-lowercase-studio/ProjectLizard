@@ -248,7 +248,7 @@ namespace Assets.Cards.TargetingPreview
                 targetHitCounts.TryGetValue(hit.Target, out int hitCount);
                 targetHitCounts[hit.Target] = hitCount + 1;
 
-                if (hit.Step.Effect != null)
+                if (hit.Step.Effect != null && hit.Step.Effect.HasVisuals)
                 {
                     AddEffectIfNeeded(targetEffects[hit.Target], new CardTargetEffectPreview(hit.Step.Effect, hit.Step.GetClampedEffectChance()));
                 }

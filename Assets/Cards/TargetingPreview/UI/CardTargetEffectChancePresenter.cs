@@ -35,7 +35,7 @@ namespace Assets.Cards.TargetingPreview.UI
 
         public void Initialize(CardTargetEffectChancePresenterConfig config)
         {
-            if (config.EffectPreview.Effect == null)
+            if (config.EffectPreview.Effect == null || !config.EffectPreview.Effect.HasVisuals)
             {
                 gameObject.SetActive(false);
                 return;

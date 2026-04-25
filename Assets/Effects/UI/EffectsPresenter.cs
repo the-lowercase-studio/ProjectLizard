@@ -60,6 +60,7 @@ namespace Assets.Effects.UI
             foreach (IStatusEffectBase effect in activeEffects)
             {
                 if (effect.RemainingTurns <= 0) continue;
+                if (effect.EffectData == null || !effect.EffectData.HasVisuals) continue;
 
                 if (_activePresenters.ContainsKey(effect.EffectType))
                 {
