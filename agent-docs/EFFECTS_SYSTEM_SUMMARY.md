@@ -111,13 +111,13 @@ The system is not responsible for:
 
 - Safe extension areas:
   - Add new EffectSO implementations and optional runtime status classes deriving from StatusEffectBase.
-  - Add new display mappings in EffectTypeSpriteMappingSO for icon and initial animator.
+  - Assign Sprite and InitialEffectAnimator directly on each EffectSO asset (preferred) or add entries in EffectTypeSpriteMappingSO as a legacy fallback.
   - Add new modifier-style behaviors by implementing interfaces such as IIncomingDamageModifier.
   - Add custom card-only behavior via CustomEffectSO + ICustomCardEffect.
 - Required dependencies and contracts:
   - New persistent status effects must set EffectType and ExecutionState correctly and implement ProcessTurnEffect safely.
   - Any effect relying on spread/retargeting must use ITargetsProvider semantics that match combat expectations.
-  - UI requires EffectTypeSpriteMappingSO entries for all user-visible effects.
+  - UI reads Sprite and InitialEffectAnimator from EffectSO first, falling back to EffectTypeSpriteMappingSO entries when not set.
   - If effect blocks actions, target must implement IParalyzable or equivalent contract.
 - Testing implications:
   - Validate stack behavior: same type stacks value/duration as intended and different types coexist.

@@ -21,7 +21,7 @@ namespace Assets.Effects.StatusEffects
 
     public class StatusEffectReceiver : MonoBehaviour, IStatusEffectReceiver
     {
-        private List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
+        private readonly List<IStatusEffect> _activeEffects = new();
 
         public event EventHandler OnEffectsChanged;
 

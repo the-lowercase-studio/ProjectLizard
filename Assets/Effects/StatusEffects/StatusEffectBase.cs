@@ -11,6 +11,7 @@ namespace Assets.Effects.StatusEffects
         TurnExecutionState ExecutionState { get; }
         string EffectValueDisplay { get; }
         bool CanStackValue { get; }
+        EffectSO EffectData { get; }
 
         void Apply(ITarget target);
 
@@ -30,11 +31,11 @@ namespace Assets.Effects.StatusEffects
         public virtual string EffectValueDisplay { get; protected set; }
         public bool CanStackValue { get; protected set; }
         protected ITarget target;
-        protected EffectSO effectData;
+        public EffectSO EffectData { get; protected set; }
 
         protected StatusEffectBase(EffectSO effectSO)
         {
-            effectData = effectSO;
+            EffectData = effectSO;
             RemainingTurns = effectSO.TurnDuration;
             ExecutionState = effectSO.ExecutionState;
             CanStackValue = effectSO.CanStackValue;

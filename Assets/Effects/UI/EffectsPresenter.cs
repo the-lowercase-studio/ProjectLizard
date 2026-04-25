@@ -13,13 +13,12 @@ namespace Assets.Effects.UI
 
     public class EffectsPresenter : MonoBehaviour, IEffectsPresenter
     {
-        [SerializeField] private EffectTypeSpriteMappingSO _effectTypeMapping;
         [SerializeField] private AppliedEffectPresenter _effectPresenterPrefab;
         [SerializeField] private InitialEffectPresenter _initialEffectPresenterPrefab;
         [SerializeField] private Transform _initialEffectPresenterParent;
 
         private IStatusEffectReceiver _targetReceiver;
-        private Dictionary<EffectType, AppliedEffectPresenter> _activePresenters = new Dictionary<EffectType, AppliedEffectPresenter>();
+        private readonly Dictionary<EffectType, AppliedEffectPresenter> _activePresenters = new();
 
         private void OnDestroy()
         {
@@ -43,7 +42,7 @@ namespace Assets.Effects.UI
         {
             List<IStatusEffect> activeEffects = _targetReceiver.GetActiveEffects();
 
-            List<EffectType> effectsToRemove = new List<EffectType>();
+            List<EffectType> effectsToRemove = new();
             foreach (var presenter in _activePresenters)
             {
                 bool stillActive = activeEffects.Exists(e => e.EffectType == presenter.Key);
@@ -68,9 +67,9 @@ namespace Assets.Effects.UI
                 }
                 else
                 {
-                    Sprite effectSprite = _effectTypeMapping.GetSpriteForEffectType(effect.EffectType);
+                    Sprite effectSprite = effect.EffectData?.Sprite;
                     CreateAppliedEffectPresenter(effect.EffectType, effect, effectSprite);
-                    CreateInitialEffectPresenter(effect.EffectType);
+                    CreateInitialEffectPresenter(effect);
                 }
             }
         }
@@ -82,9 +81,9 @@ namespace Assets.Effects.UI
             _activePresenters[effectType] = presenter;
         }
 
-        private void CreateInitialEffectPresenter(EffectType effectType)
+        private void CreateInitialEffectPresenter(IStatusEffect effect)
         {
-            var initialEffectAnimator = _effectTypeMapping.GetInitialEffectAnimatorForEffectType(effectType);
+            var initialEffectAnimator = effect.EffectData?.InitialEffectAnimator;
             if (initialEffectAnimator == null)
             {
                 return;

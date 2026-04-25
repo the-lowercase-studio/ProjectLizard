@@ -13,7 +13,6 @@ namespace Assets.Effects.StatusEffects.Poisoning
         [field: SerializeField] public List<Elements> CompatibleElements { get; private set; } = new();
         [field: SerializeField, Min(1f)] public float CompatibleElementsDamageScalingFactor { get; private set; } = 1.25f;
         [field: SerializeField, Min(1f)] public float IncompatibleElementsDamageScalingFactor { get; private set; } = 1.1f;
-        [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
 
         public float GetDamageScalingFactor(Elements damageElement)
         {
@@ -31,7 +30,6 @@ namespace Assets.Effects.StatusEffects.Poisoning
         {
             ApplyDirectDamage(context);
             ApplyPoisoningEffect(context);
-            SpawnVisualEffect(context);
         }
 
         private void ApplyDirectDamage(CardEffectContext context)
@@ -49,14 +47,6 @@ namespace Assets.Effects.StatusEffects.Poisoning
             {
                 context.Target.StatusEffectReceiver.ApplyStatusEffect(new PoisoningStatusEffect(this));
                 Debug.Log($"Applied poisoning effect to {context.Target.Name} for {TurnDuration} turns");
-            }
-        }
-
-        private void SpawnVisualEffect(CardEffectContext context)
-        {
-            if (VisualEffectPrefab != null)
-            {
-                Instantiate(VisualEffectPrefab, context.Position, Quaternion.identity);
             }
         }
     }
