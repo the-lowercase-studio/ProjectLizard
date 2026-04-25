@@ -151,7 +151,8 @@ namespace Assets.Cards.Base.Usage
                 Source = gameObject,
                 Position = ResolveTargetPosition(hit.Target),
                 Target = hit.Target,
-                TargetsProvider = _targetsManager
+                TargetsProvider = _targetsManager,
+                StepDamage = hit.Step?.Damage?.DamageValue ?? 0
             };
 
             effect.Execute(context);

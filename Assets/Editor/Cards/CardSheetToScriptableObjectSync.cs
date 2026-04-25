@@ -874,7 +874,7 @@ namespace Assets.Editor.Cards
             public int? RawChancePercent { get; }
             public CardDamageSO DamageAsset { get; }
             public EffectSO EffectAsset { get; }
-            public bool HasEffect => !string.Equals(EffectName, EffectType.None.ToString(), StringComparison.OrdinalIgnoreCase);
+            public bool HasEffect => !string.Equals(EffectName, EffectType.Custom.ToString(), StringComparison.OrdinalIgnoreCase);
 
             public CardAttackStepDefinition(
                 int damageValue,

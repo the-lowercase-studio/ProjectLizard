@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Burning
 {
-    [CreateAssetMenu(fileName = "New Fire Burning Effect", menuName = "Scriptable Objects/Effects/Fire/Burning Effect")]
+    [CreateAssetMenu(fileName = "New Fire Burning", menuName = "Scriptable Objects/Effects/Fire/Burning")]
     public class BurningEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }

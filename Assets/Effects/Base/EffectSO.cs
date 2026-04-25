@@ -34,5 +34,6 @@ namespace Assets.Effects.Base
         public GameObject Source { get; set; }
         public Vector3 Position { get; set; }
         public ITargetsProvider TargetsProvider { get; set; }
+        public int StepDamage { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Paralysis
 {
-    [CreateAssetMenu(fileName = "New Electric Paralysis Effect", menuName = "Scriptable Objects/Effects/Electric/Paralysis Effect")]
+    [CreateAssetMenu(fileName = "New Electric Paralysis", menuName = "Scriptable Objects/Effects/Electric/Paralysis")]
     public class ParalysisEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }

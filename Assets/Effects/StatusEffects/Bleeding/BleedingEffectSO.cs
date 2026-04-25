@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Bleeding
 {
-    [CreateAssetMenu(fileName = "New Physic Bleeding Effect", menuName = "Scriptable Objects/Effects/Physic/Bleeding Effect")]
+    [CreateAssetMenu(fileName = "New Physic Bleeding", menuName = "Scriptable Objects/Effects/Physic/Bleeding")]
     public class BleedingEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }

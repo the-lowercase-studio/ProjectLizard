@@ -23,6 +23,8 @@ namespace Assets.Energy
         void DecreaseEnergyPerTurn(int amount);
 
         void IncreaseEnergyPerTurn(int amount);
+
+        void AddBonusEnergyForNextTurn(int amount);
     }
 
     public sealed class EnergyManager : MonoBehaviour, IEnergyManager
@@ -36,10 +38,11 @@ namespace Assets.Energy
         [Inject] private ITurnManager _turnManager;
 
         private const byte START_ENERGY_PER_TURN = 3;
-        private const byte MAX_ENERGY_PER_TURN = 9;
+        public const byte MAX_ENERGY_PER_TURN = 9;
 
         private int _energyPerTurn = START_ENERGY_PER_TURN;
         private int _currentEnergy = START_ENERGY_PER_TURN;
+        private int _bonusEnergyForNextTurn = 0;
 
         private void OnEnable()
         {
@@ -125,6 +128,22 @@ namespace Assets.Energy
         private void TurnManager_OnPlayerTurnStart(object sender, EventArgs e)
         {
             RefilCurrentEnergy();
+
+            if (_bonusEnergyForNextTurn > 0)
+            {
+                int sum = _currentEnergy + _bonusEnergyForNextTurn;
+                _currentEnergy = Mathf.Min(sum, MAX_ENERGY_PER_TURN);
+                _bonusEnergyForNextTurn = 0;
+                OnCurrentEnergyChange?.Invoke(this, _currentEnergy);
+            }
+        }
+
+        public void AddBonusEnergyForNextTurn(int amount)
+        {
+            if (amount > 0)
+            {
+                _bonusEnergyForNextTurn += amount;
+            }
         }
     }
 }

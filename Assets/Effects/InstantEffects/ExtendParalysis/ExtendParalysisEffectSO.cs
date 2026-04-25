@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Effects.InstantEffects.ExtendParalysis
 {
-    [CreateAssetMenu(fileName = "New Extend Paralysis Effect", menuName = "Scriptable Objects/Effects/Electric/Extend Paralysis Effect")]
+    [CreateAssetMenu(fileName = "New Extend Paralysis", menuName = "Scriptable Objects/Effects/Electric/Extend Paralysis")]
     public class ExtendParalysisEffectSO : EffectSO
     {
         public override void Execute(CardEffectContext context)

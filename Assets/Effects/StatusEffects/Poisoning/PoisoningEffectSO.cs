@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Poisoning
 {
-    [CreateAssetMenu(fileName = "New Acid Poisoning Effect", menuName = "Scriptable Objects/Effects/Acid/Poisoning Effect")]
+    [CreateAssetMenu(fileName = "New Acid Poisoning", menuName = "Scriptable Objects/Effects/Acid/Poisoning")]
     public class PoisoningEffectSO : EffectSO
     {
         [field: SerializeField] public int InitialDamage { get; private set; }
