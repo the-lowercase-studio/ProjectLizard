@@ -76,8 +76,8 @@ Examples:
   - Supported: `Start`, `Center`, `End`
 - `TargetMode`: mapped to `CardDamageSO.TargetMode`
   - Supported: `Same`, `All`, `Random`
-- `StatusEffectName`: used to resolve `EffectSO`
-  - Supported: `None`, `Burning`, `Paralysis`, `Bleeding`, `Poisoning`
+- `StatusEffectName`: used to resolve `EffectSO` (can be a Status Effect or Instant Effect)
+  - Supported examples: `None`, `Burning`, `Paralysis`, `Bleeding`, `Poisoning`, `ExtendParalysis`
 - `ChancePercent`: optional integer `0..100`
   - Mapped to `CardAttackStep.EffectChance` as `0f..1f`
   - Omitted values default to `1.0`
@@ -180,9 +180,10 @@ Compatibility note:
 
 ### Effect assets
 
-Effects are never created by the importer. They are resolved from existing shared assets at:
+Effects are never created by the importer. They are resolved from existing shared assets by searching the following locations in order:
 
-- `Assets/Effects/StatusEffects/<EffectName>/<EffectName>.asset`
+1. `Assets/Effects/StatusEffects/<EffectName>/<EffectName>.asset`
+2. `Assets/Effects/InstantEffects/<EffectName>/<EffectName>.asset`
 
 Examples:
 
@@ -190,6 +191,7 @@ Examples:
 - `Paralysis` -> `Assets/Effects/StatusEffects/Paralysis/Paralysis.asset`
 - `Bleeding` -> `Assets/Effects/StatusEffects/Bleeding/Bleeding.asset`
 - `Poisoning` -> `Assets/Effects/StatusEffects/Poisoning/Poisoning.asset`
+- `ExtendParalysis` -> `Assets/Effects/InstantEffects/ExtendParalysis/ExtendParalysis.asset`
 
 If a non-`None` effect asset cannot be resolved, that row fails and the importer continues with the next row.
 

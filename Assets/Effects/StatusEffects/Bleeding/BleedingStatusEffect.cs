@@ -35,7 +35,7 @@ namespace Assets.Effects.StatusEffects.Bleeding
             RemoveVisualEffect();
         }
 
-        protected override void StackValue(IStatusEffect other)
+        protected override void StackValue(IStatusEffectBase other)
         {
             if (other is BleedingStatusEffect bleedingEffect)
             {

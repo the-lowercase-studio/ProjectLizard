@@ -10,13 +10,11 @@ namespace Assets.Effects.StatusEffects.Bleeding
         [field: SerializeField] public int BleedingDamagePerTurn { get; private set; }
         [field: SerializeField] public float AcidDamageMultiplier { get; private set; }
         [field: SerializeField] public float PhysicDamageMultiplier { get; private set; }
-        [field: SerializeField] public GameObject VisualEffectPrefab { get; private set; }
 
         public override void Execute(CardEffectContext context)
         {
             ApplyDirectDamage(context);
             ApplyBleedingEffect(context);
-            SpawnVisualEffect(context);
         }
 
         private void ApplyDirectDamage(CardEffectContext context)
@@ -34,14 +32,6 @@ namespace Assets.Effects.StatusEffects.Bleeding
             {
                 context.Target.StatusEffectReceiver.ApplyStatusEffect(new BleedingStatusEffect(this));
                 Debug.Log($"Applied burning effect to {context.Target.Name} for {TurnDuration} turns");
-            }
-        }
-
-        private void SpawnVisualEffect(CardEffectContext context)
-        {
-            if (VisualEffectPrefab != null)
-            {
-                Instantiate(VisualEffectPrefab, context.Position, Quaternion.identity);
             }
         }
     }

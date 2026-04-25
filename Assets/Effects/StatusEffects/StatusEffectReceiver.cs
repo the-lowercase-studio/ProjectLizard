@@ -1,34 +1,34 @@
+using System;
+using System.Collections.Generic;
 using Assets.Effects.Base;
 using Assets.Targeting;
 using Assets.Turns;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Effects.StatusEffects
 {
     public interface IStatusEffectReceiver
     {
-        void ApplyStatusEffect(IStatusEffect effect);
+        void ApplyStatusEffect(IStatusEffectBase effect);
 
-        void RemoveStatusEffect(IStatusEffect effect);
+        void RemoveStatusEffect(IStatusEffectBase effect);
 
         bool HasStatusEffect(EffectType effectType);
 
-        List<IStatusEffect> GetActiveEffects();
+        List<IStatusEffectBase> GetActiveEffects();
 
         event EventHandler OnEffectsChanged;
     }
 
     public class StatusEffectReceiver : MonoBehaviour, IStatusEffectReceiver
     {
-        private List<IStatusEffect> _activeEffects = new List<IStatusEffect>();
+        private readonly List<IStatusEffectBase> _activeEffects = new();
 
         public event EventHandler OnEffectsChanged;
 
-        public void ApplyStatusEffect(IStatusEffect effect)
+        public void ApplyStatusEffect(IStatusEffectBase effect)
         {
-            IStatusEffect existingEffect = _activeEffects.Find(e => e.EffectType == effect.EffectType);
+            IStatusEffectBase existingEffect = _activeEffects.Find(e => e.EffectType == effect.EffectType);
 
             if (existingEffect != null)
             {
@@ -63,7 +63,7 @@ namespace Assets.Effects.StatusEffects
             OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void RemoveStatusEffect(IStatusEffect effect)
+        public void RemoveStatusEffect(IStatusEffectBase effect)
         {
             _activeEffects.Remove(effect);
             Debug.Log($"Status effect '{effect.EffectType}' removed from {gameObject.name}");
@@ -76,9 +76,9 @@ namespace Assets.Effects.StatusEffects
             return _activeEffects.Exists(e => e.EffectType == effectType);
         }
 
-        public List<IStatusEffect> GetActiveEffects()
+        public List<IStatusEffectBase> GetActiveEffects()
         {
-            return new List<IStatusEffect>(_activeEffects);
+            return new List<IStatusEffectBase>(_activeEffects);
         }
     }
 }

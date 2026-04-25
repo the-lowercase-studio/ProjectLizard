@@ -4,13 +4,14 @@ using Assets.Turns;
 
 namespace Assets.Effects.StatusEffects
 {
-    public interface IStatusEffect
+    public interface IStatusEffectBase
     {
         int RemainingTurns { get; }
         EffectType EffectType { get; }
         TurnExecutionState ExecutionState { get; }
         string EffectValueDisplay { get; }
         bool CanStackValue { get; }
+        EffectSO EffectData { get; }
 
         void Apply(ITarget target);
 
@@ -18,10 +19,10 @@ namespace Assets.Effects.StatusEffects
 
         void Remove();
 
-        void StackWith(IStatusEffect other);
+        void StackWith(IStatusEffectBase other);
     }
 
-    public abstract class StatusEffectBase : IStatusEffect
+    public abstract class StatusEffectBase : IStatusEffectBase
     {
         public float Duration { get; protected set; }
         public int RemainingTurns { get; protected set; }
@@ -30,11 +31,11 @@ namespace Assets.Effects.StatusEffects
         public virtual string EffectValueDisplay { get; protected set; }
         public bool CanStackValue { get; protected set; }
         protected ITarget target;
-        protected EffectSO effectData;
+        public EffectSO EffectData { get; protected set; }
 
         protected StatusEffectBase(EffectSO effectSO)
         {
-            effectData = effectSO;
+            EffectData = effectSO;
             RemainingTurns = effectSO.TurnDuration;
             ExecutionState = effectSO.ExecutionState;
             CanStackValue = effectSO.CanStackValue;
@@ -71,7 +72,7 @@ namespace Assets.Effects.StatusEffects
             target.StatusEffectReceiver?.RemoveStatusEffect(this);
         }
 
-        public void StackWith(IStatusEffect other)
+        public void StackWith(IStatusEffectBase other)
         {
             RemainingTurns += other.RemainingTurns;
 
@@ -83,7 +84,7 @@ namespace Assets.Effects.StatusEffects
             UpdateEffectValueDisplay();
         }
 
-        protected virtual void StackValue(IStatusEffect other)
+        protected virtual void StackValue(IStatusEffectBase other)
         {
         }
 

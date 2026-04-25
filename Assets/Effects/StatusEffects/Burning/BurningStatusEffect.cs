@@ -1,6 +1,6 @@
 using Assets.Interfaces.Combat;
-using UnityEngine;
 using Assets.Targeting;
+using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Burning
 {
@@ -48,7 +48,7 @@ namespace Assets.Effects.StatusEffects.Burning
             RemoveVisualEffect();
         }
 
-        protected override void StackValue(IStatusEffect other)
+        protected override void StackValue(IStatusEffectBase other)
         {
             if (other is BurningStatusEffect burningEffect)
             {
@@ -86,7 +86,7 @@ namespace Assets.Effects.StatusEffects.Burning
             }
 
             spreadTarget.StatusEffectReceiver.ApplyStatusEffect(
-                new BurningStatusEffect(effectData as BurningEffectSO, _targetsProvider));
+                new BurningStatusEffect(EffectData as BurningEffectSO, _targetsProvider));
         }
 
         private bool CanSpreadOnTarget(ITarget target)

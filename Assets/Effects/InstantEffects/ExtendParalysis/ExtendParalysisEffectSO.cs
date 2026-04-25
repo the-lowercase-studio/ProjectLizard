@@ -24,24 +24,5 @@ namespace Assets.Effects.InstantEffects.ExtendParalysis
                 }
             }
         }
-
-        private class ParalysisExtension : IStatusEffect
-        {
-            public int RemainingTurns { get; }
-            public EffectType EffectType => EffectType.Paralysis;
-            public TurnExecutionState ExecutionState => TurnExecutionState.Instant;
-            public string EffectValueDisplay => string.Empty;
-            public bool CanStackValue => false;
-
-            public ParalysisExtension(int extensionTurns)
-            {
-                RemainingTurns = extensionTurns;
-            }
-
-            public void Apply(ITarget target) { }
-            public void PerformEffect() { }
-            public void Remove() { }
-            public void StackWith(IStatusEffect other) { }
-        }
     }
 }

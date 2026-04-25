@@ -1,12 +1,10 @@
 using Assets.Cards.Base.Damage;
-using Assets.Effects.UI;
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Cards.Base
+namespace Assets.Cards.TargetingPreview.UI
 {
     public readonly struct CardTargetCrosshairPresenterConfig
     {
@@ -28,7 +26,7 @@ namespace Assets.Cards.Base
         [SerializeField] private RectTransform _effectsContainer;
         [SerializeField] private CardTargetEffectChancePresenter _effectChancePresenterPrefab;
 
-        private readonly List<CardTargetEffectChancePresenter> _activePresenters = new List<CardTargetEffectChancePresenter>();
+        private readonly List<CardTargetEffectChancePresenter> _activePresenters = new();
 
         public void Initialize(CardTargetCrosshairPresenterConfig config)
         {
