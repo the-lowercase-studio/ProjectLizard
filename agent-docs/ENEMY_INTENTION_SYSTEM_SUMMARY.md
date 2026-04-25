@@ -1,163 +1,131 @@
-# Enemy Intention System - Implementation Summary
+# Enemy Intention System Documentation
 
-## What Was Created
+## Purpose
 
-A complete, modular enemy intention and action system has been implemented for your Unity game. The system allows enemies to choose and execute actions based on configurable probabilities.
+The Enemy Intention system lets each enemy declare the action it plans to take, show that plan to the player, and execute the selected action during the enemy phase.
 
-## New Files Created
+It is part of the broader Enemies system. Use `agent-docs/ENEMIES_SYSTEM_SUMMARY.md` as the canonical overview for enemy runtime lifecycle, damage intake, shield behavior, and death handling.
 
-### Core System
-1. **Assets/Enemies/Intentions/IntentionType.cs** - Enum defining intention types (Attack, Defense, Special)
-2. **Assets/Enemies/Intentions/IEnemyAction.cs** - Interface for all enemy actions
-3. **Assets/Enemies/Intentions/IntentionConfig.cs** - Configuration class for intentions with probability and action
-4. **Assets/Enemies/Intentions/IntentionSelector.cs** - Handles weighted random selection of intentions
+The intention system is responsible for:
 
-### Built-in Actions
-5. **Assets/Enemies/Actions/AttackAction.cs** - Basic attack action that deals damage
-6. **Assets/Enemies/Actions/DefenseAction.cs** - Defense action that heals the enemy
-7. **Assets/Enemies/Actions/SpecialAction.cs** - Special action with enhanced damage and optional AoE
-8. **Assets/Enemies/Actions/BerserkAttackAction.cs** - Example custom action with complex logic
+- Storing per-enemy intention options on `EnemyConfigSO`.
+- Selecting one intention by weighted probability.
+- Rolling the action value before displaying the intention.
+- Showing an icon/value preview through `IntentionIndicator`.
+- Executing the selected `EnemyActionBase` against the current target.
+- Triggering matching enemy animation triggers when supported.
 
-### UI Components
-9. **Assets/Enemies/UI/IntentionIndicator.cs** - Visual indicator to show enemy's current intention
+It is not responsible for:
 
-### Editor Tools
-10. **Assets/Editor/Enemies/IntentionConfigDrawer.cs** - Custom property drawer for better Inspector UI
+- Global turn sequencing (`TurnManager` owns phase events).
+- Player-party damage/shield internals.
+- Health, death VFX/audio, or object destruction.
+- Card/effect authoring outside status effects that interact with enemy targets.
 
-### Documentation
-11. **Assets/Enemies/Intentions/README.md** - Comprehensive documentation
-12. **Assets/Enemies/QUICK_SETUP_GUIDE.md** - Quick start guide with examples
+## Reading Map
 
-## Modified Files
+- Primary code locations:
+  - `Assets/Enemies/Base/EnemyBase.cs`
+  - `Assets/Enemies/Base/EnemyConfigSO.cs`
+  - `Assets/Enemies/Intentions/IntentionConfig.cs`
+  - `Assets/Enemies/Intentions/IntentionSelector.cs`
+  - `Assets/Enemies/Intentions/EnemyActionBase.cs`
+  - `Assets/Enemies/Intentions/IntentionType.cs`
+  - `Assets/Enemies/Intentions/IntentionTypeAttribute.cs`
+  - `Assets/Enemies/Intentions/EnemyAnimationPlayer.cs`
+  - `Assets/Enemies/UI/IntentionIndicator.cs`
+  - `Assets/Enemies/Actions/AttackAction.cs`
+  - `Assets/Enemies/Actions/DefenseAction.cs`
+  - `Assets/Enemies/Actions/SpecialAction.cs`
+  - `Assets/Editor/Enemies/IntentionConfigPropertyDrawer.cs`
+- Related docs:
+  - `agent-docs/ENEMIES_SYSTEM_SUMMARY.md`
+  - `agent-docs/EFFECTS_SYSTEM_SUMMARY.md`
+  - `agent-docs/PROJECT_CODING_STANDARDS.md`
+- Related agents or instructions:
+  - `.agents/skills/document-system/SKILL.md`
+  - `.agents/skills/balance-analysis/SKILL.md`
 
-### Assets/Enemies/Base/EnemyConfigSO.cs
-- Added `List<IntentionConfig> Intentions` field
-- Allows configuring intentions per enemy type in the Inspector
+## Architecture and Data Flow
 
-### Assets/Enemies/Base/EnemyBase.cs
-- Added intention selection logic (triggered on player turn start)
-- Added intention execution logic (triggered on enemy turn end)
-- Integrated with TurnManager events
-- Added support for IntentionIndicator component
-- Added public `CurrentIntention` property for external access
+- Core components:
+  - `IntentionConfig`: serializable config entry with `IntentionType`, probability, and `[SerializeReference] EnemyActionBase` action.
+  - `IntentionSelector`: selects one intention from the configured list using weighted random probability.
+  - `EnemyActionBase`: base contract for rollable action values and execution.
+  - `IntentionTypeAttribute`: maps action classes to compatible intention enum values for editor filtering.
+  - `IntentionConfigPropertyDrawer`: inspector drawer that filters action types by selected intention and clears mismatched action references when type changes.
+  - `IntentionIndicator`: maps selected intention type to sprite and displays the rolled value when an action exists.
+  - `EnemyAnimationPlayer`: maps supported intention types to animator triggers.
+- Runtime flow:
+  1. On player-turn start, `EnemyBase` selects a new intention if alive and not paralyzed.
+  2. `IntentionSelector` chooses from `EnemyConfigSO.Intentions` based on summed probabilities.
+  3. The selected action rolls its current value through `RefreshValue`.
+  4. `IntentionIndicator` displays the selected icon and rolled value.
+  5. On enemy-turn start, `EnemyBase` clears its shield.
+  6. On enemy-turn end, `EnemyBase` executes the selected action against injected `IPlayerParty`.
+  7. If the enemy is paralyzed, it shows `SelfParalysis`, clears the current action, and skips execution.
 
-## How It Works
+## Rules and Invariants
 
-### Flow Diagram
-```
-Player Turn Start
-    ↓
-Enemy.SelectIntention()
-    ↓
-[Weighted Random Selection based on probabilities]
-    ↓
-Intention Selected & Indicator Shown
-    ↓
-... Player takes their turn ...
-    ↓
-Enemy Turn End
-    ↓
-Enemy.ExecuteIntention()
-    ↓
-Action.Execute() called
-    ↓
-Indicator Hidden
-    ↓
-Next Turn...
-```
+- Critical behavior rules:
+  - Intentions are selected only for living enemies.
+  - Action value is rolled before the indicator reads `GetValue`.
+  - `Probability` values are treated as weights, not percentages that must sum to 100.
+  - An all-zero probability list returns no intention.
+  - `SelfParalysis` is a display/skip state, not a normal configured action.
+- Ordering or sequencing guarantees:
+  - Selection happens on `ITurnManager.OnPlayerTurnStart`.
+  - Shield clearing happens on `ITurnManager.OnEnemyTurnStart`.
+  - Action execution happens on `ITurnManager.OnEnemyTurnEnd`.
+  - Animation trigger is attempted immediately before action execution.
+- Constraints contributors must preserve:
+  - Keep action classes `[Serializable]`, derive from `EnemyActionBase`, and add `[IntentionType(...)]` when they should be selectable in the inspector.
+  - Keep action classes default-constructible because the property drawer uses `Activator.CreateInstance`.
+  - Update indicator icons and animation trigger mapping when adding new intention types.
 
-### Key Features
+## Extension Points
 
-✅ **Configurable per Enemy Type** - Each EnemyConfigSO can have different intentions
-✅ **Probability-Based Selection** - Weighted random selection using configurable probabilities
-✅ **Modular Actions** - Easy to add new custom actions by implementing IEnemyAction
-✅ **Optional Visual Feedback** - IntentionIndicator shows players what enemies will do
-✅ **Turn-Based Integration** - Automatically hooks into existing TurnManager
-✅ **Flexible Configuration** - Not all enemies need all action types
-✅ **Zero Code Setup** - Configure entirely through Unity Inspector
+- Safe extension areas:
+  - Add new `EnemyActionBase` subclasses for richer attack, defense, support, or status-effect behavior.
+  - Add new `IntentionType` values when the player needs a distinct preview category.
+  - Add enemy-specific animator trigger support through controller parameters.
+- Required dependencies and contracts:
+  - Actions receive the acting `IEnemyBase` and an `ITarget`.
+  - Attack-like actions should use `target.Damageable`.
+  - Defense-like actions should use the enemy's `IShielded.ShieldReceiver`.
+- Testing implications:
+  - Validate inspector action filtering when adding intention/action pairs.
+  - Validate null or missing action behavior in configs.
+  - Validate weighted selection behavior with zero and mixed probabilities.
+  - Validate paralyzed enemies show the correct indicator and do not execute stale actions.
 
-## Usage Example
+## Integration Notes
 
-### In Unity Inspector (EnemyConfigSO):
-```
-Intentions & Actions:
-  Intention 0:
-    Intention Type: Attack
-    Probability: 50
-    Action: AttackAction
-      - Damage Amount: 15
+- Upstream dependencies:
+  - `TurnManager` provides the event timing.
+  - `EnemyConfigSO` assets provide intention data.
+  - Effects can drive paralysis through `IParalyzable`.
+- Downstream consumers:
+  - `IntentionIndicator` exposes enemy plans to players.
+  - `EnemyAnimationPlayer` uses intention type to drive animation triggers.
+  - Player party receives enemy action effects through target interfaces.
+- Cross-system coupling risks:
+  - New intention enum values require synchronized updates across config drawer, indicator, and animation mapping.
+  - The current execution target is the injected `IPlayerParty`; multi-target or per-character targeting requires a broader target-selection design.
+  - Reflection-based editor discovery depends on action class metadata being available in loaded assemblies.
 
-  Intention 1:
-    Intention Type: Defense
-    Probability: 30
-    Action: DefenseAction
-      - Heal Amount: 10
+## Known Risks and Open Questions
 
-  Intention 2:
-    Intention Type: Special
-    Probability: 20
-    Action: SpecialAction
-      - Damage Amount: 25
-      - Is AoE: false
-```
-
-### In Code (Creating Custom Action):
-```csharp
-using Assets.Enemies.Intentions;
-using System;
-using UnityEngine;
-
-[Serializable]
-public class MyCustomAction : IEnemyAction
-{
-    [SerializeField] private int _myParameter;
-
-    public void Execute(EnemyBase enemy)
-    {
-        // Your custom logic here
-        Debug.Log($"{enemy.Name} executes custom action!");
-    }
-}
-```
-
-## Integration Points
-
-### With Existing Systems
-- **TurnManager**: Subscribes to `OnPlayerTurnStart` and `OnEnemyTurnEnd` events
-- **Health System**: Uses existing `IHealth` interface for healing actions
-- **Damage System**: Uses existing `IDamageable` interface for attack actions
-- **Target System**: Uses existing `ITarget` interface for target selection
-
-### Extensibility Points
-- **Custom Actions**: Implement `IEnemyAction` interface
-- **Custom Selection Logic**: Extend or replace `IntentionSelector`
-- **Custom UI**: Extend or replace `IntentionIndicator`
-- **Validation**: Add `CanExecute()` method to actions for conditional execution
-
-## Testing Checklist
-
-✅ Project builds successfully
-✅ All new files compile without errors
-✅ EnemyBase integrates with TurnManager
-✅ Intentions can be configured in Inspector
-✅ Actions execute during enemy turn
-
-## Next Steps (Optional Enhancements)
-
-1. **Add UI Icons**: Create sprites for attack, defense, and special icons for IntentionIndicator
-2. **Add Sound Effects**: Play audio when intentions are selected or executed
-3. **Add Animations**: Trigger animations based on action type
-4. **Add Status Effects**: Create actions that apply buffs/debuffs
-5. **Add Targeting Logic**: Implement smart target selection (lowest HP, highest threat, etc.)
-6. **Add Conditional Actions**: Implement actions that only execute under certain conditions
-7. **Add Action Chains**: Allow multiple actions to be executed in sequence
-8. **Add Action Cooldowns**: Prevent certain actions from being used every turn
-
-## Support
-
-For detailed documentation, see:
-- **Assets/Enemies/Intentions/README.md** - Full system documentation
-- **Assets/Enemies/QUICK_SETUP_GUIDE.md** - Quick setup guide with examples
-
-For custom implementations, examine:
-- **Assets/Enemies/Actions/BerserkAttackAction.cs** - Example of a complex custom action
+- Known limitations:
+  - `EnemyBase.SelectIntention` calls `_currentIntention.Action.RefreshValue()` before null-checking `_currentIntention` or its action, so missing actions can throw.
+  - `IntentionSelector` does not reject negative probabilities.
+  - `SpecialAction` currently behaves like `AttackAction`.
+  - The indicator is not explicitly hidden after action execution; it persists until the next selection or death UI hide.
+- Open design questions:
+  - Should enemy actions execute on enemy-turn start instead of enemy-turn end for clearer phase naming?
+  - Should probability validation happen in `EnemyConfigSO`, the property drawer, or a separate editor validation tool?
+  - Should actions receive a richer execution context instead of just enemy + target?
+- Suggested follow-up tasks:
+  - Add null-safe selection/execution handling for missing actions.
+  - Add editor validation for negative probabilities and empty action references.
+  - Give `SpecialAction` a distinct baseline behavior or remove it until needed.

@@ -176,7 +176,10 @@ Project docs and when to use them:
 - CHANGELOG.md: Recent change history and migration context.
 - REFACTORING_SUMMARY.md: DI migration decisions and architectural constraints.
 - SYSTEM_ARCHITECTURE_VISUAL.md: High-level architecture and flow diagrams.
+- ELEMENTAL_SYSTEM_SUMMARY.md: Shared element vocabulary, card/effect/party consumers, and elemental modifier boundaries.
+- TURNS_SYSTEM_SUMMARY.md: Turn sequencing, event order, and turn-event integration boundaries.
 - ENEMY_INTENTION_SYSTEM_SUMMARY.md: Enemy intention/action design and integration notes.
+- DAMAGE_NUMBERS_SYSTEM_SUMMARY.md: Damage popup feedback behavior, shield/health split display, and UI ownership boundaries.
 - PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md: Player party model, character data flow, damage/death behavior, and extension constraints.
 - SHIELD_IMPLEMENTATION_COMPLETE.md: Shield-first combat behavior and related implementation details.
 - SHIELD_SYSTEM_UPDATE.md: Follow-up shield updates and setup notes.
