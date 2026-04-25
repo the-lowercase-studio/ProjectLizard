@@ -86,7 +86,7 @@ namespace Assets.Effects.StatusEffects.Burning
             }
 
             spreadTarget.StatusEffectReceiver.ApplyStatusEffect(
-                new BurningStatusEffect(effectData as BurningEffectSO, _targetsProvider));
+                new BurningStatusEffect(EffectData as BurningEffectSO, _targetsProvider));
         }
 
         private bool CanSpreadOnTarget(ITarget target)

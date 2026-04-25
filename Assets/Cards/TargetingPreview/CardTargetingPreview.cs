@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Assets.Cards.Base.Interaction;
 using Assets.Cards.Base;
+using Assets.Cards.TargetingPreview.UI;
 
 namespace Assets.Cards.TargetingPreview
 {
@@ -391,7 +392,7 @@ namespace Assets.Cards.TargetingPreview
                 return null;
             }
 
-            return canvas.worldCamera != null ? canvas.worldCamera : _mainCamera;
+            return canvas.worldCamera ?? _mainCamera;
         }
     }
 }

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Cards.Base
+namespace Assets.Cards.TargetingPreview.UI
 {
     public readonly struct CardTargetEffectPreview
     {
@@ -32,7 +32,6 @@ namespace Assets.Cards.Base
     {
         [SerializeField] private Image _effectIcon;
         [SerializeField] private TextMeshProUGUI _chanceText;
-        [SerializeField] private EffectTypeSpriteMappingSO _effectTypeMapping;
 
         public void Initialize(CardTargetEffectChancePresenterConfig config)
         {
@@ -42,9 +41,9 @@ namespace Assets.Cards.Base
                 return;
             }
 
-            if (_effectIcon != null && _effectTypeMapping != null)
+            if (_effectIcon != null)
             {
-                _effectIcon.sprite = _effectTypeMapping.GetSpriteForEffectType(config.EffectPreview.Effect.EffectType);
+                _effectIcon.sprite = config.EffectPreview.Effect.Sprite;
             }
 
             if (_chanceText != null)
