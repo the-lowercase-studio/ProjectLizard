@@ -47,13 +47,13 @@ The system is not responsible for:
   - Assets/Editor/Cards/UnsyncedCardsDeletion.cs
 - Related docs:
   - agent-docs/AGENTS.md
-  - agent-docs/TECHNOLOGY_DOCUMENTATION.md
-  - agent-docs/PROJECT_CODING_STANDARDS.md
-  - agent-docs/SYSTEM_ARCHITECTURE_VISUAL.md
-  - agent-docs/EFFECTS_SYSTEM_SUMMARY.md
-  - agent-docs/ENERGY_SYSTEM_SUMMARY.md
-  - agent-docs/DAMAGE_NUMBERS_SYSTEM_SUMMARY.md
-  - agent-docs/CARDS_SCRIPTABLE_OBJECTS_FROM_CARD_SHEET_GENERATOR_SUMMARY.md
+  - agent-docs/technology-documentation.md
+  - agent-docs/project-coding-standards.md
+  - agent-docs/system-architecture-visual.md
+  - agent-docs/effects-system-summary.md
+  - agent-docs/energy-system-summary.md
+  - agent-docs/damage-numbers-system-summary.md
+  - agent-docs/cards-scriptable-objects-from-card-sheet-generator-summary.md
 - Related agents or instructions:
   - .agents/skills/document-system/SKILL.md
   - .agents/skills/architecture-review/SKILL.md
@@ -100,7 +100,7 @@ The system is not responsible for:
 - Card sheet importer:
   - The CSV at Assets/Cards/CardsLibrary/CardsSheet.csv is the source for generated CardConfigBaseSO assets.
   - Generated cards use the runtime AttackSteps schema; shared CardDamageSO assets are reused by damage tuple.
-  - Full parsing, validation, and menu-command behavior is documented in CARDS_SCRIPTABLE_OBJECTS_FROM_CARD_SHEET_GENERATOR_SUMMARY.md.
+  - Full parsing, validation, and menu-command behavior is documented in cards-scriptable-objects-from-card-sheet-generator-summary.md.
 
 ## Rules and Invariants
 

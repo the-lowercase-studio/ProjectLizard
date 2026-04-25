@@ -24,9 +24,9 @@ The system is not responsible for:
   - `Assets/Installers/SceneInstaller.cs`
 - Related docs:
   - `agent-docs/AGENTS.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
-  - `agent-docs/CARDS_SYSTEM_SUMMARY.md`
-  - `agent-docs/ENEMIES_SYSTEM_SUMMARY.md`
+  - `agent-docs/project-coding-standards.md`
+  - `agent-docs/cards-system-summary.md`
+  - `agent-docs/enemies-system-summary.md`
 - Related agents or instructions:
   - `.agents/skills/document-system/SKILL.md`
   - `.agents/instructions/ui-feedback.instructions.md`

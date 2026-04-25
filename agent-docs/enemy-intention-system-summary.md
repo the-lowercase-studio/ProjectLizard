@@ -4,7 +4,7 @@
 
 The Enemy Intention system lets each enemy declare the action it plans to take, show that plan to the player, and execute the selected action during the enemy phase.
 
-It is part of the broader Enemies system. Use `agent-docs/ENEMIES_SYSTEM_SUMMARY.md` as the canonical overview for enemy runtime lifecycle, damage intake, shield behavior, and death handling.
+It is part of the broader Enemies system. Use `agent-docs/enemies-system-summary.md` as the canonical overview for enemy runtime lifecycle, damage intake, shield behavior, and death handling.
 
 The intention system is responsible for:
 
@@ -39,9 +39,9 @@ It is not responsible for:
   - `Assets/Enemies/Actions/SpecialAction.cs`
   - `Assets/Editor/Enemies/IntentionConfigPropertyDrawer.cs`
 - Related docs:
-  - `agent-docs/ENEMIES_SYSTEM_SUMMARY.md`
-  - `agent-docs/EFFECTS_SYSTEM_SUMMARY.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
+  - `agent-docs/enemies-system-summary.md`
+  - `agent-docs/effects-system-summary.md`
+  - `agent-docs/project-coding-standards.md`
 - Related agents or instructions:
   - `.agents/skills/document-system/SKILL.md`
   - `.agents/skills/balance-analysis/SKILL.md`

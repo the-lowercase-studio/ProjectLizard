@@ -38,11 +38,11 @@ The system is not responsible for:
   - `Assets/Editor/Enemies/IntentionConfigPropertyDrawer.cs`
 - Related docs:
   - `agent-docs/AGENTS.md`
-  - `agent-docs/TECHNOLOGY_DOCUMENTATION.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
-  - `agent-docs/ENEMY_INTENTION_SYSTEM_SUMMARY.md`
-  - `agent-docs/EFFECTS_SYSTEM_SUMMARY.md`
-  - `agent-docs/DAMAGE_NUMBERS_SYSTEM_SUMMARY.md`
+  - `agent-docs/technology-documentation.md`
+  - `agent-docs/project-coding-standards.md`
+  - `agent-docs/enemy-intention-system-summary.md`
+  - `agent-docs/effects-system-summary.md`
+  - `agent-docs/damage-numbers-system-summary.md`
 - Related agents or instructions:
   - `.agents/skills/document-system/SKILL.md`
   - `.agents/skills/architecture-review/SKILL.md`

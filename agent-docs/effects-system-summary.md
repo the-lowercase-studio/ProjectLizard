@@ -47,11 +47,11 @@ The system is not responsible for:
   - `Assets/Effects/UI/InitialEffectPresenter.cs`
 - Related docs:
   - `agent-docs/AGENTS.md`
-  - `agent-docs/TECHNOLOGY_DOCUMENTATION.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
-  - `agent-docs/CARDS_SYSTEM_SUMMARY.md`
-  - `agent-docs/CARDS_SCRIPTABLE_OBJECTS_FROM_CARD_SHEET_GENERATOR_SUMMARY.md`
-  - `agent-docs/ENEMIES_SYSTEM_SUMMARY.md`
+  - `agent-docs/technology-documentation.md`
+  - `agent-docs/project-coding-standards.md`
+  - `agent-docs/cards-system-summary.md`
+  - `agent-docs/cards-scriptable-objects-from-card-sheet-generator-summary.md`
+  - `agent-docs/enemies-system-summary.md`
 - Related agents or instructions:
   - `.agents/skills/create-effect/SKILL.md`
   - `.agents/skills/document-system/SKILL.md`

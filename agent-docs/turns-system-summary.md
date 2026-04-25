@@ -29,13 +29,13 @@ The system is not responsible for:
   - `Assets/Installers/SceneInstaller.cs`
 - Related docs:
   - `agent-docs/AGENTS.md`
-  - `agent-docs/TECHNOLOGY_DOCUMENTATION.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
-  - `agent-docs/SYSTEM_ARCHITECTURE_VISUAL.md`
-  - `agent-docs/CARDS_SYSTEM_SUMMARY.md`
-  - `agent-docs/ENERGY_SYSTEM_SUMMARY.md`
-  - `agent-docs/ENEMIES_SYSTEM_SUMMARY.md`
-  - `agent-docs/EFFECTS_SYSTEM_SUMMARY.md`
+  - `agent-docs/technology-documentation.md`
+  - `agent-docs/project-coding-standards.md`
+  - `agent-docs/system-architecture-visual.md`
+  - `agent-docs/cards-system-summary.md`
+  - `agent-docs/energy-system-summary.md`
+  - `agent-docs/enemies-system-summary.md`
+  - `agent-docs/effects-system-summary.md`
 - Related agents or instructions:
   - `.agents/skills/document-system/SKILL.md`
   - `.agents/skills/architecture-review/SKILL.md`
@@ -140,5 +140,5 @@ The system is not responsible for:
 - Suggested follow-up tasks:
   - Add a small event-order test or manual validation checklist for turn transitions.
   - Add an active phase/state guard before changing turn pacing or adding asynchronous completion.
-  - Decide and document intended enemy action timing, then align `ENEMIES_SYSTEM_SUMMARY.md` if the phase changes.
+  - Decide and document intended enemy action timing, then align `enemies-system-summary.md` if the phase changes.
   - Rename `targets` to `_targets` during the next code touch in `TurnManager`.

@@ -12,7 +12,7 @@ When official documentation is available for a technology used in this project, 
 
 Rules:
 
-1. Use TECHNOLOGY_DOCUMENTATION.md as the source for official docs links.
+1. Use technology-documentation.md as the source for official docs links.
 2. Prefer official docs over memory or generic model knowledge.
 3. If docs and code behavior differ, trust the actual project code and ask the user to clarify intended behavior.
 4. In responses and implementation notes, mention which official source was used when relevant.
@@ -138,7 +138,14 @@ Representative folders:
 
 - Use AI suggestions as a draft, not as a source of truth.
 - Validate gameplay logic against turn flow, shields, and intention execution.
-- Follow the detailed guidance in AI_GAME_DEV_BEST_PRACTICES.md for implementation, testing, and content workflows.
+- Follow the detailed guidance in ai-game-dev-best-practices.md for implementation, testing, and content workflows.
+
+## Markdown Document Naming
+
+- AI-facing project documentation under `agent-docs/` uses kebab-case markdown filenames.
+- Date-prefixed implementation notes use `yyyy-mm-dd-description.md`.
+- Reserved operational filenames keep their established uppercase or conventional names, including `AGENTS.md`, `README.md`, and `SKILL.md`.
+- New documentation links should use the exact on-disk filename and relative path.
 
 ## Project Coding Standards
 
@@ -155,7 +162,7 @@ Use these standards for all new code and refactors in touched files.
 9. Inspector workflow: prefer [SerializeField] private fields over new public mutable fields.
 10. Fixing legacy style: when editing files with older style, migrate changed lines toward these standards without unrelated large rewrites.
 
-For full details and examples, see PROJECT_CODING_STANDARDS.md.
+For full details and examples, see project-coding-standards.md.
 
 ## Known Guidance Documents for AI Agents
 
@@ -164,28 +171,28 @@ Use this section as a reading map before major changes. Prefer project-authored 
 Recommended reading order:
 
 1. AGENTS.md
-2. TECHNOLOGY_DOCUMENTATION.md
-3. AI_GAME_DEV_BEST_PRACTICES.md
-4. SYSTEM_ARCHITECTURE_VISUAL.md
-5. PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md
+2. technology-documentation.md
+3. ai-game-dev-best-practices.md
+4. system-architecture-visual.md
+5. player-party-character-system-summary.md
 6. ../.agents/README.md
 
 Project docs and when to use them:
 
 - README.md: Entry-level project overview.
-- CHANGELOG.md: Recent change history and migration context.
-- REFACTORING_SUMMARY.md: DI migration decisions and architectural constraints.
-- SYSTEM_ARCHITECTURE_VISUAL.md: High-level architecture and flow diagrams.
-- ELEMENTAL_SYSTEM_SUMMARY.md: Shared element vocabulary, card/effect/party consumers, and elemental modifier boundaries.
-- TURNS_SYSTEM_SUMMARY.md: Turn sequencing, event order, and turn-event integration boundaries.
-- ENEMY_INTENTION_SYSTEM_SUMMARY.md: Enemy intention/action design and integration notes.
-- DAMAGE_NUMBERS_SYSTEM_SUMMARY.md: Damage popup feedback behavior, shield/health split display, and UI ownership boundaries.
-- PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md: Player party model, character data flow, damage/death behavior, and extension constraints.
-- SHIELD_IMPLEMENTATION_COMPLETE.md: Shield-first combat behavior and related implementation details.
-- SHIELD_SYSTEM_UPDATE.md: Follow-up shield updates and setup notes.
-- AI_GAME_DEV_BEST_PRACTICES.md: AI-assisted implementation, testing, and review guardrails.
-- PROJECT_CODING_STANDARDS.md: Project-specific code style and architecture conventions for contributors and agents.
-- TECHNOLOGY_DOCUMENTATION.md: Official documentation links for project technologies and usage priority guidance.
+- changelog.md: Recent change history and migration context.
+- refactoring-summary.md: DI migration decisions and architectural constraints.
+- system-architecture-visual.md: High-level architecture and flow diagrams.
+- elemental-system-summary.md: Shared element vocabulary, card/effect/party consumers, and elemental modifier boundaries.
+- turns-system-summary.md: Turn sequencing, event order, and turn-event integration boundaries.
+- enemy-intention-system-summary.md: Enemy intention/action design and integration notes.
+- damage-numbers-system-summary.md: Damage popup feedback behavior, shield/health split display, and UI ownership boundaries.
+- player-party-character-system-summary.md: Player party model, character data flow, damage/death behavior, and extension constraints.
+- shield-implementation-complete.md: Shield-first combat behavior and related implementation details.
+- shield-system-update.md: Follow-up shield updates and setup notes.
+- ai-game-dev-best-practices.md: AI-assisted implementation, testing, and review guardrails.
+- project-coding-standards.md: Project-specific code style and architecture conventions for contributors and agents.
+- technology-documentation.md: Official documentation links for project technologies and usage priority guidance.
 
 Note for agents:
 

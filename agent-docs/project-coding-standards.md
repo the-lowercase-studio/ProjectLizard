@@ -106,6 +106,13 @@ public void StartEnemyTurn() { }
 public event EventHandler OnEnemyTurnEnd;
 ```
 
+### Markdown Documents
+
+- AI-facing project documentation under `agent-docs/` uses kebab-case filenames.
+- Date-prefixed implementation plans and summaries use `yyyy-mm-dd-description.md`.
+- Reserved operational filenames keep their established uppercase or conventional names, including `AGENTS.md`, `README.md`, and `SKILL.md`.
+- When renaming documentation, update all relative links and references in `agent-docs/`, `.agents/`, and root agent entry-point files.
+
 ## 3) Member Ordering in Classes
 
 For MonoBehaviour and similar runtime classes, use this field ordering:

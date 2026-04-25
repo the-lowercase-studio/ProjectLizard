@@ -42,11 +42,11 @@ The system is not currently responsible for:
   - `Assets/Editor/Cards/UnsyncedCardsDeletion.cs`
 - Related docs:
   - `agent-docs/AGENTS.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
-  - `agent-docs/CARDS_SYSTEM_SUMMARY.md`
-  - `agent-docs/EFFECTS_SYSTEM_SUMMARY.md`
-  - `agent-docs/CARDS_SCRIPTABLE_OBJECTS_FROM_CARD_SHEET_GENERATOR_SUMMARY.md`
-  - `agent-docs/PLAYER_PARTY_CHARACTER_SYSTEM_SUMMARY.md`
+  - `agent-docs/project-coding-standards.md`
+  - `agent-docs/cards-system-summary.md`
+  - `agent-docs/effects-system-summary.md`
+  - `agent-docs/cards-scriptable-objects-from-card-sheet-generator-summary.md`
+  - `agent-docs/player-party-character-system-summary.md`
 - Related agents or instructions:
   - `.agents/skills/document-system/SKILL.md`
   - `.agents/agents/mechanics-effects-specialist.agent.md`

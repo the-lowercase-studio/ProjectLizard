@@ -11,7 +11,7 @@ Agents must consult official documentation listed here before relying on general
 Execution policy:
 
 1. Read the relevant official documentation first.
-2. Apply project-specific constraints from AGENTS.md and PROJECT_CODING_STANDARDS.md.
+2. Apply project-specific constraints from AGENTS.md and project-coding-standards.md.
 3. If documentation is ambiguous, ask the user instead of guessing.
 4. If implementation behavior in project code differs from docs, keep project behavior and request clarification.
 
@@ -42,5 +42,5 @@ Execution policy:
 ## Cross-References
 
 - See AGENTS.md for architecture and repository-specific working rules.
-- See AI_GAME_DEV_BEST_PRACTICES.md for workflow, validation, and review practices.
-- See PROJECT_CODING_STANDARDS.md for code style and structure rules.
+- See ai-game-dev-best-practices.md for workflow, validation, and review practices.
+- See project-coding-standards.md for code style and structure rules.

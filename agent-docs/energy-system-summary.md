@@ -31,11 +31,11 @@ The system is not responsible for:
   - Assets/Effects/InstantEffects/Add2EnergyToNextTurn/AddEnergyToNextTurnEffectSO.cs
 - Related docs:
   - agent-docs/AGENTS.md
-  - agent-docs/TECHNOLOGY_DOCUMENTATION.md
-  - agent-docs/PROJECT_CODING_STANDARDS.md
-  - agent-docs/CARDS_SYSTEM_SUMMARY.md
-  - agent-docs/EFFECTS_SYSTEM_SUMMARY.md
-  - agent-docs/implementation-summaries/effects/AddEnergyToNextTurnEffectSO.md
+  - agent-docs/technology-documentation.md
+  - agent-docs/project-coding-standards.md
+  - agent-docs/cards-system-summary.md
+  - agent-docs/effects-system-summary.md
+  - agent-docs/implementation-summaries/effects/add-energy-to-next-turn-effect-so.md
 - Related agents or instructions:
   - .agents/skills/document-system/SKILL.md
   - .agents/skills/create-effect/SKILL.md
