@@ -1,4 +1,4 @@
-﻿using Assets.Cards.CardsHand;
+using Assets.Cards.CardsHand;
 using Assets.Cards.Base.Interaction;
 using Assets.Cards.Constants;
 using Assets.Inputs.Pointer;
@@ -48,8 +48,7 @@ namespace Assets.Cards.Base
 
         private void OnEnable()
         {
-            _visualCanvas.overrideSorting = true;
-            _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
+            _visualCanvas.overrideSorting = false;
         }
 
         private void OnDisable()
@@ -82,6 +81,7 @@ namespace Assets.Cards.Base
 
             _interactionStateMachine.TryTransitionToHovered(() =>
             {
+                _visualCanvas.overrideSorting = true;
                 _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
 
                 _card.Scaler.SetVisualPivotToBottom();
@@ -98,7 +98,7 @@ namespace Assets.Cards.Base
 
             _interactionStateMachine.TryTransitionToNone(() =>
             {
-                _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
+                _visualCanvas.overrideSorting = false;
 
                 _card.Scaler.ResetVisualScaleFromBottom();
                 _cardsHandPresenter.UpdateCardPlacement(_card);
@@ -116,6 +116,8 @@ namespace Assets.Cards.Base
                 _interactionStateMachine.TryTransitionToDragged(() =>
                 {
                     Debug.Log("Drag start");
+                    _visualCanvas.overrideSorting = true;
+                    _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
                     _card.Movement.VisualStartFollowingPointer();
                     _card.Scaler.ResetVisualScaleFromBottom();
                     _canvasGroup.blocksRaycasts = false;
@@ -146,6 +148,7 @@ namespace Assets.Cards.Base
                     {
                         _interactionStateMachine.ForceTransition(CardState.Hovered, () =>
                         {
+                            _visualCanvas.overrideSorting = true;
                             _visualCanvas.sortingOrder = LayersOrder.Cards.INTERACTED_LAYER_ORDER;
 
                             _card.Scaler.SetVisualPivotToBottom();
@@ -160,7 +163,7 @@ namespace Assets.Cards.Base
                     {
                         _interactionStateMachine.ForceTransition(CardState.None, () =>
                         {
-                            _visualCanvas.sortingOrder = LayersOrder.Cards.DEFAULT_LAYER_ORDER;
+                            _visualCanvas.overrideSorting = false;
 
                             _card.Scaler.ResetVisualScale();
                         });
