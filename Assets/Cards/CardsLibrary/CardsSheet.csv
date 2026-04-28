@@ -1,23 +1,23 @@
-Element,Title,Description,Start Energy Cost,Attack,Front Graphic,Visual Base,Implemented,ChangeDate
-Physical,Cut,,1,6x1_Start_Same_None,Assets/Cards/CardsLibrary/Physical/Images/Cut,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Physical,Double Blow,If target is Bleeding: 2x damage.,2,2x2_Start_Random_None,Assets/Cards/CardsLibrary/Physical/Images/DoubleBlow,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Physical,Puncture,Apply Bleed. If target is Bleeding: 2x damage.,2,5x1_Start_Same_Bleeding%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Physical,Crushing Blow,Apply Bleed.,3,12x1_Start_Same_Bleeding%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Physical,Series of Blows,If target is Bleeding: 2x damage.,4,4x3_Start_Same_None,Assets/Cards/CardsLibrary/Physical/Images/SeriesOfBlows,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Physical,Critical Hit,If target is Bleeding: 2x damage.,4,11x1_Start_Random_None,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Fire,Burning Flame,Apply Burn.,1,2x1_Start_Same_Burning%100,Assets/Cards/CardsLibrary/Fire/Images/BurningFlame,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Fire,Flame Sword,Apply Burn.,2,6x1_Start_Same_Burning%100,Assets/Cards/CardsLibrary/Fire/Images/FlameSword,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Fire,Burning Breath,Apply Burn (3).,3,8x2_Start_Random_Burning%100,Assets/Cards/CardsLibrary/Fire/Images/BurningBreath,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Fire,Great Fireball,Apply Burn.,4,10x1_Start_All_Burning%100,Assets/Cards/CardsLibrary/Fire/Images/GreatBallOfFire,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Electric,Electric Spark,,1,4x1_Start_Random_None,Assets/Cards/CardsLibrary/Electric/Images/ElectricSpark,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Electric,Lightning,Apply Shock.,2,6x1_Start_Same_Paralysis%100,Assets/Cards/CardsLibrary/Electric/Images/Lightning,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Electric,Electrical Conduction,Apply Shock.,4,5x1_Start_All_Paralysis%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Electric,Jumping Spark,Apply Shock.,3,4x2_Start_Random_Paralysis%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Electric,Electrical Overload,Shocked targets: +1 Stun duration.,2,0x1_Start_All_Paralysis%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Electric,Energy Boost,Next turn: Gain +3 Energy.,2,0x0_Start_Same_None,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Acid ,Acid Throw,Apply Poison.,1,2x1_End_Same_Poisoning%100,Assets/Cards/CardsLibrary/Acid/Images/AcidThrow,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Acid ,Acid Splash,Apply Poison.,2,4x2_End_Random_Poisoning%100,Assets/Cards/CardsLibrary/Acid/Images/AcidSplash,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Acid ,Corrosive Substance,Apply Poison.,4,9x1_End_Same_Poisoning%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Acid ,Acid Rain,Apply Poison.,3,4x1_Start_All_Poisoning%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Acid ,Toxic Cloud,Apply Poison.,3,7x2_Start_Random_Poisoning%100,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
-Acid ,Chemical Reaction,Hits only Poisoned and Shocked targets.,3,15x1_Start_All_None,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE,
+Element,Title,Description,Start Energy Cost,Attack,Front Graphic,Visual Base,Implemented
+Physical,Cut,(first target),1,6x1_Start_Same_None,Assets/Cards/CardsLibrary/Physical/Images/Cut,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Physical,Double Blow,If target is Bleeding: 2x damage (random target).,2,2x2_Start_Random_None,Assets/Cards/CardsLibrary/Physical/Images/DoubleBlow,Assets/Cards/Base/DefaultCardVisualBase,FALSE
+Physical,Puncture,Apply Bleed (50%). If target is Bleeding: 2x damage (first target).,2,5x1_Start_Same_ConditionalBleedingDamageMultiplier | 0x1_Start_Same_Bleeding%50,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE
+Physical,Crushing Blow,Apply Bleed (first target).,3,12x1_Start_Same_Bleeding,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Physical,Series of Blows,If target is Bleeding: 2x damage (first target).,4,4x3_Start_Same_ConditionalBleedingDamageMultiplier,Assets/Cards/CardsLibrary/Physical/Images/SeriesOfBlows,Assets/Cards/Base/DefaultCardVisualBase,FALSE
+Physical,Critical Hit,If target is Bleeding: 2x damage (random target).,4,11x1_Start_Random_ConditionalBleedingDamageMultiplier,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Fire,Burning Flame,Apply Burn (first target).,1,2x1_Start_Same_Burning,Assets/Cards/CardsLibrary/Fire/Images/BurningFlame,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Fire,Flame Sword,Apply Burn (50%) (center target).,2,6x1_Center_Same_Burning%50,Assets/Cards/CardsLibrary/Fire/Images/FlameSword,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Fire,Burning Breath,Apply Burn (random target).,3,8x2_Start_Random_Burning,Assets/Cards/CardsLibrary/Fire/Images/BurningBreath,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Fire,Great Fireball,Apply Burn (75%) (all targets).,4,10x1_Start_All_Burning%75,Assets/Cards/CardsLibrary/Fire/Images/GreatBallOfFire,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Electric,Electric Spark,(random target),1,4x1_Start_Random_None,Assets/Cards/CardsLibrary/Electric/Images/ElectricSpark,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Electric,Lightning,Apply Shock (first target).,2,3x1_Start_Same_Paralysis,Assets/Cards/CardsLibrary/Electric/Images/Lightning,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Electric,Electrical Conduction,Apply Shock (all targets).,4,5x1_Start_All_Paralysis,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Electric,Jumping Spark,Apply Shock (2 random targets).,3,4x2_Start_Random_Paralysis,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Electric,Electrical Overload,Shocked targets: +1 Stun duration (all targets).,2,0x1_Start_All_ExtendParalysis,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Electric,Energy Boost,Next turn: Gain +2 Energy (first target).,2,0x1_Start_Same_Add2EnergyToNextTurn,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE
+Acid ,Acid Throw,Apply Poison (last target).,1,2x1_End_Same_Poisoning,Assets/Cards/CardsLibrary/Acid/Images/AcidThrow,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Acid ,Acid Splash,Apply Poison (60%) (2 random targets).,2,4x2_End_Random_Poisoning%60,Assets/Cards/CardsLibrary/Acid/Images/AcidSplash,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Acid ,Corrosive Substance,Apply Poison (last target).,4,9x1_End_Same_Poisoning,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Acid ,Acid Rain,Apply Poison (50%) (all targets).,3,4x1_Start_All_Poisoning%50,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Acid ,Toxic Cloud,Apply Poison (75%) (2 random targets).,3,7x2_Start_Random_Poisoning%75,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,TRUE
+Acid ,Chemical Reaction,Hits only Poisoned and Shocked targets (all targets).,3,15x1_Start_All_None,Assets/Cards/CardsLibrary/Custom/Images/Placeholder,Assets/Cards/Base/DefaultCardVisualBase,FALSE

@@ -35,7 +35,7 @@ namespace Assets.Cards.TargetingPreview.UI
 
         public void Initialize(CardTargetEffectChancePresenterConfig config)
         {
-            if (config.EffectPreview.Effect == null)
+            if (config.EffectPreview.Effect == null || !config.EffectPreview.Effect.HasVisuals)
             {
                 gameObject.SetActive(false);
                 return;
@@ -48,9 +48,13 @@ namespace Assets.Cards.TargetingPreview.UI
 
             if (_chanceText != null)
             {
-                int chancePercent = Mathf.RoundToInt(config.EffectPreview.Chance * 100f);
-                _chanceText.text = chancePercent + "%";
-                _chanceText.gameObject.SetActive(true);
+                bool shouldShowChance = !Mathf.Approximately(config.EffectPreview.Chance, 1f);
+                _chanceText.gameObject.SetActive(shouldShowChance);
+                if (shouldShowChance)
+                {
+                    int chancePercent = Mathf.RoundToInt(config.EffectPreview.Chance * 100f);
+                    _chanceText.text = chancePercent + "%";
+                }
             }
         }
     }

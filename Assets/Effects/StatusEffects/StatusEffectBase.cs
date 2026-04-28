@@ -4,7 +4,7 @@ using Assets.Turns;
 
 namespace Assets.Effects.StatusEffects
 {
-    public interface IStatusEffect
+    public interface IStatusEffectBase
     {
         int RemainingTurns { get; }
         EffectType EffectType { get; }
@@ -19,10 +19,10 @@ namespace Assets.Effects.StatusEffects
 
         void Remove();
 
-        void StackWith(IStatusEffect other);
+        void StackWith(IStatusEffectBase other);
     }
 
-    public abstract class StatusEffectBase : IStatusEffect
+    public abstract class StatusEffectBase : IStatusEffectBase
     {
         public float Duration { get; protected set; }
         public int RemainingTurns { get; protected set; }
@@ -72,7 +72,7 @@ namespace Assets.Effects.StatusEffects
             target.StatusEffectReceiver?.RemoveStatusEffect(this);
         }
 
-        public void StackWith(IStatusEffect other)
+        public void StackWith(IStatusEffectBase other)
         {
             RemainingTurns += other.RemainingTurns;
 
@@ -84,7 +84,7 @@ namespace Assets.Effects.StatusEffects
             UpdateEffectValueDisplay();
         }
 
-        protected virtual void StackValue(IStatusEffect other)
+        protected virtual void StackValue(IStatusEffectBase other)
         {
         }
 

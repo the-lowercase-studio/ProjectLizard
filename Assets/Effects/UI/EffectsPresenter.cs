@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Assets.Effects.Base;
 using Assets.Effects.StatusEffects;
 using Assets.Interfaces;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Effects.UI
@@ -40,7 +40,7 @@ namespace Assets.Effects.UI
 
         public void UpdateEffectsDisplay()
         {
-            List<IStatusEffect> activeEffects = _targetReceiver.GetActiveEffects();
+            List<IStatusEffectBase> activeEffects = _targetReceiver.GetActiveEffects();
 
             List<EffectType> effectsToRemove = new();
             foreach (var presenter in _activePresenters)
@@ -57,9 +57,10 @@ namespace Assets.Effects.UI
                 RemoveEffectPresenter(effectType);
             }
 
-            foreach (IStatusEffect effect in activeEffects)
+            foreach (IStatusEffectBase effect in activeEffects)
             {
                 if (effect.RemainingTurns <= 0) continue;
+                if (effect.EffectData == null || !effect.EffectData.HasVisuals) continue;
 
                 if (_activePresenters.ContainsKey(effect.EffectType))
                 {
@@ -74,14 +75,14 @@ namespace Assets.Effects.UI
             }
         }
 
-        private void CreateAppliedEffectPresenter(EffectType effectType, IStatusEffect statusEffect, Sprite effectSprite)
+        private void CreateAppliedEffectPresenter(EffectType effectType, IStatusEffectBase statusEffect, Sprite effectSprite)
         {
             AppliedEffectPresenter presenter = Instantiate(_effectPresenterPrefab, transform);
             presenter.Initialize(new AppliedEffectPresenterConfig(statusEffect, effectSprite));
             _activePresenters[effectType] = presenter;
         }
 
-        private void CreateInitialEffectPresenter(IStatusEffect effect)
+        private void CreateInitialEffectPresenter(IStatusEffectBase effect)
         {
             var initialEffectAnimator = effect.EffectData?.InitialEffectAnimator;
             if (initialEffectAnimator == null)

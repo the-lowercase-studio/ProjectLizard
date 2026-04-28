@@ -38,10 +38,11 @@ The system is not responsible for:
   - `Assets/Editor/Enemies/IntentionConfigPropertyDrawer.cs`
 - Related docs:
   - `agent-docs/AGENTS.md`
-  - `agent-docs/TECHNOLOGY_DOCUMENTATION.md`
-  - `agent-docs/PROJECT_CODING_STANDARDS.md`
-  - `agent-docs/ENEMY_INTENTION_SYSTEM_SUMMARY.md`
-  - `agent-docs/EFFECTS_SYSTEM_SUMMARY.md`
+  - `agent-docs/technology-documentation.md`
+  - `agent-docs/project-coding-standards.md`
+  - `agent-docs/enemy-intention-system-summary.md`
+  - `agent-docs/effects-system-summary.md`
+  - `agent-docs/damage-numbers-system-summary.md`
 - Related agents or instructions:
   - `.agents/skills/document-system/SKILL.md`
   - `.agents/skills/architecture-review/SKILL.md`
@@ -60,7 +61,7 @@ The system is not responsible for:
     - `SpecialAction`: currently same behavior as attack (placeholder).
   - `EnemyAnimationPlayer`: translates intention type into animator trigger if supported by this enemy.
   - `IntentionIndicator`: runtime icon/value presenter for selected intention.
-  - `EnemyDeathHandler`: orchestrates enemy death completion and hides enemy-specific UI.
+  - `EnemyDeathHandler`: hides enemy-specific UI, plays the death animation when available, and destroys the enemy after the animation callback.
 - Key interfaces:
   - Enemy-facing: `IEnemyBase`, `IEnemyAction`, `IEnemyAnimationPlayer`.
   - Turn integration: `ITurnManager` (`OnPlayerTurnStart`, `OnEnemyTurnStart`, `OnEnemyTurnEnd`).
@@ -73,7 +74,8 @@ The system is not responsible for:
   5. On `OnEnemyTurnStart`, enemy clears its current shield.
   6. On `OnEnemyTurnEnd`, living enemy executes selected action against injected `IPlayerParty` target and triggers matching animation.
   7. Enemy damage intake applies shield-first split, emits shield/health damage numbers, updates health, and plays hit VFX when still alive.
-  8. On death, `EnemyDeathHandler` hides enemy UI, plays death animation through `EnemyAnimationPlayer` when available, and destroys enemy object when complete.
+  8. On death, `EnemyDeathHandler` hides enemy UI, plays death animation through `EnemyAnimationPlayer` when available, and destroys the enemy object when the animation path completes.
+  9. Separately, `DeathHandlerBase.OnCompleted` is relayed by `EnemyBase.OnCanBeDestroyed` after death VFX/audio completion; this event should not be assumed to be the same moment as object destruction.
 
 ### Inspector Authoring Path
 
@@ -93,7 +95,8 @@ The system is not responsible for:
   - Selection happens at player-turn start.
   - Execution happens on enemy-turn end event.
   - Intention animation trigger is attempted before action execution.
-  - Enemy destroy permission is emitted only after death effects sequence completion (`OnCanBeDestroyed`).
+  - Death UI is hidden before death animation playback begins.
+  - `OnCanBeDestroyed` is emitted only after the inherited death effects sequence completes.
 - Constraints contributors must preserve:
   - Keep `IntentionConfig` + `[SerializeReference]` action model compatible with existing property drawer workflow.
   - Keep action classes serializable and default-constructible when exposed through drawer (`Activator.CreateInstance`).
@@ -134,6 +137,7 @@ The system is not responsible for:
   - Enemy actions currently assume `IPlayerParty` as a single target abstraction.
   - Intention visualization and animation mapping must stay in sync with intention enum growth.
   - Editor drawer reflection-based discovery depends on assembly/type metadata and attributes.
+  - Enemy death currently crosses animation, VFX/audio completion, and object destruction paths; changes should preserve their intended ordering explicitly.
 
 ## Known Risks and Open Questions
 
@@ -143,6 +147,7 @@ The system is not responsible for:
   - `SpecialAction` is currently behavior-equivalent to `AttackAction` (placeholder with TODO).
   - `EnemyBase.Name` returns `Config.name` (asset object name) instead of `Config.Name` (inspector field), which may be intentional but can surprise designers.
   - `IntentionConfigPropertyDrawer` contains an unused `_lastIntentionTypes` cache field.
+  - `DeathHandlerBase` waits for both VFX and audio completion events, but enemy audio death playback is currently commented out; verify completion behavior before depending on `OnCanBeDestroyed`.
 - Open design questions:
   - Should intention execution happen on enemy-turn start instead of enemy-turn end for clearer phase semantics?
   - Should intention indicator be explicitly hidden after execution/skip, or intentionally persist until next selection?

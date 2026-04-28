@@ -1,6 +1,6 @@
+using Assets.Cards.Base.Targeting;
 using Assets.Effects.StatusEffects;
 using Assets.ElementalSystem;
-using Assets.Cards.Base.Targeting;
 using Assets.Targeting;
 using UnityEngine;
 
@@ -42,7 +42,7 @@ namespace Assets.Cards.Base.Damage
 
             int modifiedDamage = baseDamage;
 
-            foreach (IStatusEffect effect in target.StatusEffectReceiver.GetActiveEffects())
+            foreach (IStatusEffectBase effect in target.StatusEffectReceiver.GetActiveEffects())
             {
                 if (effect is IIncomingDamageModifier incomingDamageModifier)
                 {

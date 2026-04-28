@@ -1,38 +1,44 @@
-using Assets.Effects.Base;
-using Assets.Targeting;
 using System;
 using System.Collections.Generic;
+using Assets.Effects.Base;
+using Assets.Targeting;
+using Assets.Turns;
 using UnityEngine;
 
 namespace Assets.Effects.StatusEffects
 {
     public interface IStatusEffectReceiver
     {
-        void ApplyStatusEffect(IStatusEffect effect);
+        void ApplyStatusEffect(IStatusEffectBase effect);
 
-        void RemoveStatusEffect(IStatusEffect effect);
+        void RemoveStatusEffect(IStatusEffectBase effect);
 
         bool HasStatusEffect(EffectType effectType);
 
-        List<IStatusEffect> GetActiveEffects();
+        List<IStatusEffectBase> GetActiveEffects();
 
         event EventHandler OnEffectsChanged;
     }
 
     public class StatusEffectReceiver : MonoBehaviour, IStatusEffectReceiver
     {
-        private readonly List<IStatusEffect> _activeEffects = new();
+        private readonly List<IStatusEffectBase> _activeEffects = new();
 
         public event EventHandler OnEffectsChanged;
 
-        public void ApplyStatusEffect(IStatusEffect effect)
+        public void ApplyStatusEffect(IStatusEffectBase effect)
         {
-            IStatusEffect existingEffect = _activeEffects.Find(e => e.EffectType == effect.EffectType);
+            IStatusEffectBase existingEffect = _activeEffects.Find(e => e.EffectType == effect.EffectType);
 
             if (existingEffect != null)
             {
                 existingEffect.StackWith(effect);
                 Debug.Log($"Status effect '{effect.EffectType}' stacked on {gameObject.name}");
+
+                if (existingEffect.ExecutionState == TurnExecutionState.Instant)
+                {
+                    existingEffect.PerformEffect();
+                }
             }
             else
             {
@@ -41,6 +47,11 @@ namespace Assets.Effects.StatusEffects
                     effect.Apply(target);
                     _activeEffects.Add(effect);
                     Debug.Log($"Status effect '{effect.EffectType}' applied to {gameObject.name}");
+
+                    if (effect.ExecutionState == TurnExecutionState.Instant)
+                    {
+                        effect.PerformEffect();
+                    }
                 }
                 else
                 {
@@ -52,7 +63,7 @@ namespace Assets.Effects.StatusEffects
             OnEffectsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void RemoveStatusEffect(IStatusEffect effect)
+        public void RemoveStatusEffect(IStatusEffectBase effect)
         {
             _activeEffects.Remove(effect);
             Debug.Log($"Status effect '{effect.EffectType}' removed from {gameObject.name}");
@@ -65,9 +76,9 @@ namespace Assets.Effects.StatusEffects
             return _activeEffects.Exists(e => e.EffectType == effectType);
         }
 
-        public List<IStatusEffect> GetActiveEffects()
+        public List<IStatusEffectBase> GetActiveEffects()
         {
-            return new List<IStatusEffect>(_activeEffects);
+            return new List<IStatusEffectBase>(_activeEffects);
         }
     }
 }

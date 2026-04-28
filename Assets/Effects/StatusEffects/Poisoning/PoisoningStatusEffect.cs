@@ -1,5 +1,5 @@
-using Assets.Interfaces.Combat;
 using Assets.ElementalSystem;
+using Assets.Interfaces.Combat;
 using UnityEngine;
 
 namespace Assets.Effects.StatusEffects.Poisoning
@@ -46,7 +46,7 @@ namespace Assets.Effects.StatusEffects.Poisoning
             RemoveVisualEffect();
         }
 
-        protected override void StackValue(IStatusEffect other)
+        protected override void StackValue(IStatusEffectBase other)
         {
             if (other is PoisoningStatusEffect burningEffect)
             {

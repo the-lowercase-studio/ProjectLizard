@@ -21,7 +21,8 @@ namespace Assets.Editor.Cards
         private const string CARDS_SHEET_PATH = "Assets/Cards/CardsLibrary/CardsSheet.csv";
         private const string CARDS_LIBRARY_PATH = "Assets/Cards/CardsLibrary";
         private const string DAMAGE_ASSETS_PATH = "Assets/Cards/Base/Damage";
-        private const string EFFECTS_ROOT_PATH = "Assets/Effects/StatusEffects";
+        private const string STATUS_EFFECTS_ROOT_PATH = "Assets/Effects/StatusEffects";
+        private const string INSTANT_EFFECTS_ROOT_PATH = "Assets/Effects/InstantEffects";
 
         private const string TITLE_PROPERTY = "<Title>k__BackingField";
         private const string DESCRIPTION_PROPERTY = "<Description>k__BackingField";
@@ -194,14 +195,24 @@ namespace Assets.Editor.Cards
             }
 
             string sanitizedEffectName = SanitizeName(step.EffectName, step.EffectName);
-            string effectPath = $"{EFFECTS_ROOT_PATH}/{sanitizedEffectName}/{sanitizedEffectName}.asset";
-            EffectSO effectAsset = AssetDatabase.LoadAssetAtPath<EffectSO>(effectPath);
-            if (effectAsset == null)
+
+            string statusEffectPath = $"{STATUS_EFFECTS_ROOT_PATH}/{sanitizedEffectName}/{sanitizedEffectName}.asset";
+            EffectSO effectAsset = AssetDatabase.LoadAssetAtPath<EffectSO>(statusEffectPath);
+            if (effectAsset != null)
             {
-                throw new CardSheetImportException($"effect asset not found at '{effectPath}' for row {csvRowNumber}.");
+                return effectAsset;
             }
 
-            return effectAsset;
+            string instantEffectPath = $"{INSTANT_EFFECTS_ROOT_PATH}/{sanitizedEffectName}/{sanitizedEffectName}.asset";
+            effectAsset = AssetDatabase.LoadAssetAtPath<EffectSO>(instantEffectPath);
+            if (effectAsset != null)
+            {
+                return effectAsset;
+            }
+
+            throw new CardSheetImportException(
+                $"effect asset not found for '{sanitizedEffectName}' in row {csvRowNumber}. " +
+                $"Searched '{statusEffectPath}' and '{instantEffectPath}'.");
         }
 
         private static CardConfigBaseSO LoadOrCreateCardAsset(string cardFolderPath, string sanitizedTitle, CardSheetImportReport report)
@@ -438,7 +449,7 @@ namespace Assets.Editor.Cards
         private static List<CardAttackStepDefinition> ParseAttackDefinitions(string attackText, int csvRowNumber)
         {
             List<CardAttackStepDefinition> attackDefinitions = new List<CardAttackStepDefinition>();
-            string[] lines = attackText.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+            string[] lines = attackText.Replace("\r\n", "|").Replace('\r', '|').Replace('\n', '|').Split('|');
 
             foreach (string rawLine in lines)
             {

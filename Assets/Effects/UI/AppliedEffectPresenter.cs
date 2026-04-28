@@ -8,10 +8,10 @@ namespace Assets.Effects.UI
 {
     public struct AppliedEffectPresenterConfig
     {
-        public IStatusEffect Effect;
+        public IStatusEffectBase Effect;
         public Sprite EffectSprite;
 
-        public AppliedEffectPresenterConfig(IStatusEffect effect, Sprite effectSprite)
+        public AppliedEffectPresenterConfig(IStatusEffectBase effect, Sprite effectSprite)
         {
             Effect = effect;
             EffectSprite = effectSprite;
@@ -22,7 +22,7 @@ namespace Assets.Effects.UI
     {
         string GetEffectName();
 
-        IStatusEffect GetTrackedEffect();
+        IStatusEffectBase GetTrackedEffect();
 
         bool IsEffectExpired();
 
@@ -36,7 +36,7 @@ namespace Assets.Effects.UI
         [SerializeField] private TextMeshProUGUI _turnCounterText;
         [SerializeField] private TextMeshProUGUI _effectValueText;
 
-        private IStatusEffect _trackedEffect;
+        private IStatusEffectBase _trackedEffect;
 
         public void Initialize(AppliedEffectPresenterConfig config)
         {
@@ -73,7 +73,7 @@ namespace Assets.Effects.UI
             return _trackedEffect == null || _trackedEffect.RemainingTurns <= 0;
         }
 
-        public IStatusEffect GetTrackedEffect()
+        public IStatusEffectBase GetTrackedEffect()
         {
             return _trackedEffect;
         }
