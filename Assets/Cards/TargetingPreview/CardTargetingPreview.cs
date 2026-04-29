@@ -245,8 +245,11 @@ namespace Assets.Cards.TargetingPreview
                 targetDamageTotals.TryGetValue(hit.Target, out int totalDamage);
                 targetDamageTotals[hit.Target] = totalDamage + modifiedDamage;
 
-                targetHitCounts.TryGetValue(hit.Target, out int hitCount);
-                targetHitCounts[hit.Target] = hitCount + 1;
+                if (modifiedDamage > 0)
+                {
+                    targetHitCounts.TryGetValue(hit.Target, out int hitCount);
+                    targetHitCounts[hit.Target] = hitCount + 1;
+                }
 
                 if (hit.Step.Effect != null && hit.Step.Effect.HasVisuals)
                 {
